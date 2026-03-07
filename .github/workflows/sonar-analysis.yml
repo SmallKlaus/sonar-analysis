@@ -1,0 +1,97 @@
+name: Flink SonarCloud Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch_number:
+        description: 'Batch number to process (1-10)'
+        required: true
+        default: '1'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
+          - '10'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180  # 3 hours max
+    
+    steps:
+      - name: Maximize build space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      
+      - name: Checkout Flink repository
+        uses: actions/checkout@v4
+        with:
+          repository: apache/flink
+          ref: master
+          fetch-depth: 0
+          path: flink
+      
+      - name: Checkout analysis scripts
+        uses: actions/checkout@v4
+        with:
+          path: scripts
+      
+      - name: Setup Java 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      
+      - name: Setup Java 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      
+      - name: Setup Java 17 (default)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      
+      - name: Install SonarScanner
+        run: |
+          wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip -q sonar-scanner-cli-5.0.1.3006-linux.zip
+          echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
+      
+      - name: Download batch data
+        run: |
+          cp scripts/flink_issues_batch_${{ github.event.inputs.batch_number }}.json .
+          echo "Processing batch ${{ github.event.inputs.batch_number }}"
+      
+      - name: Run analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+          JIRA_JSON_PATH: flink_issues_batch_${{ github.event.inputs.batch_number }}.json
+          GITHUB_WORKSPACE: ${{ github.workspace }}/flink
+        run: |
+          cd flink
+          python3 ../scripts/sonar_build_scan_cloud.py
+      
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: results-batch-${{ github.event.inputs.batch_number }}
+          path: |
+            flink/output/*.json
+            flink/output/*.log
+          retention-days: 90
