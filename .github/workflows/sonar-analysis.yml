@@ -23,7 +23,7 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    timeout-minutes: 180  # 3 hours max
+    timeout-minutes: 180
     
     steps:
       - name: Maximize build space
@@ -75,19 +75,23 @@ jobs:
         run: |
           cp scripts/flink_issues_batch_${{ github.event.inputs.batch_number }}.json .
           echo "Processing batch ${{ github.event.inputs.batch_number }}"
+          ls -lh flink_issues_batch_${{ github.event.inputs.batch_number }}.json
       
       - name: Run analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-          JIRA_JSON_PATH: flink_issues_batch_${{ github.event.inputs.batch_number }}.json
+          JIRA_JSON_PATH: ${{ github.workspace }}/flink_issues_batch_${{ github.event.inputs.batch_number }}.json
           GITHUB_WORKSPACE: ${{ github.workspace }}/flink
         run: |
           cd flink
+          mkdir -p output
+          echo "Looking for JSON at: $JIRA_JSON_PATH"
+          ls -lh "$JIRA_JSON_PATH"
           python3 ../scripts/sonar_build_scan_cloud.py
       
       - name: Upload results
-        uses: actions/upload-artifact@v4  # ← Changed from v3 to v4
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: results-batch-${{ github.event.inputs.batch_number }}
