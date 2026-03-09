@@ -1,11 +1,6 @@
 """
 sonar_build_scan_cloud.py - GitHub Actions + SonarCloud version
-
-Differences from local version:
-- Uses SonarCloud instead of local SonarQube
-- Configures via environment variables
-- Linux paths instead of Windows
-- Uses preinstalled Java/Maven from GitHub Actions
+WITH DETAILED LOGGING FOR TROUBLESHOOTING
 """
 
 import os
@@ -17,39 +12,45 @@ import logging
 from datetime import datetime, timezone
 
 # ============================================================================
-# CONFIGURATION - Uses environment variables set by GitHub Actions
+# CONFIGURATION
 # ============================================================================
 CONFIG = {
-    "jira_json_path": os.getenv("JIRA_JSON_PATH", "jira_issues_batch_1.json"),
-    "repo_path": os.getenv("GITHUB_WORKSPACE", "."),  # GitHub Actions workspace
+    "jira_json_path": os.getenv("JIRA_JSON_PATH", "flink_issues_batch_1.json"),
+    "repo_path": os.getenv("GITHUB_WORKSPACE", "."),
     "output_dir": "output",
     
-    # SonarCloud configuration
     "sonar_url": "https://sonarcloud.io",
     "sonar_token": os.getenv("SONAR_TOKEN"),
     "sonar_organization": os.getenv("SONAR_ORGANIZATION"),
     
-    # Java homes (GitHub Actions setup-java creates these)
     "java_homes": {
         "8":  os.getenv("JAVA_HOME_8_X64", "/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/8.0.432-6/x64"),
         "11": os.getenv("JAVA_HOME_11_X64", "/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.25-9/x64"),
         "17": os.getenv("JAVA_HOME_17_X64", "/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.13-11/x64"),
     },
     
-    # Maven is in PATH, but we can specify version-specific paths if needed
-    "maven_bin": "mvn",  # GitHub Actions has Maven in PATH
-    
-    # SonarScanner CLI (installed in workflow)
+    "maven_bin": "mvn",
     "sonar_scanner_bin": "sonar-scanner",
 }
 
 os.makedirs(CONFIG["output_dir"], exist_ok=True)
 
+# Enhanced logging - both to file AND console
 logging.basicConfig(
-    filename=os.path.join(CONFIG["output_dir"], "sonar_build_scan_errors.log"),
-    level=logging.ERROR,
+    level=logging.INFO,  # Show INFO level in console
     format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(os.path.join(CONFIG["output_dir"], "sonar_build_scan_errors.log")),
+        logging.StreamHandler()  # Also print to console
+    ]
 )
+
+def log_step(message):
+    """Helper to print prominent step messages"""
+    print(f"\n{'='*70}")
+    print(f">>> {message}")
+    print(f"{'='*70}\n")
+    logging.info(message)
 
 
 # ============================================================================
@@ -82,19 +83,27 @@ def year_from_iso(date_str: str) -> int:
 # ============================================================================
 def git_checkout(repo_path: str, sha: str) -> bool:
     try:
-        subprocess.run(
+        log_step(f"Git checkout: {sha}")
+        
+        result = subprocess.run(
             ["git", "checkout", "--force", sha],
             cwd=repo_path, check=True,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            capture_output=True, text=True
         )
+        print(f"✓ Checked out {sha}")
+        
         subprocess.run(
             ["git", "clean", "-fd"],
             cwd=repo_path, check=True,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            capture_output=True, text=True
         )
+        print(f"✓ Cleaned working directory")
+        
         return True
     except subprocess.CalledProcessError as e:
-        logging.error(f"git checkout {sha} failed: {e.stderr.decode(errors='replace')}")
+        print(f"✗ Git checkout FAILED")
+        print(f"  Error: {e.stderr}")
+        logging.error(f"git checkout {sha} failed: {e.stderr}")
         return False
 
 
@@ -102,16 +111,23 @@ def git_checkout(repo_path: str, sha: str) -> bool:
 # SONARCLOUD HELPERS
 # ============================================================================
 def delete_sonar_project(project_key: str):
-    """SonarCloud uses different delete API"""
+    log_step(f"Deleting SonarCloud project: {project_key}")
+    
+    full_key = f"{CONFIG['sonar_organization']}_{project_key}"
     url = f"{CONFIG['sonar_url']}/api/projects/delete"
     auth = (CONFIG["sonar_token"], "")
-    res = requests.post(url, auth=auth, data={"project": project_key})
-    if res.status_code in (200, 204):
-        print(f"      [Sonar] Deleted existing project '{project_key}'.")
-    elif res.status_code == 404:
-        pass
-    else:
-        print(f"      [Sonar Warning] Could not delete project: {res.text}")
+    
+    try:
+        res = requests.post(url, auth=auth, data={"project": full_key}, timeout=30)
+        if res.status_code in (200, 204):
+            print(f"✓ Deleted existing project '{full_key}'")
+        elif res.status_code == 404:
+            print(f"✓ Project doesn't exist (clean slate)")
+        else:
+            print(f"⚠ Could not delete project: {res.status_code} - {res.text}")
+    except Exception as e:
+        print(f"⚠ Delete request failed: {e}")
+        logging.error(f"delete_sonar_project error: {e}")
 
 
 def _is_transient_error(output: str) -> bool:
@@ -133,12 +149,18 @@ def _is_transient_error(output: str) -> bool:
 # ============================================================================
 def maven_build_phase(repo_path: str, project_key: str, toolchain: dict,
                       log_file: str, max_retries: int = 3) -> bool:
+    
+    log_step(f"Maven Build Phase - Java {toolchain['java_major']}")
+    
     java_home = CONFIG["java_homes"].get(toolchain["java_major"])
     
     if not java_home or not os.path.isdir(java_home):
+        print(f"✗ Java home not found: {java_home}")
         logging.error(f"Java home not found for major={toolchain['java_major']}: {java_home}")
         return False
-
+    
+    print(f"Using Java: {java_home}")
+    
     env = os.environ.copy()
     env["JAVA_HOME"] = java_home
     env["PATH"] = f"{java_home}/bin:{env.get('PATH', '')}"
@@ -166,10 +188,11 @@ def maven_build_phase(repo_path: str, project_key: str, toolchain: dict,
         "--batch-mode",
         "--no-transfer-progress",
     ]
+    
+    print(f"Maven command: {' '.join(cmd_build[:5])}...")
 
     for attempt in range(1, max_retries + 1):
-        print(f"      [Build] Attempt {attempt}/{max_retries}: "
-              f"java {toolchain['java_major']} (timeout: 45 min)")
+        print(f"\n>>> Build attempt {attempt}/{max_retries} (timeout: 45 min)")
 
         build_output = []
 
@@ -191,6 +214,7 @@ def maven_build_phase(repo_path: str, project_key: str, toolchain: dict,
                     errors="replace",
                 )
 
+                line_count = 0
                 for line in iter(process.stdout.readline, ''):
                     if not line:
                         break
@@ -198,15 +222,24 @@ def maven_build_phase(repo_path: str, project_key: str, toolchain: dict,
                     log_fh.write(line)
                     log_fh.flush()
                     
+                    line_count += 1
+                    # Show progress every 100 lines
+                    if line_count % 100 == 0:
+                        print(".", end="", flush=True)
+                    
+                    # Show important lines
                     if "building" in line.lower() and any(x in line.lower() for x in ["module", "project"]):
-                        print(f"      [Progress] {line.strip()}")
+                        print(f"\n  {line.strip()}")
+                    elif "error" in line.lower() or "failure" in line.lower():
+                        print(f"\n  ⚠ {line.strip()}")
 
                 try:
                     process.wait(timeout=2700)
                 except subprocess.TimeoutExpired:
                     process.kill()
                     process.wait()
-                    print(f"      [Error] BUILD phase timed out after 45 minutes.")
+                    print(f"\n✗ BUILD timed out after 45 minutes")
+                    logging.error(f"Build timeout on attempt {attempt}")
                     return False
 
                 if process.returncode != 0:
@@ -214,19 +247,27 @@ def maven_build_phase(repo_path: str, project_key: str, toolchain: dict,
                         process.returncode, cmd_build, output="".join(build_output)
                     )
 
-            print(f"      [Build] ✓ Completed successfully")
+            print(f"\n✓ Build completed successfully")
             return True
 
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError as e:
             full_output = "".join(build_output)
+            
+            # Show last 30 lines of output for debugging
+            print(f"\n✗ Build FAILED (exit code {e.returncode})")
+            print(f"\nLast 30 lines of build output:")
+            print("─" * 70)
+            for line in build_output[-30:]:
+                print(line.rstrip())
+            print("─" * 70)
+            
             if _is_transient_error(full_output) and attempt < max_retries:
                 wait_time = 30 * attempt
-                print(f"      [Retry] Transient error detected. Waiting {wait_time}s...")
+                print(f"\n⟳ Transient error detected. Retrying in {wait_time}s...")
                 time.sleep(wait_time)
                 continue
             else:
-                print(f"      [Error] Build failed after {attempt} attempt(s).")
-                logging.error(f"Build failed:\n{full_output[-1000:]}")
+                logging.error(f"Build failed after {attempt} attempts:\n{full_output[-2000:]}")
                 return False
 
     return False
@@ -236,6 +277,8 @@ def maven_build_phase(repo_path: str, project_key: str, toolchain: dict,
 # DISCOVER PROJECT STRUCTURE
 # ============================================================================
 def discover_project_structure(repo_path: str):
+    log_step("Discovering project structure")
+    
     source_dirs = []
     binary_dirs = []
 
@@ -259,7 +302,12 @@ def discover_project_structure(repo_path: str):
     sources_str = ",".join(source_dirs) if source_dirs else "."
     binaries_str = ",".join(binary_dirs) if binary_dirs else "target/classes"
 
-    print(f"      [Discovery] Found {len(source_dirs)} source dirs, {len(binary_dirs)} binary dirs")
+    print(f"✓ Found {len(source_dirs)} source directories")
+    print(f"✓ Found {len(binary_dirs)} binary directories")
+    
+    if len(source_dirs) <= 5:
+        print(f"  Sources: {sources_str}")
+    
     return sources_str, binaries_str
 
 
@@ -267,15 +315,20 @@ def discover_project_structure(repo_path: str):
 # PHASE 2: SONARCLOUD SCAN
 # ============================================================================
 def sonar_scan_phase(repo_path: str, project_key: str, toolchain: dict, log_file: str) -> str | None:
+    log_step("SonarCloud Scan Phase")
+    
     scanner_bin = CONFIG["sonar_scanner_bin"]
-    scanner_java = CONFIG["java_homes"]["17"]  # SonarScanner runs with Java 17
+    scanner_java = CONFIG["java_homes"]["17"]
     project_java = CONFIG["java_homes"].get(toolchain["java_major"])
 
-    print(f"      [Sonar] Discovering project structure...")
+    print(f"Scanner Java: {scanner_java}")
+    print(f"Project Java: {project_java}")
+
     sources, binaries = discover_project_structure(repo_path)
 
-    # SonarCloud requires organization prefix
     full_project_key = f"{CONFIG['sonar_organization']}_{project_key}"
+    
+    print(f"Project key: {full_project_key}")
 
     props_file = os.path.join(repo_path, "sonar-project.properties")
     props_content = f"""# Generated by sonar_build_scan_cloud.py
@@ -295,6 +348,8 @@ sonar.exclusions=**/archetype-resources/**,**/target/classes/archetype-resources
     try:
         with open(props_file, "w", encoding="utf-8") as f:
             f.write(props_content)
+        
+        print(f"✓ Created sonar-project.properties")
 
         env = os.environ.copy()
         env["JAVA_HOME"] = scanner_java
@@ -307,7 +362,7 @@ sonar.exclusions=**/archetype-resources/**,**/target/classes/archetype-resources
             f"-Dproject.settings={props_file}",
         ]
 
-        print(f"      [Sonar] Running SonarCloud scanner (timeout: 60 min)...")
+        print(f"Starting SonarCloud scan (timeout: 60 min)...")
 
         scan_output = []
         task_id = None
@@ -329,6 +384,7 @@ sonar.exclusions=**/archetype-resources/**,**/target/classes/archetype-resources
                 errors="replace",
             )
 
+            line_count = 0
             for line in iter(process.stdout.readline, ''):
                 if not line:
                     break
@@ -336,29 +392,42 @@ sonar.exclusions=**/archetype-resources/**,**/target/classes/archetype-resources
                 log_fh.write(line)
                 log_fh.flush()
                 
-                if "analysis" in line.lower():
-                    print(f"      [Sonar] {line.strip()}")
+                line_count += 1
+                if line_count % 50 == 0:
+                    print(".", end="", flush=True)
                 
+                # Show important lines
+                if any(word in line.lower() for word in ["analysis", "executing", "error", "warn"]):
+                    print(f"\n  {line.strip()}")
+                
+                # Parse task ID
                 if "task?id=" in line or "ceTaskId=" in line:
                     if "task?id=" in line:
                         task_id = line.split("task?id=")[1].strip()
                     else:
                         task_id = line.split("ceTaskId=")[1].strip()
-                    print(f"      [Sonar] ✓ Task ID captured: {task_id}")
+                    print(f"\n✓ Task ID captured: {task_id}")
 
             try:
                 process.wait(timeout=3600)
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.wait()
-                print(f"      [Error] Sonar scan timed out after 60 minutes.")
+                print(f"\n✗ Sonar scan timed out after 60 minutes")
+                logging.error(f"Sonar timeout")
                 return None
 
             if process.returncode != 0:
-                print(f"      [Error] Sonar scan failed.")
+                print(f"\n✗ Sonar scan FAILED (exit code {process.returncode})")
+                print(f"\nLast 30 lines of scan output:")
+                print("─" * 70)
+                for line in scan_output[-30:]:
+                    print(line.rstrip())
+                print("─" * 70)
                 logging.error(f"Sonar scan failed:\n{''.join(scan_output[-1000:])}")
                 return None
-
+        
+        print(f"\n✓ Scan completed successfully")
         return task_id
 
     finally:
@@ -377,40 +446,52 @@ def build_and_scan_mvn(repo_path: str, project_key: str, toolchain: dict) -> str
         CONFIG["output_dir"],
         f"{project_key.replace(':', '_')}_maven.log"
     )
+    
     if not maven_build_phase(repo_path, project_key, toolchain, log_file):
+        print(f"✗ Maven build failed - aborting scan")
         return None
+    
     return sonar_scan_phase(repo_path, project_key, toolchain, log_file)
 
 
 def wait_for_task(task_id: str, timeout_seconds: int = 2700) -> bool:
     if not task_id:
+        print(f"✗ No task ID - cannot wait")
         return False
 
+    log_step(f"Waiting for SonarCloud task: {task_id}")
+    
     url = f"{CONFIG['sonar_url']}/api/ce/task?id={task_id}"
     auth = (CONFIG["sonar_token"], "")
-    print(f"      [Wait] CE task {task_id} (timeout: {timeout_seconds // 60} min) ...")
 
     deadline = time.time() + timeout_seconds
+    elapsed = 0
+    
     while time.time() < deadline:
         try:
             resp = requests.get(url, auth=auth, timeout=10)
             status = resp.json()["task"]["status"]
+            
+            elapsed = int(time.time() - (deadline - timeout_seconds))
+            print(f"  Status: {status} (elapsed: {elapsed}s)", end="\r")
+            
             if status == "SUCCESS":
-                print(f"      [Wait] ✓ Task completed successfully")
+                print(f"\n✓ Task completed successfully ({elapsed}s)")
                 return True
             elif status in ("FAILED", "CANCELED"):
-                print(f"      [Sonar Error] Task status: {status}")
+                print(f"\n✗ Task status: {status}")
                 return False
         except Exception as e:
+            print(f"\n⚠ Polling error: {e}")
             logging.error(f"Polling task {task_id}: {e}")
+        
         time.sleep(10)
 
-    print(f"      [Sonar Error] Timed out.")
+    print(f"\n✗ Task timed out after {timeout_seconds // 60} minutes")
     return False
 
 
 def get_measures(project_key: str) -> dict:
-    # SonarCloud uses organization prefix
     full_key = f"{CONFIG['sonar_organization']}_{project_key}"
     url = f"{CONFIG['sonar_url']}/api/measures/component"
     auth = (CONFIG["sonar_token"], "")
@@ -423,8 +504,13 @@ def get_measures(project_key: str) -> dict:
         if res.status_code == 200:
             data = res.json()
             if "component" in data and "measures" in data["component"]:
-                return {m["metric"]: m["value"] for m in data["component"]["measures"]}
+                measures = {m["metric"]: m["value"] for m in data["component"]["measures"]}
+                print(f"✓ Retrieved {len(measures)} metrics")
+                return measures
+        else:
+            print(f"⚠ Failed to get measures: {res.status_code}")
     except Exception as e:
+        print(f"⚠ Error getting measures: {e}")
         logging.error(f"get_measures({full_key}): {e}")
     return {}
 
@@ -455,13 +541,14 @@ def fetch_issues(project_key: str, statuses=None, resolutions=None,
 
         while True:
             if (page - 1) * page_size >= MAX_RESULTS:
-                print(f"      [Warn] {issue_type} shard hit 10,000 cap.")
+                print(f"  ⚠ {issue_type} hit 10,000 cap")
                 break
 
             params["p"] = page
             try:
                 res = requests.get(url, auth=auth, params=params, timeout=30)
                 if res.status_code != 200:
+                    print(f"  ⚠ HTTP {res.status_code} fetching {issue_type}")
                     logging.error(f"fetch_issues HTTP {res.status_code}: {res.text}")
                     break
 
@@ -473,9 +560,11 @@ def fetch_issues(project_key: str, statuses=None, resolutions=None,
                 page += 1
 
             except Exception as e:
+                print(f"  ⚠ Error fetching {issue_type}: {e}")
                 logging.error(f"fetch_issues: {e}")
                 break
 
+    print(f"✓ Fetched {len(all_issues)} issues total")
     return all_issues
 
 
@@ -483,31 +572,43 @@ def fetch_issues(project_key: str, statuses=None, resolutions=None,
 # MAIN
 # ============================================================================
 def main():
+    log_step("Starting SonarCloud Analysis Pipeline")
+    
+    print(f"Configuration:")
+    print(f"  JIRA JSON: {CONFIG['jira_json_path']}")
+    print(f"  Repository: {CONFIG['repo_path']}")
+    print(f"  Output dir: {CONFIG['output_dir']}")
+    print(f"  Organization: {CONFIG['sonar_organization']}")
+    print(f"  Java homes: {CONFIG['java_homes']}")
+    
     try:
         with open(CONFIG["jira_json_path"], "r", encoding="utf-8") as fh:
             jira_issues = json.load(fh)
+        print(f"✓ Loaded {len(jira_issues)} issues from JSON")
     except FileNotFoundError:
-        print(f"[Fatal] JIRA JSON not found: {CONFIG['jira_json_path']}")
+        print(f"✗ JIRA JSON not found: {CONFIG['jira_json_path']}")
         return
 
     failures = []
+    successes = []
 
-    for jira_id, item in jira_issues.items():
+    for idx, (jira_id, item) in enumerate(jira_issues.items(), 1):
         output_path = os.path.join(CONFIG["output_dir"], f"{jira_id}_report.json")
 
         if os.path.exists(output_path):
-            print(f"\n=== [{jira_id}] Already processed — skipping. ===")
+            print(f"\n[{idx}/{len(jira_issues)}] {jira_id}: Already processed ✓")
             continue
 
-        print(f"\n{'='*60}")
-        print(f"=== Processing {jira_id} ===")
+        print(f"\n{'='*70}")
+        print(f"[{idx}/{len(jira_issues)}] Processing {jira_id}")
+        print(f"{'='*70}")
 
         try:
             sha_before = item.get("sha_before", "").strip()
             commits = item.get("commits", [])
 
             if not sha_before or not commits:
-                print("   [Skip] Missing data.")
+                print(f"✗ Missing data - skipping")
                 continue
 
             sha_after = commits[0]["sha"]
@@ -517,19 +618,21 @@ def main():
             before_toolchain = get_toolchain(year_from_iso(before_date) if before_date else datetime.now().year)
             after_toolchain = get_toolchain(year_from_iso(after_date) if after_date else datetime.now().year)
 
-            print(f"   sha_before: {sha_before[:10]}, sha_after: {sha_after[:10]}")
+            print(f"  Before: {sha_before[:10]} (Java {before_toolchain['java_major']})")
+            print(f"  After:  {sha_after[:10]} (Java {after_toolchain['java_major']})")
 
             project_key = f"jira:{jira_id}"
             delete_sonar_project(project_key)
 
             # BEFORE scan
-            print(f"\n   -> [BEFORE] Checking out {sha_before[:10]} ...")
+            print(f"\n▶ BEFORE SCAN")
             if not git_checkout(CONFIG["repo_path"], sha_before):
                 failures.append(jira_id)
                 continue
 
             before_task = build_and_scan_mvn(CONFIG["repo_path"], project_key, before_toolchain)
             if not before_task or not wait_for_task(before_task):
+                print(f"✗ BEFORE scan failed")
                 failures.append(jira_id)
                 continue
 
@@ -538,13 +641,14 @@ def main():
             scan_time_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+0000")
 
             # AFTER scan
-            print(f"\n   -> [AFTER] Checking out {sha_after[:10]} ...")
+            print(f"\n▶ AFTER SCAN")
             if not git_checkout(CONFIG["repo_path"], sha_after):
                 failures.append(jira_id)
                 continue
 
             after_task = build_and_scan_mvn(CONFIG["repo_path"], project_key, after_toolchain)
             if not after_task or not wait_for_task(after_task):
+                print(f"✗ AFTER scan failed")
                 failures.append(jira_id)
                 continue
 
@@ -575,17 +679,24 @@ def main():
             with open(output_path, "w", encoding="utf-8") as fh:
                 json.dump(report, fh, indent=4, ensure_ascii=False)
 
-            print(f"\n   [Done] {jira_id} — Baseline: {len(baseline_issues)} | Fixed: {len(fixed_issues)} | New: {len(new_issues)}")
+            print(f"\n✓ SUCCESS: {jira_id}")
+            print(f"  Baseline: {len(baseline_issues)} | Fixed: {len(fixed_issues)} | New: {len(new_issues)}")
+            print(f"  Report: {output_path}")
+            successes.append(jira_id)
 
         except Exception as exc:
-            print(f"   [Error] {exc}")
+            print(f"\n✗ EXCEPTION: {exc}")
             logging.error(f"Error processing {jira_id}: {exc}", exc_info=True)
             failures.append(jira_id)
 
-    print(f"\n{'='*60}")
-    print(f"Analysis complete. Failures: {len(failures)}")
+    log_step("Analysis Complete")
+    print(f"Successes: {len(successes)}")
+    print(f"Failures:  {len(failures)}")
+    
+    if successes:
+        print(f"\n✓ Successful: {successes[:10]}{'...' if len(successes) > 10 else ''}")
     if failures:
-        print(f"Failed: {failures}")
+        print(f"\n✗ Failed: {failures[:10]}{'...' if len(failures) > 10 else ''}")
 
 
 if __name__ == "__main__":
