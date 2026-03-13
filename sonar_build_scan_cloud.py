@@ -82,28 +82,53 @@ def year_from_iso(date_str: str) -> int:
 # GIT HELPERS
 # ============================================================================
 def git_checkout(repo_path: str, sha: str) -> bool:
+    """
+    Checkout a specific commit SHA.
+    Assumes commit is already available via refs/td-analysis/* refs.
+    """
+    logger.info(f"Git checkout: {sha[:10]} in {repo_path}")
+    
+    # Verify commit exists (should always succeed now)
     try:
-        log_step(f"Git checkout: {sha}")
-        
+        result = subprocess.run(
+            ["git", "cat-file", "-e", sha],
+            cwd=repo_path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=10
+        )
+        if result.returncode != 0:
+            logger.error(f"✗ Commit {sha[:10]} not found even after importing refs!")
+            logger.error(f"  Check if bundle contains this commit")
+            return False
+    except Exception as e:
+        logger.error(f"✗ Failed to verify commit: {e}")
+        return False
+    
+    try:
         result = subprocess.run(
             ["git", "checkout", "--force", sha],
             cwd=repo_path, check=True,
-            capture_output=True, text=True
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            encoding="utf-8", errors="replace",
+            timeout=30
         )
-        print(f"✓ Checked out {sha}")
         
-        subprocess.run(
+        result = subprocess.run(
             ["git", "clean", "-fd"],
             cwd=repo_path, check=True,
-            capture_output=True, text=True
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            encoding="utf-8", errors="replace",
+            timeout=30
         )
-        print(f"✓ Cleaned working directory")
         
+        logger.info(f"✓ Successfully checked out {sha[:10]}")
         return True
+        
     except subprocess.CalledProcessError as e:
-        print(f"✗ Git checkout FAILED")
-        print(f"  Error: {e.stderr}")
-        logging.error(f"git checkout {sha} failed: {e.stderr}")
+        logger.error(f"✗ Git checkout failed for {sha}")
+        logger.error(f"  Return code: {e.returncode}")
+        logger.error(f"  Stderr: {e.stderr[:500]}")
         return False
 
 
