@@ -1,6 +1,5 @@
 """
 sonar_build_scan_cloud.py - GitHub Actions + SonarCloud version
-WITH DETAILED LOGGING FOR TROUBLESHOOTING
 """
 
 import os
@@ -9,6 +8,7 @@ import subprocess
 import time
 import requests
 import logging
+import traceback
 from datetime import datetime, timezone
 
 # ============================================================================
@@ -33,18 +33,26 @@ CONFIG = {
     "sonar_scanner_bin": "sonar-scanner",
 }
 
+# Create output directory BEFORE logging setup
 os.makedirs(CONFIG["output_dir"], exist_ok=True)
 
-# Enhanced logging - both to file AND console
+# Configure logging
 logging.basicConfig(
-    level=logging.INFO,  # Show INFO level in console
+    level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(os.path.join(CONFIG["output_dir"], "sonar_build_scan_errors.log")),
-        logging.StreamHandler()  # Also print to console
+        logging.FileHandler(os.path.join(CONFIG["output_dir"], "sonar_build_scan.log")),
+        logging.StreamHandler()
     ]
 )
 
+# CREATE THE LOGGER - THIS IS THE MISSING LINE!
+logger = logging.getLogger(__name__)
+
+# Log startup info
+logger.info("="*60)
+logger.info("Starting SonarCloud Analysis Pipeline")
+logger.info("="*60)
 def log_step(message):
     """Helper to print prominent step messages"""
     print(f"\n{'='*70}")
