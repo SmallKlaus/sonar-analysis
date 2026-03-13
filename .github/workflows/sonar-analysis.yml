@@ -40,6 +40,27 @@ jobs:
           ref: master
           fetch-depth: 0
           path: flink
+
+      - name: Import TD analysis commits
+        run: |
+          cd flink
+          
+          # Download bundle from GitHub releases
+          echo "Downloading TD commits bundle..."
+          wget -q https://github.com/${{ github.repository }}/releases/download/td-commits-v1/flink-td-commits.bundle
+          
+          # Verify and fetch
+          echo "Importing commits..."
+          git bundle verify flink-td-commits.bundle
+          git fetch flink-td-commits.bundle 'refs/td-analysis/*:refs/td-analysis/*'
+          
+          # Cleanup bundle to save space
+          rm flink-td-commits.bundle
+          
+          # Verify commits are available
+          echo "Commits imported: $(git for-each-ref refs/td-analysis/ | wc -l)"
+          
+          echo "✓ TD analysis commits ready"
       
       - name: Checkout analysis scripts
         uses: actions/checkout@v4
