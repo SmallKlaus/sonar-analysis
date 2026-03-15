@@ -143,6 +143,63 @@ def git_checkout(repo_path: str, sha: str) -> bool:
 # ============================================================================
 # SONARCLOUD HELPERS
 # ============================================================================
+
+def create_public_project(project_key: str):
+    """
+    Create a SonarCloud project with PUBLIC visibility using the API.
+    This avoids the 400k LOC limit that applies to private projects.
+    """
+    full_key = f"{CONFIG['sonar_organization']}_{project_key}"
+    
+    logger.info(f"Creating public project: {full_key}")
+    
+    url = f"{CONFIG['sonar_url']}/api/projects/create"
+    auth = (CONFIG["sonar_token"], "")
+    
+    data = {
+        "organization": CONFIG["sonar_organization"],
+        "project": full_key,
+        "name": project_key,
+        "visibility": "public"
+    }
+    
+    try:
+        res = requests.post(url, auth=auth, data=data, timeout=30)
+        
+        if res.status_code == 200:
+            logger.info(f"  ✓ Project created as PUBLIC")
+            return True
+        elif res.status_code == 400:
+            # Check if it's "already exists" error
+            response_text = res.text.lower()
+            if "already exists" in response_text or "duplicate" in response_text:
+                logger.info(f"  ✓ Project already exists")
+                
+                # Update visibility to public in case it was private
+                update_url = f"{CONFIG['sonar_url']}/api/projects/update_visibility"
+                update_data = {
+                    "project": full_key,
+                    "visibility": "public"
+                }
+                update_res = requests.post(update_url, auth=auth, data=update_data, timeout=30)
+                
+                if update_res.status_code in (200, 204):
+                    logger.info(f"  ✓ Updated existing project to PUBLIC")
+                else:
+                    logger.warning(f"  Could not update visibility: {update_res.status_code}")
+                
+                return True
+            else:
+                logger.error(f"  ✗ Failed to create project: {res.text}")
+                return False
+        else:
+            logger.error(f"  ✗ HTTP {res.status_code}: {res.text}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"  ✗ Exception creating project: {e}")
+        return False
+
 def delete_sonar_project(project_key: str):
     log_step(f"Deleting SonarCloud project: {project_key}")
     
@@ -656,6 +713,10 @@ def main():
 
             project_key = f"jira:{jira_id}"
             delete_sonar_project(project_key)
+            if not create_public_project(project_key):
+                logger.error(f"Failed to create public project for {jira_id}")
+                failures.append(jira_id)
+                continue
 
             # BEFORE scan
             print(f"\n▶ BEFORE SCAN")
