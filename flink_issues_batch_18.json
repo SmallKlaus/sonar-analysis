@@ -1,0 +1,1136 @@
+{
+  "FLINK-21210": {
+    "jira_id": "FLINK-21210",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-21210][coordination] ApplicationClusterEntryPoint should explicitly close PackagedProgram",
+    "description": "## What is the purpose of the change\r\n\r\n*[FLINK-21164](https://issues.apache.org/jira/browse/FLINK-21164) introduced #PackagedProgram#close# to clean up temporary jars, and with [FLINK-9844](https://issues.apache.org/jira/browse/FLINK-9844) the contained classloader will also be closed beforehand. To make it obvious that this also happens in the application cluster entrypoints. `ApplicationClusterEntryPoint` should adjust the entrypoints to explicitly close the `PackagedProgram`.*\r\n\r\n## Brief change log\r\n\r\n  - *`ApplicationClusterEntryPoint` overrides the `close` to invoke the `close` method of `PackagedProgram`.*\r\n\r\n## Verifying this change\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (yes / **no**)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (**not applicable** / docs / JavaDocs / not documented)",
+    "commits": [
+      {
+        "sha": "aa75cbfa98c0494578283d2dab0908cdd4942c3a",
+        "message": "[FLINK-21210][coordination] ApplicationClusterEntryPoint should explicitly close PackagedProgram",
+        "author": "SteNicholas",
+        "date": "2021-02-05T00:51:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/application/ApplicationClusterEntryPoint.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/application/ApplicationClusterEntryPoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 130,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 605,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Change Method Access Modifier": 2
+        }
+      },
+      {
+        "sha": "90ef99a414d6805f625d07f8f9a180c9617fecfb",
+        "message": "[FLINK-21210][coordination] ApplicationClusterEntryPoint should explicitly close PackagedProgram",
+        "author": "SteNicholas",
+        "date": "2021-02-03T13:04:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/application/ApplicationClusterEntryPoint.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/application/ApplicationClusterEntryPoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 128,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 605,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 3,
+        "refactorings": {
+          "Rename Method": 1,
+          "Change Thrown Exception Type": 1,
+          "Change Method Access Modifier": 1
+        }
+      },
+      {
+        "sha": "6916a3097fb35e9db0585aa41e7e1fb5bce541f3",
+        "message": "[FLINK-21210][coordination] ApplicationClusterEntryPoints should explicitly close PackagedProgram",
+        "author": "SteNicholas",
+        "date": "2021-01-31T08:53:23Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/application/ApplicationClusterEntryPoint.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/application/ApplicationClusterEntryPoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 117,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      }
+    ],
+    "sha_before": "a4ccc6e63cac9d867cbc9707811f1db0486b6792",
+    "prefactoring_score": 6,
+    "prefactoring_reasons": [
+      "H3 (+1): [90ef99a4] avg churn ratio on pre-existing files = 1.3% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [90ef99a4] is nearly pure structural refactoring (4 lines added, 3 refactoring ops)",
+      "H3 (+1): [aa75cbfa] avg churn ratio on pre-existing files = 1.2% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [aa75cbfa] is nearly pure structural refactoring (4 lines added, 2 refactoring ops)"
+    ]
+  },
+  "FLINK-21204": {
+    "jira_id": "FLINK-21204",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-21204][coordination] Remove LogicalSlot#getSlotSharingGroupId",
+    "description": "The `slotSharingGroupId` is always set to null and never accessed outside of a single test (which also just checked that it is indeed null).",
+    "commits": [
+      {
+        "sha": "232c04267560ca5716a027237ba5f803a036f1cc",
+        "message": "[FLINK-21204][coordination] Remove LogicalSlot#getSlotSharingGroupId",
+        "author": "Chesnay Schepler",
+        "date": "2021-01-29T13:17:31Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/LogicalSlot.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/LogicalSlot.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 164,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/SingleLogicalSlot.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/SingleLogicalSlot.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 246,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/SharedSlot.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/SharedSlot.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 317,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexLocalityTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexLocalityTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 257,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/TestingLogicalSlot.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/TestingLogicalSlot.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/TestingLogicalSlotBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/TestingLogicalSlotBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 93,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/slotpool/SingleLogicalSlotTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/slotpool/SingleLogicalSlotTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 301,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/SharedSlotTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/SharedSlotTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 345,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 3,
+        "refactorings": {
+          "Remove Parameter": 3
+        }
+      }
+    ],
+    "sha_before": "a4f117457def7593313492716c741225da50b41d",
+    "prefactoring_score": 3,
+    "prefactoring_reasons": [
+      "H3 (+1): [232c0426] avg churn ratio on pre-existing files = 0.1% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [232c0426] is nearly pure structural refactoring (3 lines added, 3 refactoring ops)"
+    ]
+  },
+  "FLINK-21033": {
+    "jira_id": "FLINK-21033",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-21033][checkpointing] Remove PendingCheckpoint.statsCallback",
+    "description": "## What is the purpose of the change\r\n\r\nA trivial change to remove PendingCheckpoint.statsCallback.\r\n\r\n## Verifying this change\r\n\r\nCovered by the existing `PendingCheckpointTest`.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): no\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: no\r\n  - The serializers: no\r\n  - The runtime per-record code paths (performance sensitive): no\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: yes\r\n  - The S3 file system connector: no\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? no\r\n  - If yes, how is the feature documented? no\r\n",
+    "commits": [
+      {
+        "sha": "676648e02dc5c3affa7d5dea514fe34c1c2190c9",
+        "message": "[FLINK-21033][checkpointing] Remove PendingCheckpoint.statsCallback",
+        "author": "Roman Khachatryan",
+        "date": "2021-02-06T13:35:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 2072,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointStatsTracker.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointStatsTracker.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 486,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/PendingCheckpoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/PendingCheckpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 630,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/PendingCheckpointTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/PendingCheckpointTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 693,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 11,
+        "refactorings": {
+          "Rename Method": 1,
+          "Remove Parameter": 1,
+          "Extract Method": 1,
+          "Parameterize Variable": 3,
+          "Add Parameter Annotation": 2,
+          "Remove Variable Modifier": 2,
+          "Add Parameter": 1
+        }
+      },
+      {
+        "sha": "9e45126e94c799fa00e56c158c7656a925d58ca0",
+        "message": "[hotfix][tests] Extract PendingCheckpointTest.abort method",
+        "author": "Roman Khachatryan",
+        "date": "2021-02-06T13:31:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/PendingCheckpointTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/PendingCheckpointTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 96,
+            "PARENT_LOC": 768,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 26,
+        "refactorings": {
+          "Extract Method": 16,
+          "Parameterize Variable": 10
+        }
+      }
+    ],
+    "sha_before": "2d4038721e1481222f67f8d283e7f8e239475839",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [9e45126e] avg churn ratio on pre-existing files = 2.7% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [676648e0] avg churn ratio on pre-existing files = 2.2% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-21273": {
+    "jira_id": "FLINK-21273",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "[FLINK-21273][coordination] Remove unused ExecutionVertexSchedulingRe…",
+    "description": "…quirements\r\n\r\n\r\n## What is the purpose of the change\r\n\r\nRemove unused ExecutionVertexSchedulingRequirements.\r\n\r\n## Verifying this change\r\n\r\nThis change is a trivial rework / code cleanup without any test coverage.\r\n\r\ncc @zhuzhurk \r\n",
+    "commits": [
+      {
+        "sha": "69f0d6e755b3f962c04b043adb50f87241ee959f",
+        "message": "[FLINK-21273][coordination] Remove unused ExecutionVertexSchedulingRequirements",
+        "author": "Yangze Guo",
+        "date": "2021-02-04T06:48:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultScheduler.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 617,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/ExecutionSlotAllocator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/ExecutionSlotAllocator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 43,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/ExecutionVertexSchedulingRequirements.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/ExecutionVertexSchedulingRequirements.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 131,
+            "PARENT_LOC": 131,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/ExecutionVertexSchedulingRequirementsMapper.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/ExecutionVertexSchedulingRequirementsMapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 69,
+            "PARENT_LOC": 69,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/SlotSharingExecutionSlotAllocator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/SlotSharingExecutionSlotAllocator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 287,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/ExecutionSlotAllocatorTestUtils.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/ExecutionSlotAllocatorTestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 63,
+            "PARENT_LOC": 63,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/SlotSharingExecutionSlotAllocatorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/SlotSharingExecutionSlotAllocatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 652,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/TestExecutionSlotAllocator.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/TestExecutionSlotAllocator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 159,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 10,
+        "refactorings": {
+          "Parameterize Variable": 1,
+          "Remove Parameter": 1,
+          "Change Parameter Type": 3,
+          "Rename Parameter": 3,
+          "Change Variable Type": 1,
+          "Rename Variable": 1
+        }
+      }
+    ],
+    "sha_before": "2d4038721e1481222f67f8d283e7f8e239475839",
+    "prefactoring_score": 3,
+    "prefactoring_reasons": [
+      "H3 (+1): [69f0d6e7] avg churn ratio on pre-existing files = 1.0% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [69f0d6e7] is nearly pure structural refactoring (10 lines added, 10 refactoring ops)"
+    ]
+  },
+  "FLINK-21303": {
+    "jira_id": "FLINK-21303",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-21303][coordination] Maybe remove LogicalSlot#getPhysicalSlotNumber",
+    "description": "## What is the purpose of the change\r\n\r\n*The `PhysicalSlotNumber` is the index of a slot on a task manager. This is currently not used in any meaningful by the `LogicalSlot` or it's consumers. Therefore, the `getPhysicalSlotNumber` of `LogicalSlot` could possibly be removed.*\r\n\r\n## Brief change log\r\n\r\n  - *`LogicalSlot` removes the `getPhysicalSlotNumber` method and the associated invokers remove the `targetSlotNumber`.*\r\n\r\n## Verifying this change\r\n\r\n  - *The associated test cases for the `getPhysicalSlotNumber` of `LogicalSlot` remove the `targetSlotNumber`.*\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (yes / **no**)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (**not applicable** / docs / JavaDocs / not documented)",
+    "commits": [
+      {
+        "sha": "be5becbdd9f6da6555653ea45138adc921abc494",
+        "message": "[FLINK-21303][coordination] Maybe remove LogicalSlot#getPhysicalSlotNumber",
+        "author": "SteNicholas",
+        "date": "2021-02-08T02:38:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/deployment/TaskDeploymentDescriptor.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/deployment/TaskDeploymentDescriptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 336,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/deployment/TaskDeploymentDescriptorFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/deployment/TaskDeploymentDescriptorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 254,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/Execution.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/Execution.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1599,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/LogicalSlot.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/LogicalSlot.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/SingleLogicalSlot.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/SingleLogicalSlot.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 234,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskExecutor.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2301,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/Task.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/Task.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1703,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/deployment/TaskDeploymentDescriptorBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/deployment/TaskDeploymentDescriptorBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 160,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/deployment/TaskDeploymentDescriptorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/deployment/TaskDeploymentDescriptorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 173,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexDeploymentTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexDeploymentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 338,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/TestingLogicalSlot.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/TestingLogicalSlot.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 142,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/TestingLogicalSlotBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/TestingLogicalSlotBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 85,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/SharedSlotTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/SharedSlotTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 343,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/declarative/allocator/SharedSlotTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/declarative/allocator/SharedSlotTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 180,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskexecutor/TaskExecutorOperatorEventHandlingTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskexecutor/TaskExecutorOperatorEventHandlingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 229,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskexecutor/TaskExecutorPartitionLifecycleTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskexecutor/TaskExecutorPartitionLifecycleTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 629,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskexecutor/TaskExecutorSubmissionTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskexecutor/TaskExecutorSubmissionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 769,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskmanager/TaskAsyncCallTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskmanager/TaskAsyncCallTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 334,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskmanager/TestTaskBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskmanager/TestTaskBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 251,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/util/JvmExitOnFatalErrorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/util/JvmExitOnFatalErrorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 275,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/InterruptSensitiveRestoreTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/InterruptSensitiveRestoreTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 409,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskSystemExitTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskSystemExitTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 312,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTerminationTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTerminationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 329,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/SynchronousCheckpointITCase.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/SynchronousCheckpointITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 302,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/TaskCheckpointingBehaviourTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/TaskCheckpointingBehaviourTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 529,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 5,
+        "refactorings": {
+          "Remove Parameter": 5
+        }
+      }
+    ],
+    "sha_before": "386e7d1b253d3b7b4da58aad8ec858936917e691",
+    "prefactoring_score": 3,
+    "prefactoring_reasons": [
+      "H3 (+1): [be5becbd] avg churn ratio on pre-existing files = 0.0% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [be5becbd] is nearly pure structural refactoring (5 lines added, 5 refactoring ops)"
+    ]
+  },
+  "FLINK-21338": {
+    "jira_id": "FLINK-21338",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-21338][test] Relax ITCase naming constraints ",
+    "description": "~~Based on #14911 and #14918.~~\r\nBased on #14930.\r\n\r\nRelaxes naming constraints for ITCases, such that any test not ending in `*Test.java` is considered an IT case.",
+    "commits": [
+      {
+        "sha": "075ea69c69770142a4d5abda415e57e904a1b46d",
+        "message": "[FLINK-21338][test] Disable broken tests",
+        "author": "Chesnay Schepler",
+        "date": "2021-02-09T20:02:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterStopWithSavepointIT.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterStopWithSavepointIT.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 444,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/manual/CheckForbiddenMethodsUsage.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/manual/CheckForbiddenMethodsUsage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 131,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Add Class Annotation": 2
+        }
+      },
+      {
+        "sha": "8a0ecec0b40fca539c5b89c234c48b2dcffd2699",
+        "message": "[FLINK-21338][test] Relax ITCase naming constraints",
+        "author": "Chesnay Schepler",
+        "date": "2021-02-09T11:03:15Z",
+        "files": [],
+        "refactoring_count": 0,
+        "refactorings": {}
+      }
+    ],
+    "sha_before": "075ea69c69770142a4d5abda415e57e904a1b46d",
+    "prefactoring_score": 3,
+    "prefactoring_reasons": [
+      "H3 (+1): [075ea69c] avg churn ratio on pre-existing files = 1.0% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [075ea69c] is nearly pure structural refactoring (4 lines added, 2 refactoring ops)"
+    ]
+  },
+  "FLINK-21203": {
+    "jira_id": "FLINK-21203",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-21203]Don’t collect -U&+U Row When they are equals In the LastRowFunction",
+    "description": "<!--\r\n*Thank you very much for contributing to Apache Flink - we are happy that you want to help us improve Flink. To help the community review your contribution in the best possible way, please go through the checklist below, which will get the contribution into a shape in which it can be best reviewed.*\r\n\r\n*Please understand that we do not do this to make contributions to Flink a hassle. In order to uphold a high standard of quality for code contributions, while at the same time managing a large number of contributions, we need contributors to prepare the contributions well, and give reviewers enough contextual information for the review. Please also understand that contributions that do not follow this guide will take longer to review and thus typically be picked up with lower priority by the community.*\r\n\r\n## Contribution Checklist\r\n\r\n  - Make sure that the pull request corresponds to a [JIRA issue](https://issues.apache.org/jira/projects/FLINK/issues). Exceptions are made for typos in JavaDoc or documentation files, which need no JIRA issue.\r\n  \r\n  - Name the pull request in the form \"[FLINK-XXXX] [component] Title of the pull request\", where *FLINK-XXXX* should be replaced by the actual issue number. Skip *component* if you are unsure about which is the best component.\r\n  Typo fixes that have no associated JIRA issue should be named following this pattern: `[hotfix] [docs] Fix typo in event time introduction` or `[hotfix] [javadocs] Expand JavaDoc for PuncuatedWatermarkGenerator`.\r\n\r\n  - Fill out the template below to describe the changes contributed by the pull request. That will give reviewers the context they need to do the review.\r\n  \r\n  - Make sure that the change passes the automated tests, i.e., `mvn clean verify` passes. You can set up Azure Pipelines CI to do that following [this guide](https://cwiki.apache.org/confluence/display/FLINK/Azure+Pipelines#AzurePipelines-Tutorial:SettingupAzurePipelinesforaforkoftheFlinkrepository).\r\n\r\n  - Each pull request should address only one issue, not mix up code from multiple issues.\r\n  \r\n  - Each commit in the pull request has a meaningful commit message (including the JIRA id)\r\n\r\n  - Once all items of the checklist are addressed, remove the above text and this checklist, leaving only the filled out template below.\r\n\r\n\r\n**(The sections below can be removed for hotfixes of typos)**\r\n-->\r\n\r\n## What is the purpose of the change\r\n\r\nIn the  LastRowFunction , the -U&+U Row will be collected even if they are the same, which will  increase calculation pressure of the next Operator.\r\n\r\n \r\n\r\nTo avoid this, we can optimize the logic of DeduplicateFunctionHelper. Also, a config to enable the optimization will be added.\r\n\r\n\r\n\r\n\r\n## Brief change log\r\n- add `equaliser` and `isStateTtlEnabled` in ProcTimeDeduplicateKeepLastRowFunction\r\n- optimize the logic of DeduplicateFunctionHelper#processLastRowOnProcTime and  DeduplicateFunctionHelper#processLastRowOnChangelog  by `equaliser` and `isStateTtlEnabled`\r\n- add unit test in ProcTimeDeduplicateKeepLastRowFunctionTest\r\n\r\n\r\n## Verifying this change\r\n\r\nThis change added tests and can be verified as follows:\r\n- Added test that validates that Duplicate row is Deduplicated when state ttl disabled In  ProcTimeDeduplicateKeepLastRowFunctionTest#testDeduplicateWithGenerateUpdateBefore\r\n\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (no)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (no)\r\n  - The serializers: (no)\r\n  - The runtime per-record code paths (performance sensitive): ( no)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (no)\r\n  - The S3 file system connector: (no)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (/no)\r\n  - If yes, how is the feature documented? (not documented)\r\n",
+    "commits": [
+      {
+        "sha": "748ad82745d9d493922150fe007136e125a50209",
+        "message": "[FLINK-21203] add new constructor for EqualiserCodeGenerator to accepting RowType  and modify method name to testWithStateTtlDisabled in ProcTimeDeduplicateKeepLastRowFunctionTest",
+        "author": "wangpeibin",
+        "date": "2021-02-23T02:30:45Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 141,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 326,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunctionTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunctionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 162,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Rename Method": 1
+        }
+      },
+      {
+        "sha": "aa6eba07f02649e2f63b5e90f6c5de34d0ab1889",
+        "message": "[FLINK-21203] optimize code according to code review",
+        "author": "wangpeibin",
+        "date": "2021-02-21T09:11:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 142,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 327,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 229,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 85,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateFunctionTestBase.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateFunctionTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 62,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Inline Variable": 2
+        }
+      },
+      {
+        "sha": "5748d5302905ad3cc3cf4b093bbfbde9e23823af",
+        "message": "fix bug and typo in ProcTimeMiniBatchDeduplicateKeepLastRowFunction",
+        "author": "wangpeibin",
+        "date": "2021-02-04T12:03:06Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 142,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 229,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 4,
+        "refactorings": {
+          "Add Attribute Modifier": 1,
+          "Remove Attribute Modifier": 1,
+          "Rename Parameter": 2
+        }
+      },
+      {
+        "sha": "bbde339b3e51d62758d124bb94dba500f6b44a36",
+        "message": "format with  spotless:apply",
+        "author": "wangpeibin",
+        "date": "2021-02-04T10:32:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 143,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 328,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 90,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunctionTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunctionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 167,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "72b208204a1b92d4cf2236bb38ea272fa8226069",
+        "message": " optimize the logic of  DeduplicateFunctionHelper#processLastRowOnChangelog",
+        "author": "wangpeibin",
+        "date": "2021-02-04T08:04:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 221,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "7982a5c4ff9ad8857515de4ffffc9dc4f4fb52f4",
+        "message": "add unit test and fix some bug/typo",
+        "author": "wangpeibin",
+        "date": "2021-02-04T07:52:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 144,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 85,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunctionTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunctionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 140,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Add Attribute Modifier": 1,
+          "Remove Attribute Modifier": 1
+        }
+      },
+      {
+        "sha": "ab597890f6c1191e6b722600fd6e9ab0b14ba55f",
+        "message": " do not emit retraction and update message when thay are equals In DeduplicateFunctionHelper",
+        "author": "wangpeibin",
+        "date": "2021-02-04T07:52:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 143,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 328,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "772dec22dcc1f44bbd429a0d86543aece9e8f41f",
+        "message": " do not emit retraction and update message when thay are equals In DeduplicateFunctionHelper",
+        "author": "wangpeibin",
+        "date": "2021-02-03T01:58:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 128,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 311,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/DeduplicateFunctionHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 208,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 58,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 78,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateFunctionTestBase.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateFunctionTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 48,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunctionTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunctionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunctionTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunctionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 183,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 7,
+        "refactorings": {
+          "Add Parameter": 7
+        }
+      },
+      {
+        "sha": "546ce689cb172bab5f02c534f5bb8e692f6ab517",
+        "message": " do not emit retraction and update message when thay are equals In DeduplicateFunctionHelper",
+        "author": "wangpeibin",
+        "date": "2021-02-03T01:58:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecChangelogNormalize.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 142,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/plan/nodes/exec/stream/StreamExecDeduplicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 327,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 85,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/deduplicate/ProcTimeMiniBatchDeduplicateKeepLastRowFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      }
+    ],
+    "sha_before": "5748d5302905ad3cc3cf4b093bbfbde9e23823af",
+    "prefactoring_score": 5,
+    "prefactoring_reasons": [
+      "H3 (+1): [772dec22] avg churn ratio on pre-existing files = 19.5% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [7982a5c4] avg churn ratio on pre-existing files = 9.2% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [5748d530] avg churn ratio on pre-existing files = 3.4% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [aa6eba07] avg churn ratio on pre-existing files = 4.6% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [748ad827] avg churn ratio on pre-existing files = 0.5% (< 20%) — mostly reshaping existing lines"
+    ]
+  }
+}

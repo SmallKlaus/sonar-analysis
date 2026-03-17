@@ -1,0 +1,1448 @@
+{
+  "FLINK-11923": {
+    "jira_id": "FLINK-11923",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-11923][metrics] MetricRegistryConfiguration provides MetricReporters Suppliers",
+    "description": "## What is the purpose of the change\r\n\r\nRefactors the `MetricRegistryConfiguration` to provide a `Supplier` for each `MetricReporter` instead of a configuration.\r\n\r\nThis will make it easier to support reporter factories and makes testing reporters in conjunction with a MetricRegistry significantly easier since you don't have to encode reporters into a Configuration beforehand.\r\n\r\n## Brief change log\r\n\r\n* Add `ReporterSetup` for encapsulating reporter-specific arguments for the `MetricRegistryImpl`\r\n* Move reporter-loading code from `MetricRegistryImpl` to `MetricRegistryConfiguration`\r\n* Update `MetricRegistryConfiguration`\r\n\r\n*(for example:)*\r\n  - *The TaskInfo is stored in the blob store on job creation time as a persistent artifact*\r\n  - *Deployments RPC transmits only the blob storage reference*\r\n  - *TaskManagers retrieve the TaskInfo from the blob cache*",
+    "commits": [
+      {
+        "sha": "02e7ad2f84f56046748f165398d4371950f2811f",
+        "message": "simplify and update Prom port collision tests",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-16T07:22:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-prometheus/src/test/java/org/apache/flink/metrics/prometheus/PrometheusReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-prometheus/src/test/java/org/apache/flink/metrics/prometheus/PrometheusReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 23,
+            "PARENT_LOC": 349,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 3,
+        "refactorings": {
+          "Extract Variable": 3
+        }
+      },
+      {
+        "sha": "ae6080434097bb554714015b12cc2d4fbf8cc605",
+        "message": "fix port range used in canStartTwoReportersWhenUsingPortRange",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-16T07:09:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-prometheus/src/test/java/org/apache/flink/metrics/prometheus/PrometheusReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-prometheus/src/test/java/org/apache/flink/metrics/prometheus/PrometheusReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 349,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "169215dddb98e1dac05d477fea48ca3c114b5a21",
+        "message": "fix java 8 incompatibility",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-12T10:53:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 219,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "26a7844b8da30f9d2f7f55af0bc7aca807ffb256",
+        "message": "hide reporter MetricConfig from registry",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-11T10:13:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryImpl.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 444,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 166,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 3,
+        "refactorings": {
+          "Change Variable Type": 1,
+          "Add Method Annotation": 1,
+          "Change Method Access Modifier": 1
+        }
+      },
+      {
+        "sha": "3699a7aee43deff3aee30e922b062b863f78e4d2",
+        "message": "use collection instead",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-10T09:52:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryImpl.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 444,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Change Parameter Type": 1
+        }
+      },
+      {
+        "sha": "1c9dcd110e724f6b45d1e73136e5944758253c8f",
+        "message": "deduplicate code",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-10T09:52:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 36,
+            "PARENT_LOC": 213,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 14,
+        "refactorings": {
+          "Extract Method": 9,
+          "Remove Variable Modifier": 2,
+          "Parameterize Variable": 2,
+          "Rename Variable": 1
+        }
+      },
+      {
+        "sha": "a73f07c25761bde5b5fa88c6884ed7576b91c164",
+        "message": "move reporter setup out of MRConfig",
+        "author": "Chesnay Schepler",
+        "date": "2019-03-29T15:44:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-dropwizard/src/test/java/org/apache/flink/dropwizard/ScheduledDropwizardReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-dropwizard/src/test/java/org/apache/flink/dropwizard/ScheduledDropwizardReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 238,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-dropwizard/src/test/java/org/apache/flink/dropwizard/metrics/DropwizardFlinkHistogramWrapperTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-dropwizard/src/test/java/org/apache/flink/dropwizard/metrics/DropwizardFlinkHistogramWrapperTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 328,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-influxdb/src/test/java/org/apache/flink/metrics/influxdb/InfluxdbReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-influxdb/src/test/java/org/apache/flink/metrics/influxdb/InfluxdbReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/metrics/jmx/JMXReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/metrics/jmx/JMXReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 313,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-prometheus/src/test/java/org/apache/flink/metrics/prometheus/PrometheusReporterTaskScopeTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-prometheus/src/test/java/org/apache/flink/metrics/prometheus/PrometheusReporterTaskScopeTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 201,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-prometheus/src/test/java/org/apache/flink/metrics/prometheus/PrometheusReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-prometheus/src/test/java/org/apache/flink/metrics/prometheus/PrometheusReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 338,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-slf4j/src/test/java/org/apache/flink/metrics/slf4j/Slf4jReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-slf4j/src/test/java/org/apache/flink/metrics/slf4j/Slf4jReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 157,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-statsd/src/test/java/org/apache/flink/metrics/statsd/StatsDReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-statsd/src/test/java/org/apache/flink/metrics/statsd/StatsDReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 400,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 536,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryConfiguration.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 132,
+            "PARENT_LOC": 252,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryImpl.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 444,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 166,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/minicluster/MiniCluster.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/minicluster/MiniCluster.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 963,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskManagerRunner.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskManagerRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 437,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/MetricRegistryImplTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/MetricRegistryImplTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 52,
+            "LINES_DELETED": 82,
+            "PARENT_LOC": 475,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/MetricRegistryConfigurationTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 80,
+            "LINES_DELETED": 22,
+            "PARENT_LOC": 155,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/groups/AbstractMetricGroupTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/groups/AbstractMetricGroupTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 337,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/groups/MetricGroupRegistrationTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/groups/MetricGroupRegistrationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 124,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 46,
+        "refactorings": {
+          "Move Method": 5,
+          "Move Attribute": 6,
+          "Move Class": 1,
+          "Rename Class": 1,
+          "Merge Class": 2,
+          "Change Variable Type": 15,
+          "Rename Variable": 5,
+          "Extract Method": 1,
+          "Remove Parameter": 1,
+          "Add Class Modifier": 1,
+          "Remove Class Modifier": 1,
+          "Rename Method": 1,
+          "Change Parameter Type": 1,
+          "Rename Parameter": 1,
+          "Change Method Access Modifier": 1,
+          "Change Return Type": 1,
+          "Rename Attribute": 1,
+          "Change Attribute Type": 1
+        }
+      },
+      {
+        "sha": "9fc2e232515c1843d7b61967dd3401c366d4b3ed",
+        "message": "[FLINK-11923][metrics] MetricRegistryConfiguration provides MetricReporter suppliers",
+        "author": "zentol",
+        "date": "2019-03-14T14:47:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryConfiguration.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 64,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 194,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryImpl.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricRegistryImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 19,
+            "PARENT_LOC": 455,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/MetricRegistryConfigurationTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/MetricRegistryConfigurationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 29,
+            "PARENT_LOC": 138,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 19,
+        "refactorings": {
+          "Change Variable Type": 6,
+          "Rename Variable": 2,
+          "Add Variable Modifier": 3,
+          "Change Class Access Modifier": 2,
+          "Rename Method": 1,
+          "Rename Parameter": 1,
+          "Change Parameter Type": 1,
+          "Change Return Type": 1,
+          "Rename Attribute": 1,
+          "Change Attribute Type": 1
+        }
+      }
+    ],
+    "sha_before": "cdf461b7d37feac94046e0058ff0215a8e85e6d9",
+    "prefactoring_score": 7,
+    "prefactoring_reasons": [
+      "H1 (+2): [9fc2e232] (2019-03-14) refactors pre-existing code BEFORE the first new file appears in this issue (2019-03-29)",
+      "H3 (+1): [a73f07c2] avg churn ratio on pre-existing files = 6.9% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [1c9dcd11] avg churn ratio on pre-existing files = 19.7% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [3699a7ae] avg churn ratio on pre-existing files = 0.2% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [26a7844b] avg churn ratio on pre-existing files = 1.1% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [02e7ad2f] avg churn ratio on pre-existing files = 4.3% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-10441": {
+    "jira_id": "FLINK-10441",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-10441]Don't log warning when creating upload directory",
+    "description": "\r\n## What is the purpose of the change\r\n\r\n*This PR is related to [FLINK-10441](https://issues.apache.org/jira/browse/FLINK-10441). RestServerEndpoint.createUploadDir(Path, Logger) logs a warning if the upload directory does not exist, it's better to log the creation of the web directory on INFO instead of the warning.*\r\n\r\n\r\n## Brief change log\r\n\r\n  - *log the creation of the web directory on INFO instead of the warning*\r\n\r\n\r\n## Verifying this change\r\n\r\nThis change is a trivial rework / code cleanup without any test coverage.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (no)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (no)\r\n  - The serializers: (no)\r\n  - The runtime per-record code paths (performance sensitive): (no)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Yarn/Mesos, ZooKeeper: (no)\r\n  - The S3 file system connector: (no)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (no)\r\n  - If yes, how is the feature documented? (not applicable)\r\n",
+    "commits": [
+      {
+        "sha": "e8cce8e54d9b1e59be31b436132f997c87c56b9a",
+        "message": "+",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-27T20:05:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/RestServerEndpoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/RestServerEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 582,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Add Parameter Modifier": 1,
+          "Rename Parameter": 1
+        }
+      },
+      {
+        "sha": "785e686fbaf9dd5d1bf58d34a5b17f1085146b79",
+        "message": "resolve comments",
+        "author": "tianchen",
+        "date": "2019-04-26T01:12:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/FileUploadHandler.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/FileUploadHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 215,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/RestServerEndpoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/RestServerEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 574,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/RestServerEndpointTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/RestServerEndpointTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 100,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Add Parameter": 1
+        }
+      },
+      {
+        "sha": "62a34b53132d3e910baab6254cb099fb90e889ea",
+        "message": "[FLINK-10441]Don't log warning when creating upload directory",
+        "author": "tianchen",
+        "date": "2019-04-19T02:37:40Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/RestServerEndpoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/RestServerEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 574,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      }
+    ],
+    "sha_before": "c9f11ccb819cb3572adb7f7301640df5cec9e5a7",
+    "prefactoring_score": 4,
+    "prefactoring_reasons": [
+      "H3 (+1): [785e686f] avg churn ratio on pre-existing files = 1.7% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [e8cce8e5] avg churn ratio on pre-existing files = 0.3% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [e8cce8e5] is nearly pure structural refactoring (2 lines added, 2 refactoring ops)"
+    ]
+  },
+  "FLINK-10517": {
+    "jira_id": "FLINK-10517",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-10517][rest] Add stability test",
+    "description": "## What is the purpose of the change\r\n\r\nThis PR adds a stability test for the REST API to prevent API breaking changes.\r\n\r\nThe test operates against an API snapshot (created by the test if `-Dgenerate-rest-snapshot` is set).\r\n\r\nOne snapshot is created for each `RestAPIVersion`, each being an array of all supported rest calls.\r\n\r\nThe test verifies the following:\r\n* URLs are not modified\r\n* Methods are not modified\r\n* StatusCodes are not modified\r\n* file-upload flags are not modified\r\n* set of path parameters is identical\r\n* query parameters are neither removed nor upgraded from optional to mandatory\r\n* fields are not removed request/response bodies nor their type changed (bar some exceptions)\r\n\r\nThe implementation of these checks can be found in `CompatibilityRoutines`.",
+    "commits": [
+      {
+        "sha": "f9a5b3a447f470089f8cf598450cfdbc31997f24",
+        "message": "[hotfix][docs] Include exception in stacktrace",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-17T09:46:21Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/util/DocumentingDispatcherRestEndpoint.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/util/DocumentingDispatcherRestEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 181,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "3b39facceff16d037b14aae4f50eda66c4982c37",
+        "message": "[FLINK-10517][rest] Extract DocumentingDispatcherRestEndpoint",
+        "author": "zentol",
+        "date": "2019-03-13T10:23:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-docs/src/main/java/org/apache/flink/docs/rest/RestAPIDocGenerator.java",
+            "CHILD_PATH": "flink-docs/src/main/java/org/apache/flink/docs/rest/RestAPIDocGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 119,
+            "PARENT_LOC": 412,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/util/DocumentingDispatcherRestEndpoint.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/util/DocumentingDispatcherRestEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 181,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/util/DocumentingRestEndpoint.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/util/DocumentingRestEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 49,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ],
+        "refactoring_count": 8,
+        "refactorings": {
+          "Move Class": 2,
+          "Change Class Access Modifier": 2,
+          "Remove Class Modifier": 1,
+          "Change Method Access Modifier": 1,
+          "Add Variable Modifier": 1,
+          "Change Return Type": 1
+        }
+      },
+      {
+        "sha": "dbf7815cbbc6fcd410d2fb4f679f435778cf30d8",
+        "message": "[FLINK-10517][rest] Add stability test",
+        "author": "zentol",
+        "date": "2018-10-18T11:47:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/Compatibility.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/Compatibility.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/CompatibilityCheckResult.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/CompatibilityCheckResult.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 84,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/CompatibilityRoutine.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/CompatibilityRoutine.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 101,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/CompatibilityRoutines.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/CompatibilityRoutines.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 270,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/RestAPIStabilityTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/compatibility/RestAPIStabilityTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 197,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "b15fbf7da97e6c6654e419cf9e48a9ab6340c585",
+        "message": "[FLINK-10517][rest] Add isStable field to RestAPIVersion",
+        "author": "zentol",
+        "date": "2018-10-09T10:48:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/versioning/RestAPIVersion.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/versioning/RestAPIVersion.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 98,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Add Parameter": 1
+        }
+      }
+    ],
+    "sha_before": "f9a5b3a447f470089f8cf598450cfdbc31997f24",
+    "prefactoring_score": 4,
+    "prefactoring_reasons": [
+      "H1 (+2): [b15fbf7d] (2018-10-09) refactors pre-existing code BEFORE the first new file appears in this issue (2018-10-18)",
+      "H3 (+1): [b15fbf7d] avg churn ratio on pre-existing files = 15.3% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [3b39facc] avg churn ratio on pre-existing files = 0.5% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-11974": {
+    "jira_id": "FLINK-11974",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "[FLINK-11974][runtime] Introduce StreamOperatorFactory",
+    "description": "## What is the purpose of the change\r\n\r\nIntroduce StreamOperatorFactory to help table perform the whole Operator CodeGeneration\r\n\r\n## Brief change log\r\n\r\nIntroduce StreamOperatorFactory\r\nIntroduce SimpleOperatorFactory\r\nIntroduce SetupableStreamOperator to remove setup in StreamOperator\r\n\r\n## Verifying this change\r\n\r\nut\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (no)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (yes)\r\n  - The serializers: (no)\r\n  - The runtime per-record code paths (performance sensitive): (no)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Yarn/Mesos, ZooKeeper: (no)\r\n  - The S3 file system connector: (no)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes)\r\n  - If yes, how is the feature documented? (JavaDocs)\r\n",
+    "commits": [
+      {
+        "sha": "634df51644081aab167b1d760654180ad0004489",
+        "message": "[FLINK-11974][table-planner-blink] Use StreamOperatorFactory in Blink runtime",
+        "author": "JingsongLi",
+        "date": "2019-05-06T09:07:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/test/java/org/apache/flink/table/codegen/LongHashJoinGeneratorTest.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/test/java/org/apache/flink/table/codegen/LongHashJoinGeneratorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 92,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/generated/GeneratedClass.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/generated/GeneratedClass.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 81,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/CodeGenOperatorFactory.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/CodeGenOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 62,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/OneInputOperatorWrapper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/OneInputOperatorWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 155,
+            "PARENT_LOC": 155,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/TwoInputOperatorWrapper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/TwoInputOperatorWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 175,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/join/Int2HashJoinOperatorTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/join/Int2HashJoinOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 433,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 9,
+        "refactorings": {
+          "Change Return Type": 2,
+          "Change Variable Type": 5,
+          "Change Parameter Type": 2
+        }
+      },
+      {
+        "sha": "ea1da90ce9a63bb129342142eadc4de7fb0f5ec9",
+        "message": "[FLINK-11974][runtime] Introduce StreamOperatorFactory and replace StreamOperator.setup with StreamOperatorFactory.create",
+        "author": "JingsongLi",
+        "date": "2019-04-23T09:20:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamConfig.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 567,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamGraph.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamGraph.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 36,
+            "PARENT_LOC": 700,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamGraphGenerator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamGraphGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 671,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamGraphHasherV2.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamGraphHasherV2.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 302,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamNode.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 337,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 710,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/AbstractStreamOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/AbstractStreamOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 822,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/InputFormatOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/InputFormatOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SetupableStreamOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SetupableStreamOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleInputFormatOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleInputFormatOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 110,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleUdfStreamOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleUdfStreamOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 48,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/StreamOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/StreamOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/StreamOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/StreamOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 95,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/UdfStreamOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/UdfStreamOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/transformations/OneInputTransformation.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/transformations/OneInputTransformation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 131,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/transformations/SinkTransformation.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/transformations/SinkTransformation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 121,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/transformations/SourceTransformation.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/transformations/SourceTransformation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 73,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/transformations/TwoInputTransformation.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/transformations/TwoInputTransformation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 167,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/OperatorChain.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/OperatorChain.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 710,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamIterationTail.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamIterationTail.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 145,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/AbstractUdfStreamOperatorLifecycleTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/AbstractUdfStreamOperatorLifecycleTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 313,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/OneInputStreamTaskTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/OneInputStreamTaskTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1013,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/OperatorChainTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/OperatorChainTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 148,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamConfigChainer.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamConfigChainer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 139,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/AbstractStreamOperatorTestHarness.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/AbstractStreamOperatorTestHarness.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 623,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/OneInputOperatorWrapper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/OneInputOperatorWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 154,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/TwoInputOperatorWrapper.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/TwoInputOperatorWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 174,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 83,
+        "refactorings": {
+          "Extract Method": 7,
+          "Add Method Annotation": 8,
+          "Rename Method": 1,
+          "Change Parameter Type": 5,
+          "Rename Parameter": 5,
+          "Change Variable Type": 6,
+          "Replace Generic With Diamond": 1,
+          "Change Return Type": 1,
+          "Rename Attribute": 5,
+          "Change Attribute Type": 10,
+          "Encapsulate Attribute": 5,
+          "Inline Variable": 1,
+          "Extract Variable": 1,
+          "Rename Variable": 1,
+          "Extract Interface": 1,
+          "Move Attribute": 5,
+          "Add Attribute Modifier": 1,
+          "Remove Attribute Modifier": 1,
+          "Extract Class": 10,
+          "Move Method": 1,
+          "Extract And Move Method": 7
+        }
+      }
+    ],
+    "sha_before": "e1f3a685c37d806ed2437f05b6b88619eb47e1ab",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [ea1da90c] avg churn ratio on pre-existing files = 5.3% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [634df516] avg churn ratio on pre-existing files = 3.3% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-11922": {
+    "jira_id": "FLINK-11922",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "[FLINK-11922][metrics] Support MetricReporter factories ",
+    "description": "## What is the purpose of the change\r\n\r\nAdds support for `MetricReporter` factories. With this change reporters no longer have to adhere to restrictions imposed by generic instantiation (public no arg constructor, initializing things lazily in open()).\r\n\r\nFactories are loaded through a `ServiceLoader` in the `ReporterSetup`. A migration to the new `Plugin` mechanism should be trivial.\r\n\r\nFactories are configured similarly to reporter classes ( `reporter.*.factory.class` instead of `reporter.*.class`).\r\n\r\nThis PR additionally migrates the `JMXReporter` to use factories instead, serving as a sanity-check.\r\n\r\n### Backwards-compatibility\r\nThe existing mechanism for instantiating reporters via reflection still exists for the sake of backwards-compatibility, but is likely to be removed in the future.\r\nReporters may support both factories and reflection , but are neither required nor encouraged to do so.\r\nFor backwards compatibility reporters may be annotated with `InstantiateViaFactory(String factoryClassName)` to automatically forward reflection-based instantiation attempts to the factory.\r\n\r\n## Verifying this change\r\n\r\nThe `ReporterSetupTest` was extended to cover the handling of factory configurations.\r\n\r\nAdded:\r\n* JMXReporterFactoryTest\r\n\r\nExisting tests/E2E tests use (JMX) reporters and thus ensure that\r\n* reflection-based reporter still work\r\n* (now) out-dated JMX configurations are still honored\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes)\r\n  - If yes, how is the feature documented? (docs / JavaDocs)\r\n",
+    "commits": [
+      {
+        "sha": "2b297e02a12a4bd596c25b8ed10500e3e46fb084",
+        "message": "[FLINK-11922][metrics] Add JMXReporterFactory",
+        "author": "Chesnay Schepler",
+        "date": "2019-05-03T11:14:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-jmx/src/main/java/org/apache/flink/metrics/jmx/JMXReporter.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-jmx/src/main/java/org/apache/flink/metrics/jmx/JMXReporter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 22,
+            "PARENT_LOC": 540,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-jmx/src/main/java/org/apache/flink/metrics/jmx/JMXReporterFactory.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-jmx/src/main/java/org/apache/flink/metrics/jmx/JMXReporterFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/metrics/jmx/JMXReporterFactoryTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/metrics/jmx/JMXReporterFactoryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 64,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/metrics/jmx/JMXReporterTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/metrics/jmx/JMXReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 311,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 6,
+        "refactorings": {
+          "Add Class Annotation": 1,
+          "Add Attribute Modifier": 1,
+          "Add Attribute Annotation": 1,
+          "Change Return Type": 1,
+          "Change Attribute Access Modifier": 1,
+          "Move Attribute": 1
+        }
+      },
+      {
+        "sha": "731ea9eb8bbf9d3ffdf881720403866e3f01b1e6",
+        "message": "[FLINK-11922][metrics] Add utils for backwards compatibility",
+        "author": "Chesnay Schepler",
+        "date": "2019-05-03T11:14:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-core/src/main/java/org/apache/flink/metrics/reporter/InstantiateViaFactory.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-core/src/main/java/org/apache/flink/metrics/reporter/InstantiateViaFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 235,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 373,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Extract Method": 1
+        }
+      },
+      {
+        "sha": "b5c557a336358ffd445938990f80a403072b13b8",
+        "message": "[hotfix][metrics] Exit early if not reporters are configured",
+        "author": "Chesnay Schepler",
+        "date": "2019-04-18T12:43:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 176,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "973aae5e5978667ee1b42f3a272afdd24ccd65e0",
+        "message": "[FLINK-11922][metrics] Support MetricReporter factories",
+        "author": "zentol",
+        "date": "2019-03-15T10:16:01Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2022,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-core/src/main/java/org/apache/flink/metrics/reporter/MetricReporter.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-core/src/main/java/org/apache/flink/metrics/reporter/MetricReporter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 73,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-core/src/main/java/org/apache/flink/metrics/reporter/MetricReporterFactory.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-core/src/main/java/org/apache/flink/metrics/reporter/MetricReporterFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 75,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 174,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 156,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 217,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 3,
+        "refactorings": {
+          "Extract Method": 1,
+          "Invert Condition": 1,
+          "Add Variable Modifier": 1
+        }
+      }
+    ],
+    "sha_before": "b5c557a336358ffd445938990f80a403072b13b8",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [731ea9eb] avg churn ratio on pre-existing files = 9.2% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [2b297e02] avg churn ratio on pre-existing files = 3.8% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-12539": {
+    "jira_id": "FLINK-12539",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-12539] [fs-connector] Make StreamingFileSink customizable",
+    "description": "## What is the purpose of the change\r\n*Provide mechanisms to extend the StreamingFileSink class and make it customizable*\r\n\r\n## Brief change log\r\n  - *Provide mechanisms to extend the StreamingFileSink class and make it customizable*\r\n \r\n## Verifying this change\r\nThis change is a trivial rework / code cleanup without any test coverage.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (**yes** / no)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Yarn/Mesos, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (not applicable / docs / JavaDocs / not documented)\r\n",
+    "commits": [
+      {
+        "sha": "bd2fd1ae40ef2f34a2a3a050df865c5e04cee89f",
+        "message": "Code review comments",
+        "author": "Kailash HD",
+        "date": "2019-05-16T22:34:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/StreamingFileSink.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/StreamingFileSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 379,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Change Class Access Modifier": 1
+        }
+      },
+      {
+        "sha": "2c1814b3fd0df21fd5418b18d3004da33f87de04",
+        "message": "FLINK-12539: StreamingFileSink: Make the class customizeable",
+        "author": "Kailash HD",
+        "date": "2019-05-16T16:27:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/StreamingFileSink.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/StreamingFileSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 379,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Change Method Access Modifier": 1,
+          "Change Class Access Modifier": 1
+        }
+      }
+    ],
+    "sha_before": "4669dd03ca0dc882991120e292deff5345b8fc98",
+    "prefactoring_score": 4,
+    "prefactoring_reasons": [
+      "H3 (+1): [2c1814b3] avg churn ratio on pre-existing files = 0.5% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [2c1814b3] is nearly pure structural refactoring (2 lines added, 2 refactoring ops)",
+      "H3 (+1): [bd2fd1ae] avg churn ratio on pre-existing files = 0.3% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-12708": {
+    "jira_id": "FLINK-12708",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "[FLINK-12708][table] Introduce new source and sink interfaces to make Blink runner work",
+    "description": "## What is the purpose of the change\r\n\r\nIn order to support Blink runner (especially Blink batch source/sink and lookup source), we need some new source&sink interfaces and changes about TableSchema.\r\n\r\n- `AsyncTableFunction`: used as async lookup function, to support async temporal table join (i.e. dimension table join.).\r\n- `LookupableTableSource`: The LookupableTableSource interface adds support for the table to be accessed via key column(s) in a lookup fashion in order to support temporal table join.\r\nBoundedTableSource: used for batch table source, returns a bounded DataStream, not a InputFormat, because we also want to reuse existing streaming source implementation to support bounded source, for example: bounded Kafka source.\r\n- `BoundedTableSink`: used for batch table sink, emit a bounded DataStream, not a OutputFormat. The reason is the same as above.\r\n\r\n## Brief change log\r\n\r\nThis contribution contains 4 commits:\r\n\r\n1. Introduce `BoundedTableSource` \r\n   - add `isBounded` interface to `StreamTableSource`\r\n   - `BoundedTableSource` extends `StreamTableSource` and expose `getInputFormat`\r\n   - removes `BatchTableSource` and `StreamTableSource` in blink planner\r\n   - support it in blink and flink planner\r\n2. Introduce `BoundedTableSink`\r\n   - `BoundedTableSink` extends `StreamTableSink` expose `getInputFormat`\r\n   - removes `BatchTableSink` in blink planner\r\n   - support it in blink and flink planner\r\n3. Introduce `LookupableTableSource`\r\n   - removes `LookupableTableSource` and `LookupConfig` in blink planner\r\n   - support it only in blink planner\r\n4. Expose `getTableStats` in `TableSource`\r\n   - support it in blink and flink planner\r\n\r\n## Verifying this change\r\n\r\nAdd some unit tests and integration tests\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (no)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (no)\r\n  - The serializers: (no)\r\n  - The runtime per-record code paths (performance sensitive): (no)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Yarn/Mesos, ZooKeeper: (no)\r\n  - The S3 file system connector: (no)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (no)\r\n  - If yes, how is the feature documented? (not applicable)\r\n",
+    "commits": [
+      {
+        "sha": "5be9ab3c8a28b64d7039568adc43b0abb32c3f6e",
+        "message": "[FLINK-12708][table] Introduce LookupableTableSource and make blink planner support it",
+        "author": "Jark Wu",
+        "date": "2019-06-10T12:43:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/functions/AsyncTableFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/AsyncTableFunction.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 46,
+            "PARENT_LOC": 134,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/sources/LookupableTableSource.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/sources/LookupableTableSource.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 51,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/sources/LookupConfig.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/sources/LookupConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 111,
+            "PARENT_LOC": 111,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/api/TableConfigOptions.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/api/TableConfigOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 247,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/join/lookup/DelegatingResultFuture.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/join/lookup/DelegatingResultFuture.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ],
+        "refactoring_count": 4,
+        "refactorings": {
+          "Move Source Folder": 1,
+          "Add Class Annotation": 2,
+          "Remove Class Annotation": 1
+        }
+      },
+      {
+        "sha": "851d27bb54596d1044a831160b09aad9f3b32316",
+        "message": "[FLINK-12708][table] Introduce OutputFormatTableSink and make blink&flink planner support it\n\n1. Introduce OutputFormatTableSink and extends StreamTableSink and only expose getOutputFormat interface\n2. Add a method consumeDataStream(DataStream) to StreamTableSink which returns DataStreamSink always, and make it mandatory in Blink planner",
+        "author": "Jark Wu",
+        "date": "2019-06-10T12:26:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sinks/BatchTableSink.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sinks/BatchTableSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 32,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sinks/OutputFormatTableSink.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sinks/OutputFormatTableSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 49,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sinks/StreamTableSink.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sinks/StreamTableSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 32,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Add Class Annotation": 1,
+          "Add Method Annotation": 1
+        }
+      },
+      {
+        "sha": "4946cf4d6ab0f502f065825e157c7cabde604fe1",
+        "message": "[FLINK-12708][table] Introduce InputFormatTableSource and make blink&flink planner support it\n\n1. Add a isBounded() interface to StreamTableSource, default returns false\n2. Introduce InputFormatTableSource extends StreamTableSource and isBounded always returns true\n3. InputFormatTableSource only exposes getInputFormat() interface",
+        "author": "Jark Wu",
+        "date": "2019-06-10T09:34:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/BatchTableSource.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/BatchTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 37,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/InputFormatTableSource.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/InputFormatTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 51,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/StreamTableSource.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/StreamTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 37,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Add Class Annotation": 1
+        }
+      },
+      {
+        "sha": "147022cf7984b8e56d1e01e826d9640674837e68",
+        "message": "[FLINK-12708][table] Expose getTableStats() interface in TableSource",
+        "author": "Jark Wu",
+        "date": "2019-06-10T07:13:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/sources/TableSource.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/sources/TableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 87,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/catalog/DatabaseCalciteSchema.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/catalog/DatabaseCalciteSchema.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 147,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/plan/QueryOperationConverter.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/plan/QueryOperationConverter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 443,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      }
+    ],
+    "sha_before": "5be9ab3c8a28b64d7039568adc43b0abb32c3f6e",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [4946cf4d] avg churn ratio on pre-existing files = 14.9% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [5be9ab3c] avg churn ratio on pre-existing files = 8.3% (< 20%) — mostly reshaping existing lines"
+    ]
+  }
+}

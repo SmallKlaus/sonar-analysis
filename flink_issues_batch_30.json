@@ -1,0 +1,1565 @@
+{
+  "FLINK-24907": {
+    "jira_id": "FLINK-24907",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-24907] Support side out late data for interval join",
+    "description": "## What is the purpose of the change\r\nThis pull requst makes interval-join support side out late data.\r\n\r\n\r\n## Brief change log\r\n   Add `OutputTag` for left and right stream in `org.apache.flink.streaming.api.operators.co.IntervalJoinOperator`, and emit late data  when `isLate(ourTimestamp) = true`\r\n\r\n\r\n\r\n## Verifying this change\r\n\r\n`IntervalJoinITCase.testIntervalJoinSideOutputLeftLateData`\r\n`IntervalJoinITCase.testIntervalJoinSideOutputRightLateData`\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (**yes**/ no)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (not applicable / docs / JavaDocs / **not documented**)\r\n",
+    "commits": [
+      {
+        "sha": "af9887ed853d202148a5d136b8606e1451937e1d",
+        "message": "[FLINK-24907] Extract sideout method for testing",
+        "author": "chenyuzhi",
+        "date": "2022-09-08T12:36:11Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 560,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 6,
+        "refactorings": {
+          "Extract Method": 2,
+          "Parameterize Variable": 4
+        }
+      },
+      {
+        "sha": "cf8359262330be3500a47e239f366245c2a72bac",
+        "message": "[FLINK-24907] Optimize run content",
+        "author": "chenyuzhi",
+        "date": "2022-09-08T12:01:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 85,
+            "LINES_DELETED": 38,
+            "PARENT_LOC": 513,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 6,
+        "refactorings": {
+          "Rename Method": 1,
+          "Extract Method": 1,
+          "Replace Anonymous With Lambda": 3,
+          "Rename Variable": 1
+        }
+      },
+      {
+        "sha": "33d839163a44198cc568ef39e522dc9ba1a2cfa5",
+        "message": "[FLINK-24907] merge test method",
+        "author": "chenyuzhi",
+        "date": "2022-09-06T15:38:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 63,
+            "PARENT_LOC": 564,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Rename Method": 1,
+          "Rename Variable": 1
+        }
+      },
+      {
+        "sha": "0f9facf56b56ab9e80b0aec374c5983bf75cf738",
+        "message": "[FLINK-24907] unchange comment",
+        "author": "chenyuzhi459",
+        "date": "2021-12-16T07:06:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/co/IntervalJoinOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/co/IntervalJoinOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 589,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "8002cd28b3d8c5d550875b9d4cea5a3a9da6add9",
+        "message": "[FLINK-24907] code style",
+        "author": "chenyuzhi459",
+        "date": "2021-12-16T02:47:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/co/IntervalJoinOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/co/IntervalJoinOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 589,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 34,
+            "PARENT_LOC": 558,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "2ff5b33eb48329afa8d1aad04b9f581dabf23455",
+        "message": "[FLINK-24907] Support side out late data for interval join",
+        "author": "chenyuzhi459",
+        "date": "2021-12-15T10:54:29Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/datastream/KeyedStream.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/datastream/KeyedStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1085,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/co/IntervalJoinOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/co/IntervalJoinOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 570,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/IntervalJoinOperatorTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/IntervalJoinOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 897,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IntervalJoinITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 124,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 434,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Add Parameter": 2
+        }
+      }
+    ],
+    "sha_before": "290137c201cc61cc3f7ff97080946b2147eaae89",
+    "prefactoring_score": 4,
+    "prefactoring_reasons": [
+      "H3 (+1): [2ff5b33e] avg churn ratio on pre-existing files = 9.0% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [33d83916] avg churn ratio on pre-existing files = 2.1% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [cf835926] avg churn ratio on pre-existing files = 16.6% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [af9887ed] avg churn ratio on pre-existing files = 3.0% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-28853": {
+    "jira_id": "FLINK-28853",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-28853][connector-base] Add FLIP-217 support for watermark alignment of source splits | [FLINK-28853] Document the split level watermark alignment feature an…",
+    "description": "=== PR #20485 (1/2) ===\n## What is the purpose of the change\r\n\r\n* The change implements FLIP-217 (https://cwiki.apache.org/confluence/display/FLINK/FLIP-217+Support+watermark+alignment+of+source+splits) to support watermark alignment of source splits.\r\n\r\n## Brief change log\r\n\r\n* Revised `SplitFetcher` threading model and add support to pause/resume `SplitFetcher`\r\n* Adds support for watermark alignment of individual source splits controlled by `SourceOperator`\r\n* Adds support for split watermark alignment for Kafka and Pulsar sources\r\n* Adds configuration parameter to allow unaligned splits as migration plan to support legacy sources that lack support for split alignment\r\n\r\n\r\n## Verifying this change\r\n\r\nThis change added and extended tests and can be verified as follows:\r\n\r\n* `SplitFetcherTest` extended to test pause/resume of`SplitFetcher`\r\n* `SourceOperatorSplitWatermarkAlignmentTest` added to test split alignment based on split reader watermarks\r\n* `SplitFetcherPauseResumeSplitReaderITCase` added to test pause/resume of individual split readers\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): **no**\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: **yes** (according to FLIP-217)\r\n  - The serializers: **no**\r\n  - The runtime per-record code paths (performance sensitive): **no**\r\n  - Anything that affects deployment or recovery: **no**\r\n  - The S3 file system connector: **no**\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? **yes**\r\n  - If yes, how is the feature documented? **docs** (configuration parameter) and **JavaDocs** (changes of public APIs)\r\n\n\n---\n\n=== PR #22531 (2/2) ===\n…d fixup grammar from the configuration table\r\n\r\n## What is the purpose of the change\r\n\r\nUpdate docs for watermark alignment.\r\n\r\n\r\n## Brief change log\r\n\r\n- Update docs for watermark alignment\r\n- Fixup grammar in Flink configuration \r\n\r\n## Verifying this change\r\n\r\nThis change is a trivial rework / code cleanup without any test coverage.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (**yes** / no)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (**yes** / no)\r\n  - If yes, how is the feature documented? (not applicable / **docs** / JavaDocs / not documented)\r\n",
+    "commits": [
+      {
+        "sha": "77f5f4b20b495508b8af6cf2e4784f11cdd4ab20",
+        "message": "[FLINK-28853] Document the split level watermark alignment feature and fixup grammar from the configuration table",
+        "author": "mas-chen",
+        "date": "2023-05-05T06:48:11Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/PipelineOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/PipelineOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 313,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "991230aa2cc6e8a105305d6ff901c649cd8f72d9",
+        "message": "[FLINK-28853] Address PR comments / Add Kafka and Pulsar split pausing tests",
+        "author": "Maximilian Michels",
+        "date": "2022-09-01T14:15:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/SourceReaderBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/SourceReaderBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 342,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/PauseOrResumeSplitsTask.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/PauseOrResumeSplitsTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 84,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/splitreader/SplitReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/splitreader/SplitReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 97,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherPauseResumeSplitReaderTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherPauseResumeSplitReaderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 311,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 351,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/connector/kafka/source/reader/KafkaSourceReaderTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/connector/kafka/source/reader/KafkaSourceReaderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 586,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/split/PulsarPartitionSplitReaderBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/split/PulsarPartitionSplitReaderBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 246,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/test/java/org/apache/flink/connector/pulsar/source/reader/source/PulsarOrderedSourceReaderTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/test/java/org/apache/flink/connector/pulsar/source/reader/source/PulsarOrderedSourceReaderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 180,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/CombinedWatermarkStatus.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/CombinedWatermarkStatus.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 138,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/WatermarkOutputMultiplexer.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/WatermarkOutputMultiplexer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 225,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/connector/source/SourceReader.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/connector/source/SourceReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 166,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/PipelineOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/PipelineOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 302,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 703,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/SourceOperatorSplitWatermarkAlignmentTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/SourceOperatorSplitWatermarkAlignmentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 144,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 8,
+        "refactorings": {
+          "Rename Class": 1,
+          "Extract Variable": 1,
+          "Add Thrown Exception Type": 1,
+          "Change Attribute Type": 1,
+          "Change Parameter Type": 2,
+          "Remove Attribute Annotation": 1,
+          "Rename Method": 1
+        }
+      },
+      {
+        "sha": "6e3ea662a10db1ea8832b89587217573a1e1c71a",
+        "message": "[FLINK-28853][connector-base] Add source reader split alignment test",
+        "author": "Sebastian Mattheis",
+        "date": "2022-07-26T05:33:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherPauseResumeSplitReaderTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherPauseResumeSplitReaderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 311,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/mocks/MockSplitReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/mocks/MockSplitReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 191,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 4,
+        "refactorings": {
+          "Change Method Access Modifier": 1,
+          "Change Attribute Access Modifier": 3
+        }
+      },
+      {
+        "sha": "520050a5277ed6c25170a8dc38c0ef15ea8adc53",
+        "message": "[FLINK-28853][connector-base] Add allow-unaligned-source-splits config option",
+        "author": "Sebastian Mattheis",
+        "date": "2022-07-24T10:09:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/SingleThreadMultiplexSourceReaderBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/SingleThreadMultiplexSourceReaderBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 116,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/PauseOrResumeSplitsTask.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/PauseOrResumeSplitsTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 72,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SingleThreadFetcherManager.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SingleThreadFetcherManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcher.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 377,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherManager.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 260,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/splitreader/SplitReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/splitreader/SplitReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/SourceReaderBaseTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/SourceReaderBaseTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 512,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherManagerTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherManagerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 174,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 350,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/source/reader/fetcher/KafkaSourceFetcherManager.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/source/reader/fetcher/KafkaSourceFetcherManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 111,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/fetcher/PulsarFetcherManagerBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/fetcher/PulsarFetcherManagerBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 106,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/fetcher/PulsarOrderedFetcherManager.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/fetcher/PulsarOrderedFetcherManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 75,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/fetcher/PulsarUnorderedFetcherManager.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/fetcher/PulsarUnorderedFetcherManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 71,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/source/PulsarOrderedSourceReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/source/PulsarOrderedSourceReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 203,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/source/PulsarUnorderedSourceReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/source/PulsarUnorderedSourceReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 179,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/PipelineOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/PipelineOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 285,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 685,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 13,
+        "refactorings": {
+          "Add Parameter": 10,
+          "Rename Method": 1,
+          "Extract Method": 2
+        }
+      },
+      {
+        "sha": "fafe9aff87b9037997324da07f32a33e5af7fcb8",
+        "message": "[FLINK-28853][source][connector-base] Add support for aligning individual splits\n\nThis provides support for pausing and resuming individual splits in SourceReaderBase. This is used to align individual splits based on emitted watermarks in SourceOperator.",
+        "author": "Dawid Wysakowicz",
+        "date": "2022-04-25T07:55:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/SourceReaderBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/SourceReaderBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 335,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/PauseOrResumeSplitsTask.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/PauseOrResumeSplitsTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 72,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcher.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 357,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherManager.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 235,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/splitreader/SplitReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/splitreader/SplitReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 71,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/SourceReaderBaseTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/SourceReaderBaseTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 512,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/mocks/MockSplitReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/mocks/MockSplitReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 170,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/streaming/connectors/kafka/internals/AbstractFetcher.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/streaming/connectors/kafka/internals/AbstractFetcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 611,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/CombinedWatermarkStatus.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/CombinedWatermarkStatus.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 129,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/IndexedCombinedWatermarkStatus.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/IndexedCombinedWatermarkStatus.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 87,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/WatermarkOutputMultiplexer.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/eventtime/WatermarkOutputMultiplexer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 219,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/connector/source/SourceReader.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/connector/source/SourceReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/api/common/eventtime/WatermarkOutputMultiplexerTest.java",
+            "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/api/common/eventtime/WatermarkOutputMultiplexerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 425,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/api/connector/source/mocks/MockSourceReader.java",
+            "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/api/connector/source/mocks/MockSourceReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 220,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 632,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/source/ProgressiveTimestampsAndWatermarks.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/source/ProgressiveTimestampsAndWatermarks.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 329,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/source/TimestampsAndWatermarks.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/source/TimestampsAndWatermarks.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 109,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/source/WatermarkToDataOutput.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/source/WatermarkToDataOutput.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 117,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/SourceOperatorSplitWatermarkAlignmentTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/SourceOperatorSplitWatermarkAlignmentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 144,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ],
+        "refactoring_count": 13,
+        "refactorings": {
+          "Add Attribute Annotation": 1,
+          "Change Parameter Type": 1,
+          "Add Parameter": 2,
+          "Extract Method": 1,
+          "Extract Variable": 2,
+          "Change Class Access Modifier": 1,
+          "Rename Method": 1,
+          "Rename Parameter": 2,
+          "Add Method Annotation": 1,
+          "Change Method Access Modifier": 1
+        }
+      },
+      {
+        "sha": "7fa7da2cefe42bc93c945a0f846c88e76485305d",
+        "message": "[FLINK-28853][pulsar] Implement pausing Pulsar splits in case of watermark drift",
+        "author": "Dawid Wysakowicz",
+        "date": "2022-03-25T08:33:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/source/PulsarSourceReaderBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/source/PulsarSourceReaderBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 87,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/split/PulsarPartitionSplitReaderBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-pulsar/src/main/java/org/apache/flink/connector/pulsar/source/reader/split/PulsarPartitionSplitReaderBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 230,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "dd38cfb73a4cbe6d03ef3240539e1d7d94722300",
+        "message": "[FLINK-28853][kafka] Implement pausing Kafka partitions in case of watermark drift",
+        "author": "Dawid Wysakowicz",
+        "date": "2022-03-25T08:25:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/source/reader/KafkaPartitionSplitReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/source/reader/KafkaPartitionSplitReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 518,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/source/reader/KafkaSourceReader.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/source/reader/KafkaSourceReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 199,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "bb91b8ca4679622a23cfaec1b901c5dccc26e5d6",
+        "message": "[FLINK-28853][connector-base] Add support for paused SplitFetcher.\n\nWhen there is only one SplitFetcher per split, the split advanced too much, and aligned event time is enabled, then the complete SplitFetcher can be paused by SplitFetcherManager#alignSplits, such that temporarily no more records are read from the respective split.",
+        "author": "Arvid Heise",
+        "date": "2021-11-24T16:10:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcher.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 49,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 323,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcherTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 333,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "3b4df5dbcc19f14254ce10abdd4f768469ca38d3",
+        "message": "[FLINK-28853][connector-base] Revise threading model of SplitFetcher.\n\nInstead of mixing 4 different concepts of synchronization, this commit aims to have one lock for everything and go through with it.",
+        "author": "Arvid Heise",
+        "date": "2021-11-24T13:36:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcher.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/source/reader/fetcher/SplitFetcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 166,
+            "LINES_DELETED": 190,
+            "PARENT_LOC": 347,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 13,
+        "refactorings": {
+          "Remove Attribute Modifier": 2,
+          "Add Attribute Annotation": 4,
+          "Change Attribute Type": 3,
+          "Extract Method": 2,
+          "Inline Method": 1,
+          "Change Return Type": 1
+        }
+      }
+    ],
+    "sha_before": "3ff0ef8474f4c1da7ad21690d82dbbfa1daed868",
+    "prefactoring_score": 6,
+    "prefactoring_reasons": [
+      "H1 (+2): [3b4df5db] (2021-11-24) refactors pre-existing code BEFORE the first new file appears in this issue (2022-04-25)",
+      "H3 (+1): [fafe9aff] avg churn ratio on pre-existing files = 8.0% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [520050a5] avg churn ratio on pre-existing files = 3.0% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [6e3ea662] avg churn ratio on pre-existing files = 6.3% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [991230aa] avg churn ratio on pre-existing files = 4.4% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-29503": {
+    "jira_id": "FLINK-29503",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-29503][rest] Add backpressureLevel field ",
+    "description": "Enum fields have naming restrictions in some languages, rejecting hyphens. Duplicate the field in responses, while hiding the deprecated field in the openapi spec.\r\n\r\n",
+    "commits": [
+      {
+        "sha": "284d3aa8883b86c88df4d11c348246060d35ad21",
+        "message": "[FLINK-29503][rest] Add backpressureLevel field\n\nEnum fields have naming restrictions in some languages.",
+        "author": "Chesnay Schepler",
+        "date": "2022-10-05T09:17:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/messages/JobVertexBackPressureInfo.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/messages/JobVertexBackPressureInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 276,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 6,
+        "refactorings": {
+          "Add Attribute Annotation": 2,
+          "Add Method Annotation": 4
+        }
+      },
+      {
+        "sha": "baa142f114e35b22eba0547d639bce0f49626437",
+        "message": "[hotfix][rest] Add final modifier",
+        "author": "Chesnay Schepler",
+        "date": "2022-10-05T09:02:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/messages/JobVertexBackPressureInfo.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/messages/JobVertexBackPressureInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 276,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Add Attribute Modifier": 2
+        }
+      }
+    ],
+    "sha_before": "fa8b1232d8eaee0679b6fe160f66db73cf5a4af2",
+    "prefactoring_score": 4,
+    "prefactoring_reasons": [
+      "H3 (+1): [baa142f1] avg churn ratio on pre-existing files = 0.7% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [baa142f1] is nearly pure structural refactoring (2 lines added, 2 refactoring ops)",
+      "H3 (+1): [284d3aa8] avg churn ratio on pre-existing files = 4.7% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-29582": {
+    "jira_id": "FLINK-29582",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-29582][state-processor] Relax 1+ operator requirement ",
+    "description": "Based on #21085.\r\n\r\nThe SavepointWriter previously had to enforce that the user provides at least 1 operator because we used them to get access to the execution environment. No operator -> no environment -> can't setup remaining operations.\r\n\r\nThis PR adds new factory methods that have the user explicitly pass the environment. With that we can define any operation we like internally without requiring another operator.\r\nThe existing factory methods were deprecated. They will continue to work, but it they are used the program is still subject to the old requirement of having at least 1 operator.",
+    "commits": [
+      {
+        "sha": "b345688719a4e25f0b9c57a4b238549fb52600e7",
+        "message": "[FLINK-29582][state-processor] Relax 1+ operator requirement",
+        "author": "Chesnay Schepler",
+        "date": "2022-10-17T10:44:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/main/java/org/apache/flink/state/api/SavepointWriter.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/main/java/org/apache/flink/state/api/SavepointWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 99,
+            "LINES_DELETED": 36,
+            "PARENT_LOC": 373,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointDeepCopyTest.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointDeepCopyTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 210,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterITCase.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 424,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterTest.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 46,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterUidModificationITCase.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterUidModificationITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 27,
+            "PARENT_LOC": 276,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterWindowITCase.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterWindowITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 433,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 8,
+        "refactorings": {
+          "Extract Method": 1,
+          "Add Method Annotation": 4,
+          "Change Variable Type": 1,
+          "Change Return Type": 1,
+          "Add Parameter": 1
+        }
+      },
+      {
+        "sha": "012382873c4a8b022f99a2753a05a6969fd535f0",
+        "message": "[hotfix][tests] Port SavepointWriterTest to JUnit 5",
+        "author": "Chesnay Schepler",
+        "date": "2022-10-17T10:29:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterTest.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/test/java/org/apache/flink/state/api/SavepointWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 5,
+        "refactorings": {
+          "Change Class Access Modifier": 1,
+          "Assert Throws": 1,
+          "Modify Method Annotation": 1,
+          "Remove Thrown Exception Type": 1,
+          "Change Method Access Modifier": 1
+        }
+      }
+    ],
+    "sha_before": "a6db6ee5d0d6e9b50c6d110793e2efbd0d57cc38",
+    "prefactoring_score": 4,
+    "prefactoring_reasons": [
+      "H3 (+1): [01238287] avg churn ratio on pre-existing files = 12.5% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [01238287] is nearly pure structural refactoring (8 lines added, 5 refactoring ops)",
+      "H3 (+1): [b3456887] avg churn ratio on pre-existing files = 11.2% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-29480": {
+    "jira_id": "FLINK-29480",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "[FLINK-29480][Connectors/Kafka] Skip null records when writing",
+    "description": "<!--\r\n*Thank you very much for contributing to Apache Flink - we are happy that you want to help us improve Flink. To help the community review your contribution in the best possible way, please go through the checklist below, which will get the contribution into a shape in which it can be best reviewed.*\r\n\r\n*Please understand that we do not do this to make contributions to Flink a hassle. In order to uphold a high standard of quality for code contributions, while at the same time managing a large number of contributions, we need contributors to prepare the contributions well, and give reviewers enough contextual information for the review. Please also understand that contributions that do not follow this guide will take longer to review and thus typically be picked up with lower priority by the community.*\r\n\r\n## Contribution Checklist\r\n\r\n  - Make sure that the pull request corresponds to a [JIRA issue](https://issues.apache.org/jira/projects/FLINK/issues). Exceptions are made for typos in JavaDoc or documentation files, which need no JIRA issue.\r\n  \r\n  - Name the pull request in the form \"[FLINK-XXXX] [component] Title of the pull request\", where *FLINK-XXXX* should be replaced by the actual issue number. Skip *component* if you are unsure about which is the best component.\r\n  Typo fixes that have no associated JIRA issue should be named following this pattern: `[hotfix] [docs] Fix typo in event time introduction` or `[hotfix] [javadocs] Expand JavaDoc for PuncuatedWatermarkGenerator`.\r\n\r\n  - Fill out the template below to describe the changes contributed by the pull request. That will give reviewers the context they need to do the review.\r\n  \r\n  - Make sure that the change passes the automated tests, i.e., `mvn clean verify` passes. You can set up Azure Pipelines CI to do that following [this guide](https://cwiki.apache.org/confluence/display/FLINK/Azure+Pipelines#AzurePipelines-Tutorial:SettingupAzurePipelinesforaforkoftheFlinkrepository).\r\n\r\n  - Each pull request should address only one issue, not mix up code from multiple issues.\r\n  \r\n  - Each commit in the pull request has a meaningful commit message (including the JIRA id)\r\n\r\n  - Once all items of the checklist are addressed, remove the above text and this checklist, leaving only the filled out template below.\r\n\r\n\r\n**(The sections below can be removed for hotfixes of typos)**\r\n-->\r\n\r\n## What is the purpose of the change\r\n\r\nMake `KafkaWriter` skip null records since sending them is meaningless in the first place. The proposed behaviour has two main advantages:\r\n1. It prevents a `NullPointerException`\r\n2. It is more consistent with the _reading case_, where one can skip the null records returned by the deserializer\r\n\r\n## Brief change log\r\n\r\nAdd simple if statement in `KafkaWriter#serialize` for skipping them.\r\n\r\n## Verifying this change\r\n\r\nThis change is already covered by the existing test `KafkaWriterITCase#testIncreasingRecordBasedCounters`, which has been slightly modified to account for null records.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): no\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: no\r\n  - The serializers: no\r\n  - The runtime per-record code paths (performance sensitive): no\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn, ZooKeeper: no\r\n  - The S3 file system connector: no\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? no\r\n ",
+    "commits": [
+      {
+        "sha": "a95bf449af7772a50003040f5c65f0c9cde7aac7",
+        "message": "Add missing import and fix style violations",
+        "author": "salvalcantara",
+        "date": "2022-10-31T07:42:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaRecordSerializationSchema.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaRecordSerializationSchema.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "ce100bbf31e67bfc825ae3d093759dffc4b4e49d",
+        "message": "Refine comments in testIncreasingRecordBasedCounters",
+        "author": "salvalcantara",
+        "date": "2022-10-31T07:03:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/connector/kafka/sink/KafkaWriterITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/connector/kafka/sink/KafkaWriterITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 562,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "58f65ee5584dc41011383db7259076429d3ca6e4",
+        "message": "Declare the writer input element nullable\n\nCo-authored-by: Leonard Xu <leonard@apache.org>",
+        "author": "Salva Alcántara",
+        "date": "2022-10-31T05:55:45Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaRecordSerializationSchema.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaRecordSerializationSchema.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaWriter.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 441,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Add Method Annotation": 1,
+          "Add Parameter Annotation": 1
+        }
+      },
+      {
+        "sha": "9c99c771d5ce676d6edf83e0d8c8ad03fc49821b",
+        "message": "Skip null producer records in the kafka writer",
+        "author": "Salva Alcántara",
+        "date": "2022-10-28T09:15:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaRecordSerializationSchema.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaRecordSerializationSchema.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaWriter.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/connector/kafka/sink/KafkaWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 439,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/connector/kafka/sink/KafkaWriterITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/connector/kafka/sink/KafkaWriterITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 549,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      }
+    ],
+    "sha_before": "cb442936156583d6cf42550f3d9187da427b9c68",
+    "prefactoring_score": 3,
+    "prefactoring_reasons": [
+      "H3 (+1): [58f65ee5] avg churn ratio on pre-existing files = 1.1% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [58f65ee5] is nearly pure structural refactoring (3 lines added, 2 refactoring ops)"
+    ]
+  },
+  "FLINK-29888": {
+    "jira_id": "FLINK-29888",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-29888][streaming] Reimplement checkNotAllowedConfigurations using refactored CheckpointConfig and ExecutionConfig",
+    "description": "This PR depends on FLINK-29379, so please ignore a couple of first commits that are being reviewed in https://github.com/apache/flink/pull/21245\r\n\r\nAfter FLINK-29379 we can re-implement checkNotAllowedConfigurations to produce better exception messages.\r\nInstead of a generic \"Configuration object ExecutionConfig changed\", without a hint of what has been modified,\r\nwe can report what ConfigOption has been changed.\r\n\r\n## Verifying this change\r\n\r\nThis change is partially covered by existing tests but also expands `StreamContextEnvironmentTest`.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (yes / **no**)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (**not applicable** / docs / JavaDocs / not documented)\r\n",
+    "commits": [
+      {
+        "sha": "f8b58d266d1d4b8b10bdd7750b9da8d702406ee4",
+        "message": "[FLINK-29888][streaming] Validate CheckpointConfig#storage manualy\n\nUnfortunately, CheckpointConfig#setCheckpointStorage is not backed by a\nConfiguration, but it also has to be validated. For this validation we\nare implementing a one off manual check",
+        "author": "Piotr Nowojski",
+        "date": "2022-11-07T12:24:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/StreamContextEnvironment.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/StreamContextEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 344,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/StreamContextEnvironmentTest.java",
+            "CHILD_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/StreamContextEnvironmentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 90,
+            "LINES_DELETED": 19,
+            "PARENT_LOC": 162,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/ConfigurationNotAllowedMessage.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/ConfigurationNotAllowedMessage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 69,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/storage/ExternalizedSnapshotLocation.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/storage/ExternalizedSnapshotLocation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 157,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/storage/FileSystemCheckpointStorage.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/storage/FileSystemCheckpointStorage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 374,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Extract Method": 2
+        }
+      },
+      {
+        "sha": "9ce17b2998a7fbf268c9ecc8cd0a8f8e65143ff4",
+        "message": "[FLINK-29888][streaming] Reimplement checkNotAllowedConfigurations using refactored CheckpointConfig and ExecutionConfig\n\nAfter FLINK-29379 we can re-implement checkNotAllowedConfigurations to produce better exception messages.\nInstead of a generic \"Configuration object ExecutionConfig changed\", without a hint of what has been modified,\nwe can report what ConfigOption has been changed.",
+        "author": "Piotr Nowojski",
+        "date": "2022-11-03T15:52:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/StreamContextEnvironment.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/StreamContextEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 106,
+            "PARENT_LOC": 395,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/StreamContextEnvironmentTest.java",
+            "CHILD_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/StreamContextEnvironmentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 154,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/Configuration.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/Configuration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 971,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/DelegatingConfiguration.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/DelegatingConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 408,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/DeploymentOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/DeploymentOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 155,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/configuration/ConfigurationTest.java",
+            "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/configuration/ConfigurationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 446,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/ConfigurationNotAllowedMessage.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/ConfigurationNotAllowedMessage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 53,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 15,
+        "refactorings": {
+          "Extract Method": 3,
+          "Remove Variable Modifier": 4,
+          "Rename Variable": 2,
+          "Parameterize Variable": 2,
+          "Rename Method": 1,
+          "Change Parameter Type": 1,
+          "Add Parameter": 2
+        }
+      },
+      {
+        "sha": "8726d52e9f7dbc7148dc9cc31a5cb1148946ba8d",
+        "message": "[hotfix][streaming] Unify method names in ConfigurationNotAllowedMessage",
+        "author": "Piotr Nowojski",
+        "date": "2022-11-03T15:38:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/StreamContextEnvironment.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/StreamContextEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 396,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/ConfigurationNotAllowedMessage.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/ConfigurationNotAllowedMessage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 53,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 5,
+        "refactorings": {
+          "Rename Method": 2,
+          "Rename Parameter": 3
+        }
+      }
+    ],
+    "sha_before": "bb124f4ada402abd98de53e3827fc227997c4e3e",
+    "prefactoring_score": 5,
+    "prefactoring_reasons": [
+      "H3 (+1): [8726d52e] avg churn ratio on pre-existing files = 6.9% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [8726d52e] is nearly pure structural refactoring (9 lines added, 5 refactoring ops)",
+      "H3 (+1): [9ce17b29] avg churn ratio on pre-existing files = 9.8% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [f8b58d26] avg churn ratio on pre-existing files = 17.0% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-29379": {
+    "jira_id": "FLINK-29379",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-29379][streaming] Migrate CheckpointConfig to use Configuration field and ConfigOption | [FLINK-29379][datastream] Migrate most of the ExecutionConfig fields to Configuration",
+    "description": "=== PR #21245 (1/2) ===\n\r\n## What is the purpose of the change\r\n\r\nThis PR refactors `CheckpointConfig` to use `Configuration` class\r\n\r\n## Brief change log\r\n\r\nPlease check individual commits.\r\n\r\n## Verifying this change\r\n\r\nThis is only a refactor that's covered by existing tests.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (**yes** / no)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / no ****/ don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (**not applicable** / docs / JavaDocs / not documented)\r\n\n\n---\n\n=== PR #21056 (2/2) ===\nThis PR depends on #21201 \r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (**yes** / no)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (**not applicable** / docs / JavaDocs / not documented)\r\n",
+    "commits": [
+      {
+        "sha": "e7d5d3feb4bc29d13f9f39c4962e5a9ac95ee33d",
+        "message": "[FLINK-29379][streaming] Drop CheckpointConfig#failOnCheckpointingErrors and use getTolerableCheckpointFailureNumber() instead",
+        "author": "Piotr Nowojski",
+        "date": "2022-11-04T12:06:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 871,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "a237990b1174986f73d75cffa624c25520c08186",
+        "message": "[FLINK-29379][streaming] Migrate a couple of CheckpointConfig fields to hidden ConfigOption",
+        "author": "Piotr Nowojski",
+        "date": "2022-11-04T12:04:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 864,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/ExecutionCheckpointingOptions.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/ExecutionCheckpointingOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 255,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Add Attribute Annotation": 1
+        }
+      },
+      {
+        "sha": "120a33accc9afd600fbf9e694e23f42315c73162",
+        "message": "[FLINK-29379][streaming] Migrate most of the CheckpointConfig fields to Configuration",
+        "author": "Piotr Nowojski",
+        "date": "2022-11-03T17:04:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 140,
+            "LINES_DELETED": 127,
+            "PARENT_LOC": 851,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 6,
+        "refactorings": {
+          "Add Attribute Annotation": 6
+        }
+      },
+      {
+        "sha": "35693d6eb57edf559af5779561ec8ccb3042cdbb",
+        "message": "[FLINK-29379][streaming] Migrate isDynamicGraph in ExecutionConfig to Configuration",
+        "author": "Piotr Nowojski",
+        "date": "2022-11-03T09:43:14Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 1261,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/partitioner/StreamPartitionerTestUtils.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/partitioner/StreamPartitionerTestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 75,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/plan/batch/sql/ForwardHashExchangeTest.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/plan/batch/sql/ForwardHashExchangeTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 422,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/runtime/batch/ParallelismSettingTest.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/runtime/batch/ParallelismSettingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 93,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/runtime/batch/sql/ForwardHashExchangeITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/runtime/batch/sql/ForwardHashExchangeITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 104,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 5,
+        "refactorings": {
+          "Rename Method": 1,
+          "Change Return Type": 1,
+          "Rename Parameter": 1,
+          "Change Parameter Type": 1,
+          "Add Method Annotation": 1
+        }
+      },
+      {
+        "sha": "ef2e9ad73bd129ad21bd7feb80007fb6e50278f6",
+        "message": "[FLINK-29379][streaming] Migrate TASK_CANCELLATION options in ExecutionConfig to Configuration",
+        "author": "Piotr Nowojski",
+        "date": "2022-11-03T08:31:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 1265,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/Task.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/Task.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 1808,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "b599cafcf53fcc61f770065b37d8d5903ffa8c68",
+        "message": "[hotfix][streaming] Fix AUTO_WATERMARK_INTERVAL default value\n\nThe actual default value was defined in the ExecutionConfig as 200ms anyway.\nThis fix changes only documentation to reflect tha actual status.",
+        "author": "Piotr Nowojski",
+        "date": "2022-10-14T07:06:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1303,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/PipelineOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/PipelineOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 302,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "8d24d272afe30aff3afa47a8cde780aa66443a24",
+        "message": "[FLINK-29379][streaming] Migrate most ExecutionConfig fields to Configuration map",
+        "author": "Piotr Nowojski",
+        "date": "2022-10-13T14:30:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 115,
+            "LINES_DELETED": 154,
+            "PARENT_LOC": 1304,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Merge Attribute": 1
+        }
+      }
+    ],
+    "sha_before": "b599cafcf53fcc61f770065b37d8d5903ffa8c68",
+    "prefactoring_score": 4,
+    "prefactoring_reasons": [
+      "H3 (+1): [8d24d272] avg churn ratio on pre-existing files = 8.8% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [35693d6e] avg churn ratio on pre-existing files = 3.0% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [120a33ac] avg churn ratio on pre-existing files = 16.5% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [a237990b] avg churn ratio on pre-existing files = 6.7% (< 20%) — mostly reshaping existing lines"
+    ]
+  }
+}

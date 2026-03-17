@@ -1,0 +1,2628 @@
+{
+  "FLINK-16190": {
+    "jira_id": "FLINK-16190",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-16190][e2e] Migrate tests to FlinkResource",
+    "description": "Based on #11246.\r\n\r\nMigrates existing java e2e tests from the `FlinkDistribution` to the `FlinkResource`.\r\n\r\nTests should only work against the `FlinkResource` API; the distribution class is more of a low-level construct.\r\nSince the distribution exposed more functionality than the `FlinkResource` does we had to extend things slightly.\r\nFor mutating the distribution (like copying jars) a new `FlinkResourceSetup` class was introduced with which tests can define customization steps for a distribution.\r\nThe `FlinkResource` now also exposes a method for searching logs.\r\nThe existing `FlinkResource#addConfiguration` method has been removed as it is subsumed by the resource setup.",
+    "commits": [
+      {
+        "sha": "b6ddc053a9cb61b261e57fdf9cddc59e9ed6ba31",
+        "message": "[FLINK-16190][e2e] Move FlinkDistribution into flink package",
+        "author": "Chesnay Schepler",
+        "date": "2020-02-20T14:46:45Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util//FlinkDistribution.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 0,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/JarMove.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/JarMove.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 46,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 172,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 4,
+        "refactorings": {
+          "Move Class": 1,
+          "Change Class Access Modifier": 2,
+          "Change Method Access Modifier": 1
+        }
+      },
+      {
+        "sha": "f1b623a907cc3298f63db7515e1640b0e74f5ca3",
+        "message": "[FLINK-16190][e2e] Migrate tests to FlinkResource",
+        "author": "Chesnay Schepler",
+        "date": "2020-02-20T14:41:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common-kafka/src/test/java/org/apache/flink/tests/util/kafka/SQLClientKafkaITCase.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common-kafka/src/test/java/org/apache/flink/tests/util/kafka/SQLClientKafkaITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 237,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common-kafka/src/test/java/org/apache/flink/tests/util/kafka/StreamingKafkaITCase.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common-kafka/src/test/java/org/apache/flink/tests/util/kafka/StreamingKafkaITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 173,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/FlinkDistribution.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/FlinkDistribution.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 320,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkResource.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkResource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 66,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkResourceFactory.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkResourceFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 36,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkResourceSetup.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkResourceSetup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 82,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/JarLocation.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/JarLocation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/JarMove.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/JarMove.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 157,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResourceFactory.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResourceFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 37,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-metrics-availability-test/src/test/java/org/pache/flink/metrics/tests/MetricsAvailabilityITCase.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-metrics-availability-test/src/test/java/org/pache/flink/metrics/tests/MetricsAvailabilityITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 164,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-metrics-reporter-prometheus-test/src/test/java/org/apache/flink/metrics/prometheus/tests/PrometheusReporterEndToEndITCase.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-metrics-reporter-prometheus-test/src/test/java/org/apache/flink/metrics/prometheus/tests/PrometheusReporterEndToEndITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 29,
+            "PARENT_LOC": 238,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 5,
+        "refactorings": {
+          "Extract Method": 1,
+          "Add Parameter": 2,
+          "Change Attribute Type": 2
+        }
+      }
+    ],
+    "sha_before": "dfd79bce78a16af9b5a534f1e9539c530979ba58",
+    "prefactoring_score": 4,
+    "prefactoring_reasons": [
+      "H3 (+1): [f1b623a9] avg churn ratio on pre-existing files = 11.3% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [b6ddc053] avg churn ratio on pre-existing files = 0.0% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [b6ddc053] is nearly pure structural refactoring (6 lines added, 4 refactoring ops)"
+    ]
+  },
+  "FLINK-16690": {
+    "jira_id": "FLINK-16690",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-16690][task][tests] Refactor StreamTaskTest to reuse TestTaskBuilder and MockStreamTaskBuilder",
+    "description": "\r\n## What is the purpose of the change\r\n\r\nWe can reuse existing `TestTaskBuilder` and `MockStreamTaskBuilder` for constructing `Task` and `StreamTask` easily in tests to simplify `StreamTaskTest` case.\r\n\r\n## Brief change log\r\n\r\nsee commit messages\r\n\r\n## Verifying this change\r\n\r\nThis change is a trivial rework / code cleanup without any test coverage.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (yes / **no**)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (**not applicable** / docs / JavaDocs / not documented)\r\n",
+    "commits": [
+      {
+        "sha": "fe213e9bce64c113e18339d0207ea87d292d3eb1",
+        "message": "[FLINK-16690][tests] Refactor StreamTaskTest to reuse TestTaskBuilder and MockStreamTaskBuilder\n\nThis closes #11459",
+        "author": "Zhijiang",
+        "date": "2020-03-20T05:14:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskmanager/TestTaskBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskmanager/TestTaskBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 239,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/AbstractUdfStreamOperatorLifecycleTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/AbstractUdfStreamOperatorLifecycleTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 314,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 86,
+            "LINES_DELETED": 177,
+            "PARENT_LOC": 1813,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/MockStreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/MockStreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 160,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/MockStreamTaskBuilder.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/MockStreamTaskBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 145,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 22,
+        "refactorings": {
+          "Extract Attribute": 1,
+          "Inline Method": 9,
+          "Change Variable Type": 7,
+          "Extract Method": 4,
+          "Add Parameter": 1
+        }
+      },
+      {
+        "sha": "c6f96c686a089ffb8501cde7900efa372986b692",
+        "message": "[hotfix][task] Remove unnecessary fields and methods from StreamTask\n\nThis closes #11459",
+        "author": "Zhijiang",
+        "date": "2020-03-19T09:21:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/AbstractStreamOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/AbstractStreamOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 841,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 1144,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/MockStreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/MockStreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 170,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/MockStreamTaskBuilder.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/MockStreamTaskBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Remove Parameter": 1
+        }
+      },
+      {
+        "sha": "63b8294fac8c46d787f9682a881f57c59a6bf2bc",
+        "message": "[hotfix][tests] Remove dead codes from SynchronousCheckpointTest\n\nThis closes #11459",
+        "author": "Zhijiang",
+        "date": "2020-03-19T08:15:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskCancellationBarrierTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskCancellationBarrierTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 35,
+            "PARENT_LOC": 202,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      }
+    ],
+    "sha_before": "c6f96c686a089ffb8501cde7900efa372986b692",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [c6f96c68] avg churn ratio on pre-existing files = 0.0% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [fe213e9b] avg churn ratio on pre-existing files = 5.5% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-16608": {
+    "jira_id": "FLINK-16608",
+    "issue_type": "Improvement",
+    "resolution": "Resolved",
+    "title": "[FLINK-16608][python] Support primitive data types for vectorized Python UDF",
+    "description": "\r\n## What is the purpose of the change\r\n\r\n*This pull request adds support of BooleanType, FloatType, DoubleType, VarCharType, VarBinaryType, DecimalType, DateType and TimeType for vectorized Python UDF.*\r\n\r\n## Verifying this change\r\n\r\n  - *Java Tests ArrowUtilsTest, BaseRowArrowReaderWriterTest, RowArrowReaderWriterTest and Python tests PandasUDFITTests.test_all_data_types*\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (no)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (no)\r\n  - The serializers: (no)\r\n  - The runtime per-record code paths (performance sensitive): (no)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (no)\r\n  - The S3 file system connector: (no)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (no)\r\n  - If yes, how is the feature documented? (not applicable)\r\n",
+    "commits": [
+      {
+        "sha": "527f5dd8b6dcef9d1064186a20e9c4faf9ab65b2",
+        "message": "[FLINK-16608][python] Support TimeType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-03-14T09:45:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 401,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/TimeFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/TimeFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 70,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowTimeColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowTimeColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 68,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowTimeWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowTimeWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 62,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/TimeWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/TimeWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 76,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 199,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 139,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "3a8d77a70ea38f6652f5bc5d8a2b451efe895ae0",
+        "message": "[FLINK-16608][python] Remove the method which derives the LogicalType from the Arrow ValueVector",
+        "author": "Dian Fu",
+        "date": "2020-03-13T12:40:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 57,
+            "PARENT_LOC": 279,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/operators/python/scalar/arrow/ArrowPythonScalarFunctionOperator.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/operators/python/scalar/arrow/ArrowPythonScalarFunctionOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 125,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/operators/python/scalar/arrow/BaseRowArrowPythonScalarFunctionOperator.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/operators/python/scalar/arrow/BaseRowArrowPythonScalarFunctionOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 124,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/runners/python/scalar/arrow/ArrowPythonScalarFunctionRunner.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/runners/python/scalar/arrow/ArrowPythonScalarFunctionRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 55,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/runners/python/scalar/arrow/BaseRowArrowPythonScalarFunctionRunner.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/runners/python/scalar/arrow/BaseRowArrowPythonScalarFunctionRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 55,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 124,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 91,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/operators/python/scalar/arrow/ArrowPythonScalarFunctionOperatorTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/operators/python/scalar/arrow/ArrowPythonScalarFunctionOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 108,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/operators/python/scalar/arrow/BaseRowArrowPythonScalarFunctionOperatorTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/operators/python/scalar/arrow/BaseRowArrowPythonScalarFunctionOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 130,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/runners/python/scalar/arrow/ArrowPythonScalarFunctionRunnerTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/runners/python/scalar/arrow/ArrowPythonScalarFunctionRunnerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 183,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 10,
+        "refactorings": {
+          "Add Parameter": 8,
+          "Extract Variable": 2
+        }
+      },
+      {
+        "sha": "52399b23f52c868d27daa27034b7a8d23dcccaad",
+        "message": "[FLINK-16608][python] Support DateType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-03-13T06:37:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 381,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/DateFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/DateFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowDateColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowDateColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 51,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDateWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDateWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DateWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DateWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 48,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/typeutils/PythonTypeUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/typeutils/PythonTypeUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 524,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/typeutils/serializers/python/DateSerializer.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/typeutils/serializers/python/DateSerializer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 131,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 191,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 137,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 102,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 10,
+        "refactorings": {
+          "Change Parameter Type": 1,
+          "Change Method Access Modifier": 2,
+          "Add Method Modifier": 2,
+          "Move Method": 2,
+          "Change Return Type": 1,
+          "Move Attribute": 2
+        }
+      },
+      {
+        "sha": "2b2ff6f60ffba45037b76169b9b23aa7d4de3e9d",
+        "message": "[FLINK-16608][python] Support DecimalType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-03-13T06:37:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 338,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/DecimalFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/DecimalFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowDecimalColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowDecimalColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 52,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDecimalWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDecimalWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 59,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DecimalWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DecimalWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 59,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/typeutils/PythonTypeUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/typeutils/PythonTypeUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 504,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 184,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 134,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/util/StreamRecordUtils.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/util/StreamRecordUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 141,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "95574f67e9f3c3e3a4fc8fd3e847239f008a4b34",
+        "message": "[FLINK-16608][python] Support VarBinaryType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-03-13T06:37:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 319,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/VarBinaryFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/VarBinaryFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowVarBinaryColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowVarBinaryColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 52,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowVarBinaryWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowVarBinaryWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/VarBinaryWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/VarBinaryWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 177,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 132,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 97,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/util/StreamRecordUtils.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/util/StreamRecordUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 139,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "307c75523c6fb4afadb2f54f9fac843f10a2362b",
+        "message": "[FLINK-16608][python] Support VarCharType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-03-13T06:34:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 300,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/VarCharFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/VarCharFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 45,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowVarCharColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowVarCharColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 52,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowVarCharWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowVarCharWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/VarCharWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/VarCharWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 170,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 130,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "1caa7595273accdd02d1a66a0ee4e396838ebe42",
+        "message": "[FLINK-16608][python] Support DoubleType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-03-12T07:23:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 281,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/DoubleFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/DoubleFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowDoubleColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowDoubleColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 51,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDoubleWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDoubleWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DoubleWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DoubleWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 163,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 128,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 93,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "b3a6ae47d0ff7ad4bc13aca221d6f4a06a492115",
+        "message": "[FLINK-16608][python] Support FloatType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-03-12T07:10:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 261,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/FloatFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/FloatFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowFloatColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowFloatColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 51,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowFloatWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowFloatWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/FloatWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/FloatWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 155,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 126,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 91,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "474eb675e42e12a40743ed618521652c5b0d1968",
+        "message": "[FLINK-16608][python] Support BooleanType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-03-12T06:48:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 242,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/BooleanFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/BooleanFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowBooleanColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowBooleanColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 51,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowBooleanWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowBooleanWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BooleanWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BooleanWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 148,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 124,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 91,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      }
+    ],
+    "sha_before": "3a8d77a70ea38f6652f5bc5d8a2b451efe895ae0",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [52399b23] avg churn ratio on pre-existing files = 5.2% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [3a8d77a7] avg churn ratio on pre-existing files = 1.9% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-16245": {
+    "jira_id": "FLINK-16245",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-16245] Decoupling user classloader from context classloader. | [FLINK-16245] Decoupling user classloader from context classloader. ",
+    "description": "=== PR #11303 (1/2) ===\n<!--\r\n*Thank you very much for contributing to Apache Flink - we are happy that you want to help us improve Flink. To help the community review your contribution in the best possible way, please go through the checklist below, which will get the contribution into a shape in which it can be best reviewed.*\r\n\r\n*Please understand that we do not do this to make contributions to Flink a hassle. In order to uphold a high standard of quality for code contributions, while at the same time managing a large number of contributions, we need contributors to prepare the contributions well, and give reviewers enough contextual information for the review. Please also understand that contributions that do not follow this guide will take longer to review and thus typically be picked up with lower priority by the community.*\r\n\r\n## Contribution Checklist\r\n\r\n  - Make sure that the pull request corresponds to a [JIRA issue](https://issues.apache.org/jira/projects/FLINK/issues). Exceptions are made for typos in JavaDoc or documentation files, which need no JIRA issue.\r\n  \r\n  - Name the pull request in the form \"[FLINK-XXXX] [component] Title of the pull request\", where *FLINK-XXXX* should be replaced by the actual issue number. Skip *component* if you are unsure about which is the best component.\r\n  Typo fixes that have no associated JIRA issue should be named following this pattern: `[hotfix] [docs] Fix typo in event time introduction` or `[hotfix] [javadocs] Expand JavaDoc for PuncuatedWatermarkGenerator`.\r\n\r\n  - Fill out the template below to describe the changes contributed by the pull request. That will give reviewers the context they need to do the review.\r\n  \r\n  - Make sure that the change passes the automated tests, i.e., `mvn clean verify` passes. You can set up Travis CI to do that following [this guide](https://flink.apache.org/contributing/contribute-code.html#open-a-pull-request).\r\n\r\n  - Each pull request should address only one issue, not mix up code from multiple issues.\r\n  \r\n  - Each commit in the pull request has a meaningful commit message (including the JIRA id)\r\n\r\n  - Once all items of the checklist are addressed, remove the above text and this checklist, leaving only the filled out template below.\r\n\r\n\r\n**(The sections below can be removed for hotfixes of typos)**\r\n-->\r\n\r\n## What is the purpose of the change\r\n\r\nDecoupling user class loader from context classloader.\r\n\r\nThus, user classloader can be unloaded even though a reference on the context classloader outlives the user code.\r\n\r\n## Brief change log\r\n\r\n- Adding SafetyNetWrapperClassLoader\r\n- Use it for FlinkUserCodeClassLoaders\r\n- Make sure LocalExecutor closes user classloader\r\n\r\n\r\n## Verifying this change\r\n\r\nAdded unit test.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (yes / **no**)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (**not applicable** / docs / JavaDocs / not documented)\r\n\n\n---\n\n=== PR #13027 (2/2) ===\n<!--\r\n*Thank you very much for contributing to Apache Flink - we are happy that you want to help us improve Flink. To help the community review your contribution in the best possible way, please go through the checklist below, which will get the contribution into a shape in which it can be best reviewed.*\r\n\r\n*Please understand that we do not do this to make contributions to Flink a hassle. In order to uphold a high standard of quality for code contributions, while at the same time managing a large number of contributions, we need contributors to prepare the contributions well, and give reviewers enough contextual information for the review. Please also understand that contributions that do not follow this guide will take longer to review and thus typically be picked up with lower priority by the community.*\r\n\r\n## Contribution Checklist\r\n\r\n  - Make sure that the pull request corresponds to a [JIRA issue](https://issues.apache.org/jira/projects/FLINK/issues). Exceptions are made for typos in JavaDoc or documentation files, which need no JIRA issue.\r\n  \r\n  - Name the pull request in the form \"[FLINK-XXXX] [component] Title of the pull request\", where *FLINK-XXXX* should be replaced by the actual issue number. Skip *component* if you are unsure about which is the best component.\r\n  Typo fixes that have no associated JIRA issue should be named following this pattern: `[hotfix] [docs] Fix typo in event time introduction` or `[hotfix] [javadocs] Expand JavaDoc for PuncuatedWatermarkGenerator`.\r\n\r\n  - Fill out the template below to describe the changes contributed by the pull request. That will give reviewers the context they need to do the review.\r\n  \r\n  - Make sure that the change passes the automated tests, i.e., `mvn clean verify` passes. You can set up Travis CI to do that following [this guide](https://flink.apache.org/contributing/contribute-code.html#open-a-pull-request).\r\n\r\n  - Each pull request should address only one issue, not mix up code from multiple issues.\r\n  \r\n  - Each commit in the pull request has a meaningful commit message (including the JIRA id)\r\n\r\n  - Once all items of the checklist are addressed, remove the above text and this checklist, leaving only the filled out template below.\r\n\r\n\r\n**(The sections below can be removed for hotfixes of typos)**\r\n-->\r\n\r\nThis is a follow-up PR of https://github.com/apache/flink/pull/11303 after https://github.com/apache/flink/pull/11611 disabled it because of performance regression in blink e2e test.\r\n\r\n## What is the purpose of the change\r\n\r\nDecoupling user class loader from context classloader.\r\n\r\nThus, user classloader can be unloaded even though a reference on the context classloader outlives the user code.\r\n\r\n## Brief change log\r\n\r\n- Adding SafetyNetWrapperClassLoader\r\n- Use it for FlinkUserCodeClassLoaders\r\n- Make sure LocalExecutor closes user classloader\r\n\r\nCompared to the original PR, it includes the following changes\r\n- Use the parent classloader of the FlinkUserCodeClassLoader in SafetyNetWrapperClassLoader to address the performance concerns.\r\n- Further, improve performance by enabling parallel class loading in all involved classloaders.\r\n\r\n## Verifying this change\r\n\r\nAdded unit test.\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (yes / **no**)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (yes / **no**)\r\n  - The serializers: (yes / **no** / don't know)\r\n  - The runtime per-record code paths (performance sensitive): (yes / **no** / don't know)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (yes / **no** / don't know)\r\n  - The S3 file system connector: (yes / **no** / don't know)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes / **no**)\r\n  - If yes, how is the feature documented? (**not applicable** / docs / JavaDocs / not documented)\r\n",
+    "commits": [
+      {
+        "sha": "74857e7cfe766ea0ba163e56a41251ca3fa0b4cf",
+        "message": "[FLINK-16917][runtime] Added option to disable safety net user classloader.\n\nIf users experience class loader leaks in libraries not under his control, they can force old behavior with the config option.",
+        "author": "Arvid Heise",
+        "date": "2020-08-07T15:56:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 159,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 378,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-formats/flink-avro/src/test/java/org/apache/flink/formats/avro/AvroKryoClassloadingTest.java",
+            "CHILD_PATH": "flink-formats/flink-avro/src/test/java/org/apache/flink/formats/avro/AvroKryoClassloadingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 91,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/execution/librarycache/BlobLibraryCacheManager.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/execution/librarycache/BlobLibraryCacheManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 413,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoaders.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoaders.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 169,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/JobManagerSharedServices.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/JobManagerSharedServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 185,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskManagerServices.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskManagerServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 416,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/BlobLibraryCacheManagerTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/BlobLibraryCacheManagerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 567,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/BlobLibraryCacheRecoveryITCase.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/BlobLibraryCacheRecoveryITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 187,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoadersTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoadersTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 234,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDbMultiClassLoaderTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDbMultiClassLoaderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 74,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-sql-client/src/test/java/org/apache/flink/table/client/gateway/local/ExecutionContextTest.java",
+            "CHILD_PATH": "flink-table/flink-sql-client/src/test/java/org/apache/flink/table/client/gateway/local/ExecutionContextTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 435,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 9,
+        "refactorings": {
+          "Add Parameter": 5,
+          "Extract Method": 2,
+          "Extract Variable": 2
+        }
+      },
+      {
+        "sha": "cccf1bd4390323e70e998f819975fa9c29e0e4e5",
+        "message": "[FLINK-16917][orc] Workaround for classloader leak in OrcFile.\n\nSee https://issues.apache.org/jira/browse/ORC-653\nOrcFile#getStaticMemoryManager caches initial configuration and leaks classloader in it. Thus, new Flink jobs use the classloader of the first job implicitly.\n\nBy adding ThreadLocalClassLoaderConfiguration, which forces the use of thread-local classloader over the initial classloader, Flink jobs use the appropriate classloader on higher runtime costs (no caches).\nThis commit should be reverted, once the bug in ORC is fixed.",
+        "author": "Arvid Heise",
+        "date": "2020-08-04T09:37:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSink.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 314,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-formats/flink-orc/src/main/java/org/apache/flink/orc/writer/OrcBulkWriterFactory.java",
+            "CHILD_PATH": "flink-formats/flink-orc/src/main/java/org/apache/flink/orc/writer/OrcBulkWriterFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 125,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-formats/flink-orc/src/main/java/org/apache/flink/orc/writer/ThreadLocalClassLoaderConfiguration.java",
+            "CHILD_PATH": "flink-formats/flink-orc/src/main/java/org/apache/flink/orc/writer/ThreadLocalClassLoaderConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 59,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "8fc73a896082ad490854f60135c40616373551ea",
+        "message": "[FLINK-16245][tests] Adjust BatchFineGrainedRecoveryITCase\n\nBecause the classloader is now closed when the task fails the UDF only has access to the bootstrap classloader, which doesn't contain our own test classes.",
+        "author": "Arvid Heise",
+        "date": "2020-03-12T19:43:18Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/BatchFineGrainedRecoveryITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/BatchFineGrainedRecoveryITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 620,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "47ea974f8307084c080c6d343bf7b22296ed8b44",
+        "message": "[FLINK-16245][tests] Adjust BatchFineGrainedRecoveryITCase\n\nBecause the classloader is now closed when the task fails the UDF only has access to the bootstrap classloader, which doesn't contain our own test classes.",
+        "author": "Arvid Heise",
+        "date": "2020-03-12T19:43:18Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/BatchFineGrainedRecoveryITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/BatchFineGrainedRecoveryITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 617,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "92b808b0df3ff53d5a46fcf55afe2bf40c73cf9a",
+        "message": "[FLINK-16245][table] Close user classloader",
+        "author": "Arvid Heise",
+        "date": "2020-03-02T13:12:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 151,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-sql-client/src/main/java/org/apache/flink/table/client/gateway/local/ExecutionContext.java",
+            "CHILD_PATH": "flink-table/flink-sql-client/src/main/java/org/apache/flink/table/client/gateway/local/ExecutionContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 798,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-sql-client/src/main/java/org/apache/flink/table/client/gateway/local/LocalExecutor.java",
+            "CHILD_PATH": "flink-table/flink-sql-client/src/main/java/org/apache/flink/table/client/gateway/local/LocalExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 767,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Change Attribute Type": 1,
+          "Change Return Type": 1
+        }
+      },
+      {
+        "sha": "4a85022a179f2d972520f5a478c40153ce317920",
+        "message": "[FLINK-16245][table] Close user classloader",
+        "author": "Arvid Heise",
+        "date": "2020-03-02T13:12:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 158,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-sql-client/src/main/java/org/apache/flink/table/client/gateway/local/ExecutionContext.java",
+            "CHILD_PATH": "flink-table/flink-sql-client/src/main/java/org/apache/flink/table/client/gateway/local/ExecutionContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 897,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Change Attribute Type": 1,
+          "Change Return Type": 1
+        }
+      },
+      {
+        "sha": "4be06f5d3aa9f36448ed00a83343df93b09de1a5",
+        "message": "[FLINK-16245][runtime] Decouple user from context classloader\n\nAllows user classloader can be unloaded even if a reference on the context classloader outlives the user code.",
+        "author": "Arvid Heise",
+        "date": "2020-03-02T13:06:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/util/ChildFirstClassLoader.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/util/ChildFirstClassLoader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 123,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/util/FlinkUserCodeClassLoader.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/util/FlinkUserCodeClassLoader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 38,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoaders.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoaders.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 70,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 85,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoadersTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoadersTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 195,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Change Method Access Modifier": 1,
+          "Extract Superclass": 1
+        }
+      },
+      {
+        "sha": "6447ae8a1f8c9690035f01fa08f75a9bd35bb5a7",
+        "message": "[FLINK-16245][runtime] Decouple user from context classloader\n\nAllows user classloader can be unloaded even if a reference on the context classloader outlives the user code.",
+        "author": "Arvid Heise",
+        "date": "2020-03-02T13:06:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/util/FlinkUserCodeClassLoader.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/util/FlinkUserCodeClassLoader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 63,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoaders.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoaders.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 76,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoadersTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoadersTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 209,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 1,
+        "refactorings": {
+          "Change Method Access Modifier": 1
+        }
+      },
+      {
+        "sha": "03a8749e27c1f1ace6b13a166bf844ce2fac45c0",
+        "message": "[hotfix][runtime][tests] Rename/move ClassLoaderTest\n\nThe test is actually testing FlinkUserCodeClassLoaders.",
+        "author": "Arvid Heise",
+        "date": "2020-03-02T11:18:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/classloading/ClassLoaderTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/execution/librarycache/FlinkUserCodeClassLoadersTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 196,
+            "STATUS": "R"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Move And Rename Class": 1,
+          "Move Package": 1
+        }
+      }
+    ],
+    "sha_before": "f765ad09ae2b2aa478c887b988e11e92a8b730bd",
+    "prefactoring_score": 10,
+    "prefactoring_reasons": [
+      "H1 (+2): [03a8749e] (2020-03-02) refactors pre-existing code BEFORE the first new file appears in this issue (2020-03-02)",
+      "H3 (+1): [03a8749e] avg churn ratio on pre-existing files = 3.1% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [03a8749e] is nearly pure structural refactoring (6 lines added, 2 refactoring ops)",
+      "H3 (+1): [92b808b0] avg churn ratio on pre-existing files = 1.1% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [4a85022a] avg churn ratio on pre-existing files = 1.1% (< 20%) — mostly reshaping existing lines",
+      "H7 (+2): [4a85022a] is nearly pure structural refactoring (10 lines added, 2 refactoring ops)",
+      "H3 (+1): [74857e7c] avg churn ratio on pre-existing files = 4.6% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-16222": {
+    "jira_id": "FLINK-16222",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "[FLINK-16222][runtime] Use plugins mechanism for initializing MetricReporters",
+    "description": "## What is the purpose of the change\r\n\r\n[FLINK-11952](https://issues.apache.org/jira/browse/FLINK-11952) introduced Plugins mechanism into Flink. This PR makes it possible to benefit from using this new functionality during the MetricReporters initialization. Instead of placing MetricReporters JARs into`/libs`, it is now additionally possible (and encouraged) to convert them into plugins and use the `/plugins` folder for initialization via independent plugin classloaders.\r\n\r\nNote that to enable this functionality, a bounded type of Plugin was removed from the PluginLoader/PluginManager methods. This removal did not affect any existing functionality, including FileSystems initialization. The adjustment was required for the following reason: `MetricReporter` interface, which is located in the `flink-metrics-core` module is currently not a `Plugin`. `Plugin` interface is located in `flink-core` and this module already has a depency on `flink-metrics-core`. This makes in impossible to mark `MetricReporter` as  `Plugin` without introducing a circular dependency. An  alternative approach could be extraction of the whole plugin classloading functionality out of `flink-core` into a separate module.\r\n\r\nAnother important consideration - current `PluginClassLoader` implementation uses parent-first initialization for classes, which start with Flink-native package prefixes, such as *org.apache.flink.*. Currently, metrics reporters shipped with Flink all have the same package prefix. This leads to the following situation: if there is a version of `PluginMetricFactory` for a particular reporter found in the /lib folder, JARs for this reporter in /plugins directory will effectively be ignored. The opposite priority might actually be desirable to improve user's experience when transitioning to plugins-based metrics initialization approach.\r\n\r\n## Brief change log\r\n\r\n  - `PluginManager`, already created for `FileSystems` initialization, is propagated from all Flink entrypoints into metrics reporters initializer\r\n  - Reporters initializer (`ReporterSetup`) combines initialization via existing `ServiceLoader` approach with the new approach of loading plugins\r\n- `PrometheusReporter` is adjusted to be compatible with the new plugins mechanism. Proper functioning is verified with the end-to-end tests\r\n\r\n## Verifying this change\r\n\r\nThis change added tests and can be verified as follows:\r\n  - Added integration tests for end-to-end tests\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (no)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (no)\r\n  - The serializers: (no)\r\n  - The runtime per-record code paths (performance sensitive): (no)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (yes)\r\n  - The S3 file system connector: (no)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (yes)\r\n  - If yes, how is the feature documented? (not documented)\r\n\r\n",
+    "commits": [
+      {
+        "sha": "672c515dda8d5d659c009099b98dd6a5835bbd40",
+        "message": "[FLINK-16222][metrics] Support loading reporters as plugins",
+        "author": "Alexander Fedulov",
+        "date": "2020-03-17T16:56:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 293,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 3,
+        "refactorings": {
+          "Split Method": 1,
+          "Change Variable Type": 1,
+          "Rename Variable": 1
+        }
+      },
+      {
+        "sha": "6a088a5f122ccce53e5baa97603eb8b0a9599247",
+        "message": "[FLINK-16222][metrics][prometheus] Add plugin e2e test",
+        "author": "Alexander Fedulov",
+        "date": "2020-02-21T14:50:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-metrics-reporter-prometheus-test/src/test/java/org/apache/flink/metrics/prometheus/tests/PrometheusReporterEndToEndITCase.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-metrics-reporter-prometheus-test/src/test/java/org/apache/flink/metrics/prometheus/tests/PrometheusReporterEndToEndITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 83,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 247,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 2,
+        "refactorings": {
+          "Add Class Annotation": 1,
+          "Add Parameter": 1
+        }
+      },
+      {
+        "sha": "590a281040da44deee5137b037bbabcaedd0b487",
+        "message": "[FLINK-16222][core] Relax Plugin bounded type parameter constraint",
+        "author": "Alexander Fedulov",
+        "date": "2020-02-21T14:46:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginLoader.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginLoader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 204,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginManager.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 83,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 0,
+        "refactorings": {}
+      },
+      {
+        "sha": "ad42c142ec109c5fb4cf1bcccb61183c3e8b4a68",
+        "message": "[FLINK-16222][runtime] Introduce PluginManager to ReporterSetup",
+        "author": "Alexander Fedulov",
+        "date": "2019-06-15T14:00:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosJobClusterEntrypoint.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosJobClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 132,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosSessionClusterEntrypoint.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosSessionClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 129,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosTaskExecutorRunner.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosTaskExecutorRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 117,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 548,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/ReporterSetup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 290,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/minicluster/MiniCluster.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/minicluster/MiniCluster.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1018,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskManagerRunner.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskManagerRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 459,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/MetricRegistryImplTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/MetricRegistryImplTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 444,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/ReporterSetupTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 419,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskexecutor/TaskManagerRunnerTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/taskexecutor/TaskManagerRunnerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/AbstractTaskManagerProcessFailureRecoveryTest.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/AbstractTaskManagerProcessFailureRecoveryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 334,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/JobManagerHAProcessFailureRecoveryITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/JobManagerHAProcessFailureRecoveryITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 405,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnTaskExecutorRunner.java",
+            "CHILD_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnTaskExecutorRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 158,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 12,
+        "refactorings": {
+          "Add Parameter": 9,
+          "Extract Variable": 3
+        }
+      }
+    ],
+    "sha_before": "590a281040da44deee5137b037bbabcaedd0b487",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [ad42c142] avg churn ratio on pre-existing files = 2.1% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [672c515d] avg churn ratio on pre-existing files = 8.5% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-16914": {
+    "jira_id": "FLINK-16914",
+    "issue_type": "Improvement",
+    "resolution": "Resolved",
+    "title": "[FLINK-16914][python] Support ArrayType in vectorized Python UDF",
+    "description": "\r\n## What is the purpose of the change\r\n\r\n*This pull request adds the support of ArrayType in vectorized Python UDF.*\r\n\r\n## Brief change log\r\n\r\n  - *Introduces ArrowArrayColumnVector and BaseRowArrayWriter in flink-python module and introduces ColumnarArray and ArrayColumnVector in flink-table-runtime-blink module to support ArrayType in the blink planner for vectorized Python UDF*\r\n  - *Introduces ArrayFieldReader and ArrayWriter in flink-python module to support ArrayType in the old planner for vectorized Python UDF*\r\n\r\n## Verifying this change\r\nThis change added tests and can be verified as follows:\r\n\r\n  - *Java tests ArrowUtilsTest, RowArrowReaderWriterTest and BaseRowArrowReaderWriterTest*\r\n  - *Python tests: test_pandas_udf.test_all_data_types*\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): (no)\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: (no)\r\n  - The serializers: (no)\r\n  - The runtime per-record code paths (performance sensitive): (no)\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: (no)\r\n  - The S3 file system connector: (no)\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? (no)\r\n  - If yes, how is the feature documented? (not applicable)\r\n",
+    "commits": [
+      {
+        "sha": "2fd5c0d6bab68aaf5f8642afa63773a61191524d",
+        "message": "[FLINK-16914][python] Support ArrayType in vectorized Python UDF",
+        "author": "Dian Fu",
+        "date": "2020-04-03T05:56:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 84,
+            "LINES_DELETED": 48,
+            "PARENT_LOC": 483,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/ArrayFieldReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/readers/ArrayFieldReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 83,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowArrayColumnVector.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/vectors/ArrowArrayColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 59,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/ArrayWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/ArrayWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 64,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BigIntWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BigIntWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BooleanWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BooleanWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 46,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DateWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DateWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 48,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DecimalWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DecimalWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 59,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DoubleWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/DoubleWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/FloatWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/FloatWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/IntWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/IntWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowArrayWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowArrayWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 63,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowBigIntWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowBigIntWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowBooleanWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowBooleanWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 46,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDateWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowDateWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDecimalWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowDecimalWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 59,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowDoubleWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowDoubleWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowFloatWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowFloatWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowIntWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowIntWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowSmallIntWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowSmallIntWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowTimeWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowTimeWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 62,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowTimestampWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowTimestampWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 67,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowTinyIntWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowTinyIntWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowVarBinaryWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowVarBinaryWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/BaseRowVarCharWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/RowVarCharWriter.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 44,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/SmallIntWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/SmallIntWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/TimeWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/TimeWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 76,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/TimestampWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/TimestampWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 66,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/TinyIntWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/TinyIntWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/VarBinaryWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/VarBinaryWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/VarCharWriter.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/writers/VarCharWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 46,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/ArrowUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 37,
+            "PARENT_LOC": 235,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/BaseRowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 163,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/arrow/RowArrowReaderWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 130,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/runners/python/scalar/arrow/ArrowPythonScalarFunctionRunnerTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/table/runtime/runners/python/scalar/arrow/ArrowPythonScalarFunctionRunnerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 186,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/util/StreamRecordUtils.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/util/StreamRecordUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 72,
+        "refactorings": {
+          "Rename Class": 13,
+          "Change Parameter Type": 26,
+          "Rename Parameter": 22,
+          "Add Parameter": 1,
+          "Rename Method": 1,
+          "Change Method Access Modifier": 2,
+          "Extract Variable": 1,
+          "Split Parameter": 1,
+          "Change Return Type": 1,
+          "Move Attribute": 3,
+          "Remove Parameter": 1
+        }
+      },
+      {
+        "sha": "c906c2773024496b86cebd802897b1b77fe6e426",
+        "message": "[FLINK-16914][table-runtime-blink] Introduce array column vector in blink",
+        "author": "Dian Fu",
+        "date": "2020-04-03T05:55:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/ColumnarArray.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/ColumnarArray.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 297,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/ColumnarRow.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/ColumnarRow.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 220,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/DataFormatConverters.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/DataFormatConverters.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1512,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/vector/ArrayColumnVector.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/vector/ArrayColumnVector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/vector/VectorizedColumnBatch.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/dataformat/vector/VectorizedColumnBatch.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 119,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/typeutils/BaseArraySerializer.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/typeutils/BaseArraySerializer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 293,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/dataformat/vector/VectorizedColumnBatchTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/dataformat/vector/VectorizedColumnBatchTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 293,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/typeutils/BaseArraySerializerTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/runtime/typeutils/BaseArraySerializerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 3,
+        "refactorings": {
+          "Rename Method": 1,
+          "Change Parameter Type": 1,
+          "Split Conditional": 1
+        }
+      }
+    ],
+    "sha_before": "482bff989069c14f10091ded34015fdf8f4aa7fd",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [c906c277] avg churn ratio on pre-existing files = 6.7% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [2fd5c0d6] avg churn ratio on pre-existing files = 14.0% (< 20%) — mostly reshaping existing lines"
+    ]
+  },
+  "FLINK-16864": {
+    "jira_id": "FLINK-16864",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[FLINK-16864][metrics] Add IdleTime metric for task. | [FLINK-16864][metrics] Add IdleTime metric for task.",
+    "description": "=== PR #11564 (1/2) ===\n## What is the purpose of the change\r\nThis pr adds an IdleTime metric which measures idle time of a task including the time cost for mail processor to wait for new mail and the time cost in record writer to waiting a new buffer.\r\n1. when a job can not catch up with the speed of data generating, the vertex which idle time is near to zero is the bottle neck of the job.\r\n2. when a job is not busy, idle time can be used to guide user how much he can scale down the job.\r\n\r\n## Brief change log\r\nA meter metrics named idleTimeMsPerSecond is added in TaskIOMetricGroup:\r\n  - *idleTime contains time waiting mail and time waiting output buffer. *\r\n  - *waiting mail time is collected when mail processor is trying to process a new mail but no mail submitted.*\r\n  - *waiting output buffer time is collected when record writer is trying to request a new buffer from result partition but no buffer available.* \r\n\r\n## Verifying this change\r\n\r\nThis change is already covered by existing tests, such as \r\n  - *TaskIOMetricGroupTest*\r\n  - *RecordWriterTest*\r\n  - *TaskMailboxProcessorTest*\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): no\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: no\r\n  - The serializers: no\r\n  - The runtime per-record code paths (performance sensitive): no\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: no\r\n  - The S3 file system connector: no\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? yes\r\n  - If yes, how is the feature documented? docs\r\n\n\n---\n\n=== PR #11679 (2/2) ===\n## What is the purpose of the change\r\nThis pr adds an IdleTime metric which measures idle time of a task including the time cost for mail processor to wait for new mail and the time cost in record writer to waiting a new buffer.\r\n1. when a job can not catch up with the speed of data generating, the vertex which idle time is near to zero is the bottle neck of the job.\r\n2. when a job is not busy, idle time can be used to guide user how much he can scale down the job.\r\n\r\n## Brief change log\r\nA meter metrics named idleTimeMsPerSecond is added in TaskIOMetricGroup:\r\n  - *idleTime contains time waiting mail and time waiting output buffer. *\r\n  - *waiting mail time is collected when mail processor is trying to process a new mail but no mail submitted.*\r\n  - *waiting output buffer time is collected when record writer is trying to request a new buffer from result partition but no buffer available.* \r\n\r\nin addition to https://github.com/apache/flink/pull/11564 to fix unstable test in https://issues.apache.org/jira/browse/FLINK-17053 and https://issues.apache.org/jira/browse/FLINK-17054:\r\n- testClearBuffersAfterInterruptDuringBlockingBufferRequest is refactored so that it is not depends Mock Class.\r\n- only check valid idle time collected(idleTime > 0) in ut instead of exactly idle time to avoid race condition affects result of test.\r\n\r\n## Verifying this change\r\n\r\nThis change is already covered by existing tests, such as \r\n  - *TaskIOMetricGroupTest*\r\n  - *RecordWriterTest*\r\n  - *TaskMailboxProcessorTest*\r\n\r\n## Does this pull request potentially affect one of the following parts:\r\n\r\n  - Dependencies (does it add or upgrade a dependency): no\r\n  - The public API, i.e., is any changed class annotated with `@Public(Evolving)`: no\r\n  - The serializers: no\r\n  - The runtime per-record code paths (performance sensitive): no\r\n  - Anything that affects deployment or recovery: JobManager (and its components), Checkpointing, Kubernetes/Yarn/Mesos, ZooKeeper: no\r\n  - The S3 file system connector: no\r\n\r\n## Documentation\r\n\r\n  - Does this pull request introduce a new feature? yes\r\n  - If yes, how is the feature documented? docs\r\n",
+    "commits": [
+      {
+        "sha": "5ee392b49a859ba781cd202e41eb8ed6f6e91eec",
+        "message": "[FLINK-16864][metrics] Add IdleTime metric for task\nThis pr adds an IdleTime metric which measures idle time of a task including the time cost for mail processor to wait for new mail and the time cost in record writer to waiting a new buffer.\n\n1. when a job can not catch up with the speed of data generating, the vertex which idle time is near to zero is the bottle neck of the job.\n2. when a job is not busy, idle time can be used to guide user how much he can scale down the job.",
+        "author": "wenlong.lwl",
+        "date": "2020-04-09T03:44:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/main/java/org/apache/flink/state/api/runtime/SavepointEnvironment.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/main/java/org/apache/flink/state/api/runtime/SavepointEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 318,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/BroadcastRecordWriter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/BroadcastRecordWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 179,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/ChannelSelectorRecordWriter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/ChannelSelectorRecordWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 139,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/RecordWriter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/RecordWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 326,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/ResultPartitionWriter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/ResultPartitionWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 103,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/buffer/BufferProvider.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/buffer/BufferProvider.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 60,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/buffer/LocalBufferPool.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/buffer/LocalBufferPool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 461,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/ResultPartition.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/ResultPartition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 386,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricNames.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricNames.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 74,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/groups/TaskIOMetricGroup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/groups/TaskIOMetricGroup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 128,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/ConsumableNotifyingResultPartitionWriterDecorator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/ConsumableNotifyingResultPartitionWriterDecorator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 180,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/writer/AbstractCollectingResultPartitionWriter.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/writer/AbstractCollectingResultPartitionWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 92,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/writer/RecordWriterTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/writer/RecordWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 117,
+            "LINES_DELETED": 43,
+            "PARENT_LOC": 682,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/buffer/NoOpBufferPool.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/buffer/NoOpBufferPool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/MockResultPartitionWriter.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/MockResultPartitionWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/util/TestPooledBufferProvider.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/util/TestPooledBufferProvider.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/groups/TaskIOMetricGroupTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/groups/TaskIOMetricGroupTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 65,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1130,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/mailbox/MailboxProcessor.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/mailbox/MailboxProcessor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 357,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/mailbox/TaskMailboxProcessorTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/mailbox/TaskMailboxProcessorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 54,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 330,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 10,
+        "refactorings": {
+          "Remove Variable Modifier": 1,
+          "Change Variable Type": 2,
+          "Rename Variable": 1,
+          "Change Attribute Access Modifier": 1,
+          "Extract And Move Method": 4,
+          "Parameterize Variable": 1
+        }
+      },
+      {
+        "sha": "3aa5c9ddf82d9ac50f5a0e0ce8f3161f19545dde",
+        "message": "[FLINK-16864][metrics] Add IdleTime metric for task\n\nThis pr adds an IdleTime metric which measures idle time of a task including the time cost for mail processor to wait for new mail and the time cost in record writer to waiting a new buffer.\n\n1. when a job can not catch up with the speed of data generating, the vertex which idle time is near to zero is the bottle neck of the job.\n2. when a job is not busy, idle time can be used to guide user how much he can scale down the job.",
+        "author": "wenlong.lwl",
+        "date": "2020-03-27T13:18:01Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-libraries/flink-state-processing-api/src/main/java/org/apache/flink/state/api/runtime/SavepointEnvironment.java",
+            "CHILD_PATH": "flink-libraries/flink-state-processing-api/src/main/java/org/apache/flink/state/api/runtime/SavepointEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 318,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/BroadcastRecordWriter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/BroadcastRecordWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 179,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/ChannelSelectorRecordWriter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/ChannelSelectorRecordWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 139,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/RecordWriter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/RecordWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 326,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/ResultPartitionWriter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/writer/ResultPartitionWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 103,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/buffer/BufferProvider.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/buffer/BufferProvider.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 60,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/buffer/LocalBufferPool.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/buffer/LocalBufferPool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 461,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/ResultPartition.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/ResultPartition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 386,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricNames.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/MetricNames.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 74,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/groups/TaskIOMetricGroup.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/metrics/groups/TaskIOMetricGroup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 128,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/ConsumableNotifyingResultPartitionWriterDecorator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/ConsumableNotifyingResultPartitionWriterDecorator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 180,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/writer/AbstractCollectingResultPartitionWriter.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/writer/AbstractCollectingResultPartitionWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 92,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/writer/RecordWriterTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/writer/RecordWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 80,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 682,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/buffer/NoOpBufferPool.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/buffer/NoOpBufferPool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/MockResultPartitionWriter.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/MockResultPartitionWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/util/TestPooledBufferProvider.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/util/TestPooledBufferProvider.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/groups/TaskIOMetricGroupTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/metrics/groups/TaskIOMetricGroupTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 65,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1130,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/mailbox/MailboxProcessor.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/mailbox/MailboxProcessor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 357,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/mailbox/TaskMailboxProcessorTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/mailbox/TaskMailboxProcessorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 48,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 330,
+            "STATUS": "M"
+          }
+        ],
+        "refactoring_count": 6,
+        "refactorings": {
+          "Change Attribute Access Modifier": 1,
+          "Extract And Move Method": 4,
+          "Parameterize Variable": 1
+        }
+      }
+    ],
+    "sha_before": "3fd568a635ae23e530babe26c98425266e975663",
+    "prefactoring_score": 2,
+    "prefactoring_reasons": [
+      "H3 (+1): [3aa5c9dd] avg churn ratio on pre-existing files = 5.1% (< 20%) — mostly reshaping existing lines",
+      "H3 (+1): [5ee392b4] avg churn ratio on pre-existing files = 5.5% (< 20%) — mostly reshaping existing lines"
+    ]
+  }
+}
