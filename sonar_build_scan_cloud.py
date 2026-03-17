@@ -144,6 +144,25 @@ def git_checkout(repo_path: str, sha: str) -> bool:
 # SONARCLOUD HELPERS
 # ============================================================================
 
+def upload_report_immediately(jira_id: str, output_path: str):
+    """
+    Immediately move successful reports to a safe location.
+    This ensures they're captured even if workflow times out.
+    """
+    try:
+        # Create a separate directory for completed reports
+        completed_dir = os.path.join(CONFIG["output_dir"], "completed")
+        os.makedirs(completed_dir, exist_ok=True)
+        
+        # Copy (don't move) the report
+        import shutil
+        completed_path = os.path.join(completed_dir, f"{jira_id}_report.json")
+        shutil.copy2(output_path, completed_path)
+        
+        logger.info(f"  ✓ Report backed up to: {completed_path}")
+    except Exception as e:
+        logger.warning(f"  Failed to backup report: {e}")
+
 def create_public_project(project_key: str):
     """
     Create a SonarCloud project with PUBLIC visibility using the API.
@@ -776,6 +795,7 @@ def main():
             print(f"\n✓ SUCCESS: {jira_id}")
             print(f"  Baseline: {len(baseline_issues)} | Fixed: {len(fixed_issues)} | New: {len(new_issues)}")
             print(f"  Report: {output_path}")
+            upload_report_immediately(jira_id, output_path)
             successes.append(jira_id)
 
         except Exception as exc:
