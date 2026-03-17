@@ -157,6 +157,21 @@ jobs:
           echo "Looking for JSON at: $JIRA_JSON_PATH"
           ls -lh "$JIRA_JSON_PATH"
           python3 ../scripts/sonar_build_scan_cloud.py
+
+      - name: Check output before upload
+        if: always()
+        run: |
+          echo "=== Checking output directory ==="
+          ls -lah flink/output/ || echo "output/ doesn't exist"
+          echo ""
+          echo "=== JSON files ==="
+          find flink/output -name "*.json" -type f || echo "No JSON files found"
+          echo ""
+          echo "=== Log files ==="
+          find flink/output -name "*.log" -type f || echo "No log files found"
+          echo ""
+          echo "=== All files in output ==="
+          find flink/output -type f || echo "No files at all"
       
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -164,6 +179,5 @@ jobs:
         with:
           name: results-batch-${{ github.event.inputs.batch_number }}
           path: |
-            flink/output/*.json
-            flink/output/*.log
+            flink/output/
           retention-days: 90
