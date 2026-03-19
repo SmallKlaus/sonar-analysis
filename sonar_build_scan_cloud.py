@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 CONFIG = {
     "jira_json_path": os.getenv("JIRA_JSON_PATH", "flink_issues_batch_1.json"),
     "repo_path": os.getenv("FLINK_REPO_PATH", "./flink"),
-    "output_dir": "output",
+    "output_dir": "../output",
     
     "sonar_url": "https://sonarcloud.io",
     "sonar_token": os.getenv("SONAR_TOKEN"),
