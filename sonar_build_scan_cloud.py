@@ -452,6 +452,7 @@ sonar.java.jdkHome={project_java}
 sonar.sourceEncoding=UTF-8
 sonar.scm.disabled=true
 sonar.exclusions=**/archetype-resources/**,**/target/classes/archetype-resources/**
+sonar.cpd.skip=true
 """
 
     try:
