@@ -719,6 +719,7 @@ def main():
             sha_before = item.get("sha_before", "").strip()
             commits = item.get("commits", [])
 
+            logger.info(f"  📋 Validating data...")
             if not sha_before or not commits:
                 print(f"✗ Missing data - skipping")
                 continue
@@ -733,8 +734,13 @@ def main():
             print(f"  Before: {sha_before[:10]} (Java {before_toolchain['java_major']})")
             print(f"  After:  {sha_after[:10]} (Java {after_toolchain['java_major']})")
 
+            logger.info(f"  sha_before: {sha_before[:10]}, sha_after: {sha_after[:10]}")
+            logger.info(f"  Toolchains: before=Java{before_toolchain['java_major']}, after=Java{after_toolchain['java_major']}")
+            
             project_key = f"jira:{jira_id}"
+            
             delete_sonar_project(project_key)
+            
             if not create_public_project(project_key):
                 logger.error(f"Failed to create public project for {jira_id}")
                 failures.append(jira_id)
@@ -742,32 +748,50 @@ def main():
 
             # BEFORE scan
             print(f"\n▶ BEFORE SCAN")
+            logger.info(f"  Step 1/4: Git checkout sha_before...")
             if not git_checkout(CONFIG["repo_path"], sha_before):
                 failures.append(jira_id)
                 continue
 
+            logger.info(f"  Step 2/4: Build and scan...")
             before_task = build_and_scan_mvn(CONFIG["repo_path"], project_key, before_toolchain)
-            if not before_task or not wait_for_task(before_task):
+            if not before_task :
                 print(f"✗ BEFORE scan failed")
                 failures.append(jira_id)
                 continue
 
+            logger.info(f"  Step 3/4: Waiting for CE task...")
+            if not wait_for_task(before_task):
+                print(f"✗ BEFORE scan CE Task failed")
+                failures.append(jira_id)
+                continue
+
+            logger.info(f"  Step 4/4: Fetching metrics and issues...")
             before_metrics = get_measures(project_key)
             baseline_issues = fetch_issues(project_key, statuses="OPEN,CONFIRMED,REOPENED")
             scan_time_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+0000")
 
             # AFTER scan
             print(f"\n▶ AFTER SCAN")
+            logger.info(f"  Step 1/4: Git checkout sha_after...")
             if not git_checkout(CONFIG["repo_path"], sha_after):
                 failures.append(jira_id)
                 continue
 
+            logger.info(f"  Step 2/4: Build and scan...")
             after_task = build_and_scan_mvn(CONFIG["repo_path"], project_key, after_toolchain)
             if not after_task or not wait_for_task(after_task):
                 print(f"✗ AFTER scan failed")
                 failures.append(jira_id)
                 continue
 
+            logger.info(f"  Step 3/4: Waiting for CE task...")
+            if not wait_for_task(after_task):
+                print(f"✗ AFTER scan CE Task failed")
+                failures.append(jira_id)
+                continue
+                
+            logger.info(f"  Step 4/4: Fetching metrics and issues...")
             after_metrics = get_measures(project_key)
             fixed_issues = fetch_issues(project_key, statuses="CLOSED", resolutions="FIXED", updated_after=scan_time_iso)
             new_issues = fetch_issues(project_key, statuses="OPEN,CONFIRMED,REOPENED", created_after=scan_time_iso)
