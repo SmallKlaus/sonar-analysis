@@ -828,6 +828,8 @@ def main():
         except Exception as exc:
             print(f"\n✗ EXCEPTION: {exc}")
             logging.error(f"Error processing {jira_id}: {exc}", exc_info=True)
+            logger.error(f"\n  ✗ EXCEPTION processing {jira_id}: {exc}")
+            logger.error(traceback.format_exc())
             failures.append(jira_id)
 
     log_step("Analysis Complete")
