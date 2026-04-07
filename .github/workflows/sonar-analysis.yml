@@ -1,59 +1,23 @@
-name: Flink SonarCloud Analysis
+name: Universal SonarCloud Analysis
 
 on:
   workflow_dispatch:
     inputs:
-      batch_number:
-        description: 'Batch number to process (1-45)'
+      project:
+        description: 'Project to analyze (flink, kafka, etc.)'
         required: true
-        default: '1'
+        default: 'flink'
         type: choice
         options:
-          - '1'
-          - '2'
-          - '3'
-          - '4'
-          - '5'
-          - '6'
-          - '7'
-          - '8'
-          - '9'
-          - '10'
-          - '11'
-          - '12'
-          - '13'
-          - '14'
-          - '15'
-          - '16'
-          - '17'
-          - '18'
-          - '19'
-          - '20'
-          - '21'
-          - '22'
-          - '23'
-          - '24'
-          - '25'
-          - '26'
-          - '27'
-          - '28'
-          - '29'
-          - '30'
-          - '31'
-          - '32'
-          - '33'
-          - '34'
-          - '35'
-          - '36'
-          - '37'
-          - '38'
-          - '39'
-          - '40'
-          - '41'
-          - '42'
-          - '43'
-          - '44'
-          - '45'
+          - 'flink'
+          - 'kafka'
+          - 'spring-framework'
+          - 'your-maven-project'
+      batch_number:
+        description: 'Batch number to process'
+        required: true
+        default: '1'
+        type: string
 
 jobs:
   analyze:
@@ -68,39 +32,52 @@ jobs:
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
       
-      - name: Checkout Flink repository
-        uses: actions/checkout@v4
-        with:
-          repository: apache/flink
-          ref: master
-          fetch-depth: 0
-          path: flink
-
-      - name: Import TD analysis commits
-        run: |
-          cd flink
-          
-          # Download bundle from GitHub releases
-          echo "Downloading TD commits bundle..."
-          wget -q https://github.com/${{ github.repository }}/releases/download/td-commits-v1/flink-td-commits.bundle
-          
-          # Verify and fetch
-          echo "Importing commits..."
-          git bundle verify flink-td-commits.bundle
-          git fetch flink-td-commits.bundle 'refs/td-analysis/*:refs/td-analysis/*'
-          
-          # Cleanup bundle to save space
-          rm flink-td-commits.bundle
-          
-          # Verify commits are available
-          echo "Commits imported: $(git for-each-ref refs/td-analysis/ | wc -l)"
-          
-          echo "✓ TD analysis commits ready"
-      
       - name: Checkout analysis scripts
         uses: actions/checkout@v4
         with:
           path: scripts
+      
+      - name: Load project configuration
+        id: config
+        run: |
+          cd scripts
+          PROJECT="${{ github.event.inputs.project }}"
+          
+          # Extract config using Python
+          python3 << EOF
+          import json
+          with open('project_configs.json') as f:
+              configs = json.load(f)
+          
+          config = configs.get('$PROJECT', {})
+          
+          print(f"repository={config.get('repository', '')}")
+          print(f"build_system={config.get('build_system', 'maven')}")
+          print(f"requires_bundle={str(config.get('requires_bundle', False)).lower()}")
+          print(f"bundle_url={config.get('bundle_url', '')}")
+          EOF
+      
+      - name: Checkout project repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.config.outputs.repository }}
+          ref: master
+          fetch-depth: 0
+          path: project
+      
+      - name: Import TD analysis commits (if needed)
+        if: steps.config.outputs.requires_bundle == 'true'
+        run: |
+          cd project
+          echo "Downloading commit bundle..."
+          wget -q ${{ steps.config.outputs.bundle_url }}
+          BUNDLE_FILE=$(basename ${{ steps.config.outputs.bundle_url }})
+          
+          git bundle verify $BUNDLE_FILE
+          git fetch $BUNDLE_FILE 'refs/td-analysis/*:refs/td-analysis/*'
+          rm $BUNDLE_FILE
+          
+          echo "✓ Commits imported: $(git for-each-ref refs/td-analysis/ | wc -l)"
       
       - name: Setup Java 8
         uses: actions/setup-java@v4
@@ -119,107 +96,46 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
+          cache: ${{ steps.config.outputs.build_system }}
       
       - name: Install SonarScanner
         run: |
           wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
           unzip -q sonar-scanner-cli-5.0.1.3006-linux.zip
           echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
-
-      - name: Configure Maven repositories
+      
+      - name: Configure Maven (if Maven project)
+        if: steps.config.outputs.build_system == 'maven'
         run: |
           mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml << 'EOF'
-          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                                        http://maven.apache.org/xsd/settings-1.0.0.xsd">
-            <profiles>
-              <profile>
-                <id>external-repos</id>
-                <repositories>
-                  <repository>
-                    <id>maven-central</id>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>false</enabled></snapshots>
-                  </repository>
-                  <repository>
-                    <id>mapr-public</id>
-                    <url>https://repository.mapr.com/nexus/content/groups/mapr-public/</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>false</enabled></snapshots>
-                  </repository>
-                  <repository>
-                    <id>huaweicloud-public</id>
-                    <url>https://repo.huaweicloud.com/artifactory/sdk_public/</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>false</enabled></snapshots>
-                  </repository>
-                  <repository>
-                    <id>confluent-public</id>
-                    <url>https://packages.confluent.io/maven/</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>false</enabled></snapshots>
-                  </repository>
-                </repositories>
-                <pluginRepositories>
-                  <pluginRepository>
-                    <id>maven-central</id>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                  </pluginRepository>
-                </pluginRepositories>
-              </profile>
-            </profiles>
-            <activeProfiles>
-              <activeProfile>external-repos</activeProfile>
-            </activeProfiles>
-          </settings>
-          EOF
-          
-          echo "✓ Maven settings.xml created"
+          python3 scripts/generate_maven_settings.py ${{ github.event.inputs.project }}
       
       - name: Download batch data
         run: |
-          cp scripts/flink_issues_batch_${{ github.event.inputs.batch_number }}.json .
-          echo "Processing batch ${{ github.event.inputs.batch_number }}"
-          ls -lh flink_issues_batch_${{ github.event.inputs.batch_number }}.json
+          PROJECT="${{ github.event.inputs.project }}"
+          BATCH="${{ github.event.inputs.batch_number }}"
+          
+          cp scripts/${PROJECT}_issues_batch_${BATCH}.json .
+          echo "✓ Processing ${PROJECT} batch ${BATCH}"
+          ls -lh ${PROJECT}_issues_batch_${BATCH}.json
       
       - name: Run analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-          JIRA_JSON_PATH: ${{ github.workspace }}/flink_issues_batch_${{ github.event.inputs.batch_number }}.json
-          FLINK_REPO_PATH: ${{ github.workspace }}/flink
+          PROJECT_NAME: ${{ github.event.inputs.project }}
+          BATCH_NUMBER: ${{ github.event.inputs.batch_number }}
+          PROJECT_REPO_PATH: ${{ github.workspace }}/project
           SONAR_SCANNER_OPTS: "-Xmx6656m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
         run: |
-          cd flink
+          cd project
           mkdir -p output
-          echo "Looking for JSON at: $JIRA_JSON_PATH"
-          ls -lh "$JIRA_JSON_PATH"
-          python3 ../scripts/sonar_build_scan_cloud.py
-
-      - name: Check output before upload
-        if: always()
-        run: |
-          echo "=== Checking output directory ==="
-          ls -lah output/ || echo "output/ doesn't exist"
-          echo ""
-          echo "=== JSON files ==="
-          find output/ -name "*.json" -type f || echo "No JSON files found"
-          echo ""
-          echo "=== Log files ==="
-          find output/ -name "*.log" -type f || echo "No log files found"
-          echo ""
-          echo "=== All files in output ==="
-          find output/ -type f || echo "No files at all"
+          python3 ../scripts/universal_sonar_analysis.py
       
       - name: Upload results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: results-batch-${{ github.event.inputs.batch_number }}
-          path: |
-            output/
+          name: results-${{ github.event.inputs.project }}-batch-${{ github.event.inputs.batch_number }}
+          path: project/output/
           retention-days: 90
