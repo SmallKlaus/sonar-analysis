@@ -27,9 +27,9 @@ PROJECT_CONFIG = PROJECT_CONFIGS.get(PROJECT_NAME, {})
 
 CONFIG = {
     "project_name": PROJECT_NAME,
-    "jira_json_path": f"../{PROJECT_NAME}_issues_batch_{BATCH_NUMBER}.json",
+    "jira_json_path": f"../scripts/{PROJECT_NAME}_issues_batch_{BATCH_NUMBER}.json",
     "repo_path": os.getenv("PROJECT_REPO_PATH", "."),
-    "output_dir": "../output",
+    "output_dir": "output",
     
     "sonar_url": "https://sonarcloud.io",
     "sonar_token": os.getenv("SONAR_TOKEN"),
