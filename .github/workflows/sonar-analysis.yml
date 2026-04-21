@@ -33,16 +33,14 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-      
+
       - name: Checkout analysis scripts
         uses: actions/checkout@v4
-        with:
-          path: scripts
+        # Removed 'path: scripts' to prevent the repo from nesting inside scripts/scripts/
       
       - name: Load project configuration
         id: config
         run: |
-          cd scripts
           PROJECT="${{ github.event.inputs.project }}"
           
           # Extract config using Python and write to GITHUB_OUTPUT
@@ -50,7 +48,8 @@ jobs:
           import json
           import os
           
-          with open('project_configs.json') as f:
+          # Point directly to the scripts folder from the workspace root
+          with open('scripts/project_configs.json') as f:
               configs = json.load(f)
           
           config = configs.get('$PROJECT', {})
