@@ -1,0 +1,905 @@
+{
+  "KAFKA-9106": {
+    "jira_id": "KAFKA-9106",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "metrics exposed via JMX shoud be configurable",
+    "description": "Kafka exposes a very large number of metrics, all of which are always visible in JMX by default. On large clusters with many partitions, this may result in tens of thousands of mbeans to be registered, which can lead to timeouts with some popular monitoring agents that rely on listing JMX metrics via RMI.\r\n\r\nMaking the set of JMX-visible metrics configurable would allow operators to decide on the set of critical metrics to collect and workaround limitation of JMX in those cases.\r\n\r\ncorresponding KIP\r\nhttps://cwiki.apache.org/confluence/display/KAFKA/KIP-544%3A+Make+metrics+exposed+via+JMX+configurable",
+    "commits": [
+      {
+        "sha": "6349bdba89d841be24015297eb26c3c021defcf0",
+        "message": "KAFKA-9106 make metrics exposed via jmx configurable",
+        "author": "xvrl",
+        "date": "2019-11-09T00:42:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 3835,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2455,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/producer/KafkaProducer.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/producer/KafkaProducer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1361,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/JmxReporter.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/JmxReporter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 88,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 247,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/metrics/JmxReporterTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/metrics/JmxReporterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 601,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/ConnectMetrics.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/ConnectMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 447,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/WorkerGroupMember.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/WorkerGroupMember.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 224,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/errors/ErrorHandlingMetrics.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/errors/ErrorHandlingMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/runtime/WorkerSourceTaskTest.java",
+            "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/runtime/WorkerSourceTaskTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1122,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/runtime/errors/RetryWithToleranceOperatorTest.java",
+            "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/runtime/errors/RetryWithToleranceOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 312,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "core/src/main/java/kafka/metrics/FilteringJmxReporter.java",
+            "CHILD_PATH": "core/src/main/java/kafka/metrics/FilteringJmxReporter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 62,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "core/src/main/java/kafka/metrics/KafkaYammerMetrics.java",
+            "CHILD_PATH": "core/src/main/java/kafka/metrics/KafkaYammerMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 78,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1250,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d7aeb82ea82247c34f26e5d06a0e814248bd3717",
+        "message": "remove kafka. config prefix on brokers",
+        "author": "xvrl",
+        "date": "2020-02-08T00:27:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/JmxReporter.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/JmxReporter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 326,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "core/src/main/java/kafka/metrics/KafkaYammerMetrics.java",
+            "CHILD_PATH": "core/src/main/java/kafka/metrics/KafkaYammerMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 78,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "01208fd218286d2cd318a891f2cb5883422283b1",
+        "message": "mark MetricsReporter interface Reconfigurable",
+        "author": "xvrl",
+        "date": "2020-02-12T01:32:02Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/JmxReporter.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/JmxReporter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 322,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/MetricsReporter.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/MetricsReporter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 53,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ea72edebf2d484e42a4251c53cd6e383743b5d1a",
+    "sha_after": "7e1c39f75abc443281f31f3c2f1e4829e738619d",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 3835,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 2455,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/producer/KafkaProducer.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/producer/KafkaProducer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1351,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/JmxReporter.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/JmxReporter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 82,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 247,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/MetricsReporter.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/metrics/MetricsReporter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 53,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/metrics/JmxReporterTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/metrics/JmxReporterTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 44,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 601,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/ConnectMetrics.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/ConnectMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 447,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/WorkerGroupMember.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/WorkerGroupMember.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 224,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/errors/ErrorHandlingMetrics.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/errors/ErrorHandlingMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 150,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/runtime/WorkerSourceTaskTest.java",
+        "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/runtime/WorkerSourceTaskTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1122,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/runtime/errors/RetryWithToleranceOperatorTest.java",
+        "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/runtime/errors/RetryWithToleranceOperatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 312,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "core/src/main/java/kafka/metrics/FilteringJmxReporter.java",
+        "CHILD_PATH": "core/src/main/java/kafka/metrics/FilteringJmxReporter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 62,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "core/src/main/java/kafka/metrics/KafkaYammerMetrics.java",
+        "CHILD_PATH": "core/src/main/java/kafka/metrics/KafkaYammerMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 76,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1250,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 20,
+    "refactorings": {
+      "Extract Variable": 11,
+      "Localize Parameter": 4,
+      "Change Variable Type": 1,
+      "Rename Variable": 1,
+      "Change Return Type": 1,
+      "Inline Method": 1,
+      "Modify Class Annotation": 1
+    }
+  },
+  "KAFKA-9407": {
+    "jira_id": "KAFKA-9407",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Return Immutable List from SchemaSourceTask",
+    "description": "Currently returns an empty {{ArrayList}} or a {{Collections.singletonList()}}.  Make it a bit more symmetrical by only returning immutable lists (and save a few bytes of memory).",
+    "commits": [
+      {
+        "sha": "cfa89996c1f220f96dd469a5dd24dc208999f09f",
+        "message": "KAFKA-9407: Return Immutable List from SchemaSourceTask",
+        "author": "belugabehr",
+        "date": "2020-01-12T16:42:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/tools/SchemaSourceTask.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/tools/SchemaSourceTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 171,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "f538caf13819c79b37fcdd300d7dacd724180197",
+    "sha_after": "99eb0d10067a95cbb85ba6dd02ad9a8e6a8f1791",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/tools/SchemaSourceTask.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/tools/SchemaSourceTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 171,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Inline Variable": 1
+    }
+  },
+  "KAFKA-9539": {
+    "jira_id": "KAFKA-9539",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add leader epoch in StopReplicaRequest",
+    "description": "Unlike the LeaderAndIsrRequest, the StopReplicaRequest does not include the leader epoch which makes it vulnerable to reordering. This KIP proposes to add the leader epoch for each partition in the StopReplicaRequest and the broker will verify the epoch before proceeding with the StopReplicaRequest.",
+    "commits": [
+      {
+        "sha": "cdff56b9a8b65d52a109098ed56d548cd95b2da8",
+        "message": "KAFKA-9539; Add leader epoch in StopReplicaRequest (KIP-570)",
+        "author": "dajac",
+        "date": "2020-03-04T13:26:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/StopReplicaRequest.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/StopReplicaRequest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 96,
+            "LINES_DELETED": 42,
+            "PARENT_LOC": 172,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/StopReplicaResponse.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/StopReplicaResponse.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 79,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/requests/RequestResponseTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/requests/RequestResponseTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 2161,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/requests/StopReplicaRequestTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/requests/StopReplicaRequestTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 189,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 65,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/requests/StopReplicaResponseTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/requests/StopReplicaResponseTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 85,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "0edeeeb600dc1978d23f44e6a8630fa07aaaade3",
+        "message": "fixup",
+        "author": "dajac",
+        "date": "2020-04-13T15:48:46Z",
+        "files": []
+      },
+      {
+        "sha": "49360d6d46bf292c7b9a774be923073fd049c19d",
+        "message": "Address review",
+        "author": "dajac",
+        "date": "2020-04-14T13:15:53Z",
+        "files": []
+      }
+    ],
+    "sha_before": "ea47a885b1fe47dfb87c1dc86db1b0e7eb8a273c",
+    "sha_after": "7c7d55dbd8d42f6378d13ba02d62633366a7ede8",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/StopReplicaRequest.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/StopReplicaRequest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 96,
+        "LINES_DELETED": 42,
+        "PARENT_LOC": 172,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/StopReplicaResponse.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/StopReplicaResponse.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 79,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/requests/RequestResponseTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/requests/RequestResponseTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 29,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 2181,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/requests/StopReplicaRequestTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/requests/StopReplicaRequestTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 189,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 65,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/requests/StopReplicaResponseTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/requests/StopReplicaResponseTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 85,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 12,
+    "refactorings": {
+      "Change Variable Type": 3,
+      "Rename Variable": 2,
+      "Extract Variable": 1,
+      "Change Parameter Type": 1,
+      "Rename Parameter": 1,
+      "Rename Attribute": 1,
+      "Change Attribute Type": 1,
+      "Rename Method": 1,
+      "Change Return Type": 1
+    }
+  },
+  "KAFKA-9919": {
+    "jira_id": "KAFKA-9919",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add logging to KafkaBasedLog",
+    "description": "The logging emitted on startup is a little thin, especially in the case where a worker is having trouble reading to the end of its offset, status, or config topic. We should add some {{TRACE}} and possibly {{DEBUG}} level logs to the {{KafkaBasedLog}} class so that it's clearer when this is happening.",
+    "commits": [
+      {
+        "sha": "f5c01409225987bd05d105bfa3a34d16adbce576",
+        "message": "KAFKA-9919: Add logging to KafkaBasedLog::readToLogEnd",
+        "author": "C0urante",
+        "date": "2020-04-25T22:17:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/util/KafkaBasedLog.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/util/KafkaBasedLog.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 348,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8a66f1fc87a66add15c77a52fa0a7b02b8ff6df3",
+        "message": "KAFKA-9919: Apply suggestions from code review",
+        "author": "C0urante",
+        "date": "2020-04-29T05:12:29Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/util/KafkaBasedLog.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/util/KafkaBasedLog.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 357,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "36c8e2c976828d7ef5d64bfac81de386b5a9a275",
+        "message": "KAFKA-9919: Address code review",
+        "author": "C0urante",
+        "date": "2020-04-29T05:13:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/util/KafkaBasedLog.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/util/KafkaBasedLog.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 354,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "417d9b1801eba46267a1370f88c6c869c1ddbb4d",
+    "sha_after": "cc02dd6e3b937c9a84142e6fea40bee9ac484ab7",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/util/KafkaBasedLog.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/util/KafkaBasedLog.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 348,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Extract Variable": 3
+    }
+  },
+  "KAFKA-9731": {
+    "jira_id": "KAFKA-9731",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Increased fetch request rate with leader selector due to HW propagation",
+    "description": "KIP-392 adds high watermark propagation to followers as a means to better sync up followers HW with leader. The issue we have noticed after trying out 2.4.0 and 2.4.1 is a spike in fetch request rate in the default selector case (leader), that does not really require this high watermark propagation:\r\n\r\n!image-2020-03-17-10-19-08-987.png|width=811,height=354!\r\n\r\nThis spike causes an increase in resource allocation (CPU) on the brokers.\r\n\r\nAn easy solution would be to disable this propagation (at least) for the default leader selector case to improve the backward compatibility.",
+    "commits": [
+      {
+        "sha": "647184893cda90673b3f1191e180b95a498407ef",
+        "message": "Only set followerNeedsHwUpdate if replica selector is defined",
+        "author": "ijuma",
+        "date": "2020-05-03T23:24:42Z",
+        "files": []
+      },
+      {
+        "sha": "53282bb37e160f1c02e236fbd0a6248ed6f89b4f",
+        "message": "Simplify and avoid unnecessary collection copies in `findPreferredReadReplica`",
+        "author": "ijuma",
+        "date": "2020-05-03T23:25:49Z",
+        "files": []
+      },
+      {
+        "sha": "05264533443b856e5845acd6ff0b3ffe39fc13e3",
+        "message": "Formatting fix",
+        "author": "ijuma",
+        "date": "2020-05-03T23:26:02Z",
+        "files": []
+      },
+      {
+        "sha": "3973a55354ad9ba81acc98986cb64c89ffd05d0e",
+        "message": "Use LongSupplier instead Supplier<Long> to avoid boxing",
+        "author": "ijuma",
+        "date": "2020-05-03T23:26:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/SubscriptionState.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/SubscriptionState.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1021,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "6d09e13ab6df80d4213d0a90aeb5c2df3f03e5cb",
+        "message": "Remove unused import",
+        "author": "ijuma",
+        "date": "2020-05-04T01:14:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/SubscriptionState.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/SubscriptionState.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1022,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "34d70ce34f8106aaf2416709751c832a8c4badaa",
+        "message": "Add spotBugs exclusion",
+        "author": "ijuma",
+        "date": "2020-05-04T03:27:59Z",
+        "files": []
+      },
+      {
+        "sha": "3597a80106aff8bda847a72109e3750bf54935cf",
+        "message": "Add test",
+        "author": "ijuma",
+        "date": "2020-05-04T23:14:21Z",
+        "files": []
+      }
+    ],
+    "sha_before": "69586fb6049b78747ef61ac2b17f67b568f7817c",
+    "sha_after": "fbfda2c4ad889c731aa52b5214e0521f187f8db6",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/SubscriptionState.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/SubscriptionState.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 1021,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Change Parameter Type": 2
+    }
+  },
+  "KAFKA-9419": {
+    "jira_id": "KAFKA-9419",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Integer Overflow Possible with CircularIterator",
+    "description": "Very unlikely to happen, but as someone that gets called in when something goes wrong, I'd like to remove as many possibilities as possible.\r\n\r\n \r\n\r\n[https://github.com/apache/kafka/blob/8c21fa837df6908d9147805e097407d006d95fd4/clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java#L39-L43]\r\n\r\n \r\n\r\nAlso, the current implementation will work with a LinkedList, but it won't work well.  The constant call to `get(i)` will perform at O(n^2).  Using an iterator instead allows other Collections to work reasonably well.",
+    "commits": [
+      {
+        "sha": "bf49fbbd6067d233fe84ef7574efe5b6dc6fcd64",
+        "message": "KAFKA-9419: Integer Overflow Possible with CircularIterator",
+        "author": "belugabehr",
+        "date": "2020-01-13T21:15:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 53,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 73,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "417ea8b6bb93d4e908200d9cd8fea40b99b765b5",
+        "message": "Added JavaDoc. Support null values in the underlying collection",
+        "author": "belugabehr",
+        "date": "2020-01-14T19:52:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 86,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 73,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f8998d2c3b03fab3dbc8cd19b579d1bcdb6dc5d6",
+        "message": "Always return true for hasNext(). Add more JavaDoc",
+        "author": "belugabehr",
+        "date": "2020-01-14T20:36:45Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 100,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b2a23493bc3205d13035704bbb7edcdb020d9f75",
+        "message": "Use an advance method to load next value and always return true in hasNext()",
+        "author": "belugabehr",
+        "date": "2020-03-02T16:37:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 23,
+            "PARENT_LOC": 111,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4520f19ad54d9a792aa904edd67c7690c685bacf",
+        "message": "Simplify test suite",
+        "author": "belugabehr",
+        "date": "2020-03-03T19:00:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 38,
+            "PARENT_LOC": 93,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "01eb7d185f13e143f27a3265b8a59d326c38ee75",
+        "message": "Use assertThrows in tests and remove redundant 'this' identifier",
+        "author": "kkonstantine",
+        "date": "2020-05-06T18:00:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 106,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 65,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c15cd5cfeb52ce9cd0d40b7d44e442bcd4ab61c1",
+    "sha_after": "074ab2ebf6856628219d4c4ee95d57ff69d29bf3",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/CircularIterator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 62,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 53,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/CircularIteratorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 66,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Add Variable Modifier": 1
+    }
+  },
+  "KAFKA-9949": {
+    "jira_id": "KAFKA-9949",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Flaky Test GlobalKTableIntegrationTest#shouldKStreamGlobalKTableLeftJoin",
+    "description": "[https://builds.apache.org/job/kafka-pr-jdk14-scala2.13/248/testReport/junit/org.apache.kafka.streams.integration/GlobalKTableIntegrationTest/shouldKStreamGlobalKTableLeftJoin/]\r\n{quote}java.lang.AssertionError: Condition not met within timeout 30000. waiting for final values at org.hamcrest.MatcherAssert.assertThat(MatcherAssert.java:26) at org.apache.kafka.test.TestUtils.lambda$waitForCondition$5(TestUtils.java:381) at org.apache.kafka.test.TestUtils.retryOnExceptionWithTimeout(TestUtils.java:429) at org.apache.kafka.test.TestUtils.retryOnExceptionWithTimeout(TestUtils.java:397) at org.apache.kafka.test.TestUtils.waitForCondition(TestUtils.java:378) at org.apache.kafka.test.TestUtils.waitForCondition(TestUtils.java:368) at org.apache.kafka.streams.integration.GlobalKTableIntegrationTest.shouldKStreamGlobalKTableLeftJoin(GlobalKTableIntegrationTest.java:175){quote}",
+    "commits": [
+      {
+        "sha": "9625da87f0871bac18513e1d7d9e1f9bc5b21f66",
+        "message": "check for all entries",
+        "author": "guozhangwang",
+        "date": "2020-05-09T05:15:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/integration/GlobalKTableIntegrationTest.java",
+            "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/integration/GlobalKTableIntegrationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 366,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "72d72a974c660db7851c1f053ae4a64dfc913837",
+    "sha_after": "6d0e722f4d14b48030b34418fb538c75fbad69e8",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/integration/GlobalKTableIntegrationTest.java",
+        "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/integration/GlobalKTableIntegrationTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 35,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 366,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Remove Thrown Exception Type": 3
+    }
+  }
+}

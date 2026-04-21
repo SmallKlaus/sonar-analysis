@@ -1,0 +1,1469 @@
+{
+  "KAFKA-7317": {
+    "jira_id": "KAFKA-7317",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Use collections subscription for main consumer to reduce metadata",
+    "description": "In KAFKA-4633 we switched from \"collection subscription\" to \"pattern subscription\" for `Consumer#subscribe()` to avoid triggering auto topic creating on the broker. In KAFKA-5291, the metadata request was extended to overwrite the broker config within the request itself. However, this feature is only used in `KafkaAdminClient`. KAFKA-7320 adds this feature for the consumer client, too.\r\n\r\nThis ticket proposes to use the new feature within Kafka Streams to allow the usage of collection based subscription in consumer and admit clients to reduce the metadata response size than can be very large for large number of partitions in the cluster.\r\n\r\nNote, that Streams need to be able to distinguish if it connects to older brokers that do not support the new metadata request and still use pattern subscription for this case.",
+    "commits": [
+      {
+        "sha": "c75d3027fca883b4ec4e482656655d080282202a",
+        "message": "add consumer config and change subscription type",
+        "author": "ableegoldman",
+        "date": "2020-01-08T04:15:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsConfig.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1307,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 37,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1914,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1287,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4bbab82fa3fc19d86e7ba46731007d0fbe857eda",
+        "message": "side cleanup",
+        "author": "ableegoldman",
+        "date": "2020-01-16T03:35:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/kstream/internals/graph/StreamSourceNode.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/kstream/internals/graph/StreamSourceNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 104,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/kstream/internals/graph/TableSourceNode.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/kstream/internals/graph/TableSourceNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 182,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 106,
+            "PARENT_LOC": 1951,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1295,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamsPartitionAssignor.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamsPartitionAssignor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1290,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/TaskManager.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/TaskManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 645,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "ad55ffc923b0f87f51277519cfebe9ff602a1927",
+        "message": "replace null check in other classes with added method",
+        "author": "ableegoldman",
+        "date": "2020-01-16T03:40:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1886,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1295,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/TaskManager.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/TaskManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 645,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "a9567353de535ee72e9eb82f91e5a47acb0e95a7",
+        "message": "fix up tests, add unit test",
+        "author": "ableegoldman",
+        "date": "2020-01-22T01:10:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 1886,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/TaskManager.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/TaskManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 645,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilderTest.java",
+            "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 869,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/TaskManagerTest.java",
+            "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/TaskManagerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 25,
+            "PARENT_LOC": 691,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3b52129691c1ced9c1e44656e8df8f7934039890",
+        "message": "fix checkstyle",
+        "author": "ableegoldman",
+        "date": "2020-01-22T21:41:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilderTest.java",
+            "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 873,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "9ba3ee4e5849cae6c81d5b229846e0507630647f",
+        "message": "github comment",
+        "author": "ableegoldman",
+        "date": "2020-01-23T00:51:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1893,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a565d1a182cc69c9994c4512b5e9877e97f06cdf",
+    "sha_after": "57b2f6807d332f4e6de4dc4ad18aa24686d304de",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsConfig.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1307,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/kstream/internals/graph/StreamSourceNode.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/kstream/internals/graph/StreamSourceNode.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 104,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/kstream/internals/graph/TableSourceNode.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/kstream/internals/graph/TableSourceNode.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 182,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 54,
+        "LINES_DELETED": 75,
+        "PARENT_LOC": 1914,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1287,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamsPartitionAssignor.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamsPartitionAssignor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1290,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/TaskManager.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/TaskManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 645,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilderTest.java",
+        "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/InternalTopologyBuilderTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 17,
+        "PARENT_LOC": 869,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/TaskManagerTest.java",
+        "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/TaskManagerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 25,
+        "PARENT_LOC": 691,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 24,
+    "refactorings": {
+      "Rename Method": 3,
+      "Change Variable Type": 3,
+      "Rename Variable": 3,
+      "Remove Thrown Exception Type": 2,
+      "Extract Method": 2,
+      "Change Attribute Type": 2,
+      "Remove Attribute Annotation": 1,
+      "Add Attribute Modifier": 1,
+      "Inline Method": 1,
+      "Extract Variable": 1,
+      "Add Method Modifier": 1,
+      "Change Return Type": 1,
+      "Move And Inline Method": 1,
+      "Change Parameter Type": 1,
+      "Rename Parameter": 1
+    }
+  },
+  "KAFKA-9152": {
+    "jira_id": "KAFKA-9152",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Improve Sensor Retrieval ",
+    "description": "This ticket shall improve two aspects of the retrieval of sensors:\r\n\r\n1. Currently, when a sensor is retrieved with {{*Metrics.*Sensor()}} (e.g. {{ThreadMetrics.createTaskSensor()}}) after it was created with the same method {{*Metrics.*Sensor()}}, the sensor is added again to the corresponding queue in {{*Sensors}} (e.g. {{threadLevelSensors}}) in {{StreamsMetricsImpl}}. Those queues are used to remove the sensors when {{removeAll*LevelSensors()}} is called. Having multiple times the same sensors in this queue is not an issue from a correctness point of view. However, it would reduce the footprint to only store a sensor once in those queues.\r\n\r\n2. When a sensor is retrieved, the current code attempts to create a new sensor and to add to it again the corresponding metrics. This could be avoided.\r\n \r\nBoth aspects could be improved by checking whether a sensor already exists by calling {{getSensor()}} on the {{Metrics}} object and checking the return value.",
+    "commits": [
+      {
+        "sha": "e55a741929fa33f80b0a4bfe2bbc34942be8bb84",
+        "message": "KAFKA-9152; Improve Sensor Retrieval",
+        "author": "high.lee",
+        "date": "2020-01-09T01:54:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 38,
+            "PARENT_LOC": 864,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+            "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 224,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 869,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "8e5faca963cdcb082c882a5e726327b36e9701f0",
+    "sha_after": "2e351e06b3557ed63a54946f33fd1c0f0f136b50",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 38,
+        "PARENT_LOC": 864,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+        "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 224,
+        "LINES_DELETED": 18,
+        "PARENT_LOC": 869,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 8,
+    "refactorings": {
+      "Inline Variable": 5,
+      "Rename Method": 2,
+      "Extract Method": 1
+    }
+  },
+  "KAFKA-8503": {
+    "jira_id": "KAFKA-8503",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Implement default.api.timeout.ms for AdminClient",
+    "description": "This issue tracks of the implementation of KIP-533: https://cwiki.apache.org/confluence/display/KAFKA/KIP-533%3A+Add+default+api+timeout+to+AdminClient",
+    "commits": [
+      {
+        "sha": "635513c61cbb5b0d8a402081c79445178604cd07",
+        "message": "KAFKA-8503: Ignore retries config if a custom timeout is provided",
+        "author": "huxihx",
+        "date": "2019-09-06T02:58:14Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/CommonClientConfigs.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/CommonClientConfigs.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 164,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AbstractOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AbstractOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 47,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AdminClientConfig.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AdminClientConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AlterConfigsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AlterConfigsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 59,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateAclsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateAclsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 43,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateTopicsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateTopicsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 60,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteAclsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteAclsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 43,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteTopicsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteTopicsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 43,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeAclsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeAclsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 42,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeClusterOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeClusterOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 55,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeConfigsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeConfigsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 60,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeTopicsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeTopicsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 54,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 3787,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/ListTopicsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/ListTopicsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 61,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/ConsumerConfig.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/ConsumerConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 562,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/clients/admin/KafkaAdminClientTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/clients/admin/KafkaAdminClientTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 61,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2620,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "edc0711cdb10fa4aea8c4bf67fbb8bca82ed22e4",
+        "message": "Add test cases and minor cleanups",
+        "author": "hachikuji",
+        "date": "2019-12-30T19:28:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AbstractOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AbstractOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 47,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AlterConfigsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AlterConfigsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 59,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateAclsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateAclsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 43,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateTopicsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateTopicsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 60,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteAclsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteAclsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 43,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteTopicsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteTopicsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 43,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeAclsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeAclsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 42,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeClusterOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeClusterOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 55,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeConfigsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeConfigsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 60,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeTopicsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeTopicsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 54,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 24,
+            "PARENT_LOC": 3826,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/ListTopicsOptions.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/ListTopicsOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 61,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/clients/admin/KafkaAdminClientTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/clients/admin/KafkaAdminClientTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 124,
+            "LINES_DELETED": 84,
+            "PARENT_LOC": 2680,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4ad7c907b5e4b226d3f5cf27181c1251a8a5067f",
+        "message": "Make request timeout and default api timeout final fields",
+        "author": "hachikuji",
+        "date": "2020-01-30T00:30:44Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 3815,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "c83cf9d4c951cbf57ece9e9903338e34007c7473",
+        "message": "Fix description of config",
+        "author": "hachikuji",
+        "date": "2020-01-30T16:50:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/CommonClientConfigs.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/CommonClientConfigs.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 168,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "0780f0043d4f9e43d38a3490a8159fef3702f949",
+    "sha_after": "4317325fbcb29d1f5ab828821b8e0714e10ed981",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/CommonClientConfigs.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/CommonClientConfigs.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 164,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AbstractOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AbstractOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 47,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AdminClientConfig.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AdminClientConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 223,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AlterConfigsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/AlterConfigsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 59,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateAclsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateAclsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 43,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateTopicsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/CreateTopicsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 60,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteAclsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteAclsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 43,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteTopicsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DeleteTopicsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 43,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeAclsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeAclsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 42,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeClusterOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeClusterOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 55,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeConfigsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeConfigsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 60,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeTopicsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/DescribeTopicsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 54,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 39,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 3785,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/ListTopicsOptions.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/admin/ListTopicsOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 61,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/ConsumerConfig.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/ConsumerConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 562,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/clients/admin/KafkaAdminClientTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/clients/admin/KafkaAdminClientTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 153,
+        "LINES_DELETED": 53,
+        "PARENT_LOC": 2620,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Rename Attribute": 2,
+      "Inline Variable": 1,
+      "Rename Variable": 1,
+      "Move Attribute": 1
+    }
+  },
+  "KAFKA-9437": {
+    "jira_id": "KAFKA-9437",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "KIP-559: Make the Kafka Protocol Friendlier with L7 Proxies",
+    "description": "",
+    "commits": [
+      {
+        "sha": "effa65da5c10d837c60532730a9d9b5726b2087e",
+        "message": "KIP-559: Make the Kafka Protocol Friendlier with L7 Proxies",
+        "author": "dajac",
+        "date": "2020-01-21T19:29:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1400,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/JoinGroupRequest.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/JoinGroupRequest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 140,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupRequest.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupRequest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 92,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupResponse.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupResponse.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 72,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinatorTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 84,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1031,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/requests/RequestResponseTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/requests/RequestResponseTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 105,
+            "LINES_DELETED": 44,
+            "PARENT_LOC": 2093,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "525e84d283eac94fca1ef0ffa069d35fd63ed172",
+        "message": "Address Jason's reviews",
+        "author": "dajac",
+        "date": "2020-01-28T21:24:06Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 1421,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "aa1008664116a7bc4c3084811982913e1e928482",
+        "message": "Address reviews",
+        "author": "dajac",
+        "date": "2020-01-29T02:27:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupRequest.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupRequest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "832a6dbb2e0bd31de4045370e862ad9cd37db219",
+        "message": "typo",
+        "author": "dajac",
+        "date": "2020-01-29T02:52:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupRequest.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupRequest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 103,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f3457905bf31539a59db5888b912aa812880b1fa",
+        "message": "fixup",
+        "author": "dajac",
+        "date": "2020-01-29T13:16:00Z",
+        "files": []
+      },
+      {
+        "sha": "8c160c96a266767182baaf3885770be9fbce16d9",
+        "message": "Address Jason's comments",
+        "author": "dajac",
+        "date": "2020-01-31T14:51:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 34,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 1421,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "6b7813176ef50d117a6f6107f75f989b23fdb7d7",
+        "message": "Make ProtocolType nullable in the JoinGroupResponse",
+        "author": "dajac",
+        "date": "2020-01-31T16:37:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/JoinGroupRequest.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/JoinGroupRequest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 141,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c8d97c6d51bf8872eb5c0e5a123a8ee0ba6cfd6b",
+    "sha_after": "96c4ce4803c39f669a7f539481be76c67979faf0",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 51,
+        "LINES_DELETED": 22,
+        "PARENT_LOC": 1400,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/JoinGroupRequest.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/JoinGroupRequest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 140,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupRequest.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupRequest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 92,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupResponse.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/requests/SyncGroupResponse.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 72,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinatorTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 84,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 1031,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/requests/RequestResponseTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/requests/RequestResponseTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 105,
+        "LINES_DELETED": 44,
+        "PARENT_LOC": 2107,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 8,
+    "refactorings": {
+      "Extract Variable": 3,
+      "Extract Method": 1,
+      "Extract Attribute": 1,
+      "Rename Parameter": 1,
+      "Rename Attribute": 1,
+      "Add Parameter": 1
+    }
+  },
+  "KAFKA-9230": {
+    "jira_id": "KAFKA-9230",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Change User Customizable Metrics API in StreamsMetrics interface",
+    "description": "As proposed in KIP-444, the user-customizable metrics API in the StreamsMetrics interface shall be improved. For more details, see https://cwiki.apache.org/confluence/display/KAFKA/KIP-444%3A+Augment+metrics+for+Kafka+Streams.",
+    "commits": [
+      {
+        "sha": "ac4966f33785de1fed91c492138d75ad3340eb86",
+        "message": "KAFKA-9230: Refactor user-customizable Streams metrics",
+        "author": "cadonna",
+        "date": "2019-11-28T15:19:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsMetrics.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 56,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 143,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 81,
+            "LINES_DELETED": 50,
+            "PARENT_LOC": 825,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredKeyValueStore.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredKeyValueStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 262,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredWindowStoreIterator.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredWindowStoreIterator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 72,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredWindowedKeyValueIterator.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredWindowedKeyValueIterator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 79,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+            "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 174,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 693,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8a496d8218b2281bc9461b1371c558e364e75321",
+        "message": "Address feedback",
+        "author": "cadonna",
+        "date": "2019-12-06T09:35:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsMetrics.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 199,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+            "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 856,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "af018280b32232ffe9137b5cc13082792e84f969",
+        "message": "Adapt unit test for deprecated methods",
+        "author": "cadonna",
+        "date": "2019-12-06T10:15:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+            "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 867,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "648497a5e5e9373e17f632d0c2d101cc369ff20e",
+    "sha_after": "bcfe8c76dd5a5b2913813cfd2ff733b7fa94a130",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsMetrics.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/StreamsMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 63,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 143,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 89,
+        "LINES_DELETED": 50,
+        "PARENT_LOC": 825,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredKeyValueStore.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredKeyValueStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 262,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredWindowStoreIterator.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredWindowStoreIterator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 72,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredWindowedKeyValueIterator.java",
+        "CHILD_PATH": "streams/src/main/java/org/apache/kafka/streams/state/internals/MeteredWindowedKeyValueIterator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 79,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+        "CHILD_PATH": "streams/src/test/java/org/apache/kafka/streams/processor/internals/metrics/StreamsMetricsImplTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 188,
+        "LINES_DELETED": 12,
+        "PARENT_LOC": 693,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 19,
+    "refactorings": {
+      "Add Method Annotation": 11,
+      "Rename Method": 2,
+      "Rename Attribute": 2,
+      "Inline Method": 1,
+      "Extract Method": 1,
+      "Change Return Type": 1,
+      "Change Method Access Modifier": 1
+    }
+  },
+  "KAFKA-7052": {
+    "jira_id": "KAFKA-7052",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "ExtractField SMT throws NPE - needs clearer error message",
+    "description": "With the following Single Message Transform: \r\n{code:java}\r\n\"transforms.ExtractId.type\":\"org.apache.kafka.connect.transforms.ExtractField$Key\",\r\n\"transforms.ExtractId.field\":\"id\"{code}\r\nKafka Connect errors with : \r\n{code:java}\r\njava.lang.NullPointerException\r\nat org.apache.kafka.connect.transforms.ExtractField.apply(ExtractField.java:61)\r\nat org.apache.kafka.connect.runtime.TransformationChain.apply(TransformationChain.java:38){code}\r\nThere should be a better error message here, identifying the reason for the NPE.\r\n\r\nVersion: Confluent Platform 4.1.1",
+    "commits": [
+      {
+        "sha": "0d49d26eeaec37908ef7880ed2ee89d27f92ade2",
+        "message": "KAFKA-7052 Avoiding NPE in ExtractField SMT in case of non-existent fields",
+        "author": "gunnarmorling",
+        "date": "2020-02-07T11:48:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/transforms/src/main/java/org/apache/kafka/connect/transforms/ExtractField.java",
+            "CHILD_PATH": "connect/transforms/src/main/java/org/apache/kafka/connect/transforms/ExtractField.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/transforms/src/test/java/org/apache/kafka/connect/transforms/ExtractFieldTest.java",
+            "CHILD_PATH": "connect/transforms/src/test/java/org/apache/kafka/connect/transforms/ExtractFieldTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 89,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "520a76155c66486cbcd0c519ef2980359964fd7c",
+    "sha_after": "5727b245091cdd20be335b5044f070ef4aecff0c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/transforms/src/main/java/org/apache/kafka/connect/transforms/ExtractField.java",
+        "CHILD_PATH": "connect/transforms/src/main/java/org/apache/kafka/connect/transforms/ExtractField.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/transforms/src/test/java/org/apache/kafka/connect/transforms/ExtractFieldTest.java",
+        "CHILD_PATH": "connect/transforms/src/test/java/org/apache/kafka/connect/transforms/ExtractFieldTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 89,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  },
+  "KAFKA-8507": {
+    "jira_id": "KAFKA-8507",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Support --bootstrap-server in all command line tools",
+    "description": "This is a unambitious initial move toward standardizing the command line tools. We have favored the name {{\\-\\-bootstrap-server}} in all new tools since it matches the config {{bootstrap.server}} which is used by all clients. Some older commands use {{\\-\\-broker-list}} or {{\\-\\-bootstrap-servers}} and maybe other exotic variations. We should support {{\\-\\-bootstrap-server}} in all commands and deprecate the other options.",
+    "commits": [
+      {
+        "sha": "fe3cd78161d9c84a3695d362ecb590b4f4d53d9b",
+        "message": "update example reassign file to include log_dirs configuration in alignment with KIP-113",
+        "author": "mitchell-h",
+        "date": "2020-01-29T23:10:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableConsumer.java",
+            "CHILD_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableConsumer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 656,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableProducer.java",
+            "CHILD_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableProducer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 541,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "9a84cb1fdffa23ff06151923f65792c1060c8b5a",
+        "message": "KIP-499",
+        "author": "mitchell-h",
+        "date": "2020-01-31T03:24:32Z",
+        "files": []
+      },
+      {
+        "sha": "7e44ecdc07e086ac89897688bc524d6ee788d307",
+        "message": "KIP-499 - Updated inline with commit comments.  Added requiredUnless options.  simplified validateOrDie logic.",
+        "author": "mitchell-h",
+        "date": "2020-02-04T23:59:02Z",
+        "files": [
+          {
+            "PARENT_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableConsumer.java",
+            "CHILD_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableConsumer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 671,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableProducer.java",
+            "CHILD_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableProducer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 558,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "359190fc37d337a37243657827b26b4000ea569d",
+        "message": "Updated /docs to use `kafka-console-producer --bootstrap-server` instead of --broker-list",
+        "author": "mitchell-h",
+        "date": "2020-02-09T18:05:01Z",
+        "files": []
+      },
+      {
+        "sha": "6b18d3c6b5be06d2bcd7eb262147cfa0ff17b881",
+        "message": "Fix checkstyle",
+        "author": "hachikuji",
+        "date": "2020-02-13T17:32:29Z",
+        "files": [
+          {
+            "PARENT_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableConsumer.java",
+            "CHILD_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableConsumer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 677,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableProducer.java",
+            "CHILD_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableProducer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 561,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "11a49210eb9233fef111c9a5ddfefe3588a9addd",
+        "message": "Fix test cases in ConsoleProducerTest",
+        "author": "hachikuji",
+        "date": "2020-02-13T17:39:16Z",
+        "files": []
+      }
+    ],
+    "sha_before": "7e1c39f75abc443281f31f3c2f1e4829e738619d",
+    "sha_after": "96c69da8c164966c1281df7001d5d239053442fd",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableConsumer.java",
+        "CHILD_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableConsumer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 658,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableProducer.java",
+        "CHILD_PATH": "tools/src/main/java/org/apache/kafka/tools/VerifiableProducer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 24,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 541,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  }
+}
