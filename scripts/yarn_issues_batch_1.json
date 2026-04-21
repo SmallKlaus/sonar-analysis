@@ -1,0 +1,466 @@
+{
+  "YARN-9124": {
+    "jira_id": "YARN-9124",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Resolve contradiction in ResourceUtils: addMandatoryResources / checkMandatoryResources work differently",
+    "description": "{{ResourceUtils#addMandatoryResources}}: Adds only memory and vcores as mandatory resources.\r\n\r\n{{ResourceUtils#checkMandatoryResources}}: YARN-6620 added some code to this. This method not only checks memory and vcores, but all the resources referred in ResourceInformation#MANDATORY_RESOURCES.\r\n\r\nI think it would be good to call {{MANDATORY_RESOURCES}} as {{PREDEFINED_RESOURCES}} or something like that and use a similar name for {{checkMandatoryResources}}.",
+    "commits": [
+      {
+        "sha": "d98297040abd332083fa1602ba134a8cde62de12",
+        "message": "YARN-9124. Resolve contradiction in ResourceUtils: addMandatoryResources / checkMandatoryResources work differently",
+        "author": "Adam Antal",
+        "date": "2019-07-18T14:49:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/ResourceInformation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/ResourceInformation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 391,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/util/resource/ResourceUtils.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/util/resource/ResourceUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 882,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "95fc38f2e9011b16ca09ac44843a71a2cac45c99",
+    "sha_after": "cbcada804d119b837ad99de71d7f44cb4629026e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/ResourceInformation.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/ResourceInformation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 391,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/util/resource/ResourceUtils.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/util/resource/ResourceUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 28,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 882,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Rename Method": 1,
+      "Rename Attribute": 1
+    }
+  },
+  "YARN-9676": {
+    "jira_id": "YARN-9676",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add DEBUG and TRACE level messages to AppLogAggregatorImpl and connected classes",
+    "description": "During the development of the last items of YARN-6875, it was typically difficult to extract information about the internal state of some log aggregation related classes (e.g. {{AppLogAggregatiorImpl}} and {{LogAggregationFileController}}). \r\n\r\nOn my fork I added a few more messages to those classes like:\r\n- displaying the number of log aggregation cycles\r\n- displaying the names of the files currently considered for log aggregation by containers\r\n- immediately displaying any exception caught (and sent to the RM in the diagnostic messages) during the log aggregation process.\r\n\r\nThose messages were quite useful for debugging if any issue occurs, but otherwise it flooded the NM log file with these messages that are usually not needed. I suggest to add (some of) these messages in DEBUG or TRACE level.",
+    "commits": [
+      {
+        "sha": "0ac9488cdf1ff1a0f537193acbba3f24e9ca5af1",
+        "message": "YARN-9676. Add DEBUG and TRACE level messages to AppLogAggregatorImpl and connected classes",
+        "author": "Adam Antal",
+        "date": "2019-08-09T13:42:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/AppLogAggregatorImpl.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/AppLogAggregatorImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 696,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4bae9c5a776df5a0fd0453d9a631119bb8ea198d",
+        "message": "Using {} placeholder, and increasing loglevel if log aggregation failed.",
+        "author": "Adam Antal",
+        "date": "2019-08-12T09:01:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/AppLogAggregatorImpl.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/AppLogAggregatorImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 704,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "b06c2345efffde2955b8c2d5fd954ad73b5d8677",
+    "sha_after": "c89bdfacc8715fa6d72acd85437ab8cd257c8aad",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/AppLogAggregatorImpl.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/AppLogAggregatorImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 17,
+        "PARENT_LOC": 696,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Invert Condition": 1
+    }
+  },
+  "YARN-9679": {
+    "jira_id": "YARN-9679",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Regular code cleanup in TestResourcePluginManager",
+    "description": "There are several things could be cleaned up in this class: \r\n1. stubResourcePluginmanager should be private.\r\n2. In tearDown, the result of dest.delete() should be checked\r\n3. In class CustomizedResourceHandler, there are several methods where exceptions decalarations are unnecessary.\r\n4. Class MyMockNM should be renamed to some more meaningful name.\r\n5. There are some danling javadoc comments, for example: \r\n\r\n{code:java}\r\n/*\r\n   * Make sure ResourcePluginManager is initialized during NM start up.\r\n   */\r\n{code}\r\n\r\n6. There are some exceptions unnecessarily declared on test methods but they are never thrown, an example: \r\ntestLinuxContainerExecutorWithResourcePluginsEnabled\r\n\r\n7. Assert.assertTrue(false); expressions should be replaced with Assert.fail()\r\n8. A handful of usages of Mockito's spy method. This method is not preferred so we should think about replacing it with mocks, somehow.\r\n\r\nThe rest can be figured out by whoever takes this jira :) ",
+    "commits": [
+      {
+        "sha": "9c5c06d25338ff92fbb1ba6fbf3ff8ae187336fd",
+        "message": "YARN-9679. Regular code cleanup in TestResourcePluginManager",
+        "author": "Adam Antal",
+        "date": "2019-08-15T13:12:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/resourceplugin/TestResourcePluginManager.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/resourceplugin/TestResourcePluginManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 43,
+            "PARENT_LOC": 523,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "1845a83cec6563482523d8c34b38c4e36c0aa9df",
+    "sha_after": "22c4f38c4b005a70c9b95d8aaa350763aaec5c5e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/resourceplugin/TestResourcePluginManager.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/resourceplugin/TestResourcePluginManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 43,
+        "LINES_DELETED": 43,
+        "PARENT_LOC": 523,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Change Method Access Modifier": 2,
+      "Rename Class": 1
+    }
+  },
+  "YARN-9689": {
+    "jira_id": "YARN-9689",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Router does not support kerberos proxy when in secure mode",
+    "description": "When we enable kerberos in YARN-Federation mode, we can not get new app since it will throw kerberos exception below.Which should be handled!\r\n{code:java}\r\n2019-07-22,18:43:25,523 WARN org.apache.hadoop.ipc.Client: Exception encountered while connecting to the server : javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]\r\n2019-07-22,18:43:25,528 WARN org.apache.hadoop.yarn.server.router.clientrm.FederationClientInterceptor: Unable to create a new ApplicationId in SubCluster xxx\r\njava.io.IOException: DestHost:destPort xxx , LocalHost:localPort xxx. Failed on local exception: java.io.IOException: javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]\r\n        at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\r\n        at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)\r\n        at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\r\n        at java.lang.reflect.Constructor.newInstance(Constructor.java:423)\r\n        at org.apache.hadoop.net.NetUtils.wrapWithMessage(NetUtils.java:831)\r\n        at org.apache.hadoop.net.NetUtils.wrapException(NetUtils.java:806)\r\n        at org.apache.hadoop.ipc.Client.getRpcResponse(Client.java:1564)\r\n        at org.apache.hadoop.ipc.Client.call(Client.java:1506)\r\n        at org.apache.hadoop.ipc.Client.call(Client.java:1416)\r\n        at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:230)\r\n        at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:116)\r\n        at com.sun.proxy.$Proxy91.getNewApplication(Unknown Source)\r\n        at org.apache.hadoop.yarn.api.impl.pb.client.ApplicationClientProtocolPBClientImpl.getNewApplication(ApplicationClientProtocolPBClientImpl.java:274)\r\n        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\r\n        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\r\n        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\r\n        at java.lang.reflect.Method.invoke(Method.java:498)\r\n        at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:422)\r\n        at org.apache.hadoop.io.retry.RetryInvocationHandler$Call.invokeMethod(RetryInvocationHandler.java:165)\r\n        at org.apache.hadoop.io.retry.RetryInvocationHandler$Call.invoke(RetryInvocationHandler.java:157)\r\n        at org.apache.hadoop.io.retry.RetryInvocationHandler$Call.invokeOnce(RetryInvocationHandler.java:95)\r\n        at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:359)\r\n        at com.sun.proxy.$Proxy92.getNewApplication(Unknown Source)\r\n        at org.apache.hadoop.yarn.server.router.clientrm.FederationClientInterceptor.getNewApplication(FederationClientInterceptor.java:252)\r\n        at org.apache.hadoop.yarn.server.router.clientrm.RouterClientRMService.getNewApplication(RouterClientRMService.java:218)\r\n        at org.apache.hadoop.yarn.api.impl.pb.service.ApplicationClientProtocolPBServiceImpl.getNewApplication(ApplicationClientProtocolPBServiceImpl.java:263)\r\n        at org.apache.hadoop.yarn.proto.ApplicationClientProtocol$ApplicationClientProtocolService$2.callBlockingMethod(ApplicationClientProtocol.java:559)\r\n        at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:525)\r\n        at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:992)\r\n        at org.apache.hadoop.ipc.Server$RpcCall.run(Server.java:885)\r\n        at org.apache.hadoop.ipc.Server$RpcCall.run(Server.java:831)\r\n        at java.security.AccessController.doPrivileged(Native Method)\r\n        at javax.security.auth.Subject.doAs(Subject.java:422)\r\n        at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1716)\r\n        at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2691)\r\nCaused by: java.io.IOException: javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]\r\n        at org.apache.hadoop.ipc.Client$Connection$1.run(Client.java:801)\r\n        at java.security.AccessController.doPrivileged(Native Method)\r\n        at javax.security.auth.Subject.doAs(Subject.java:422)\r\n        at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1716)\r\n        at org.apache.hadoop.ipc.Client$Connection.handleSaslConnectionFailure(Client.java:756)\r\n        at org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:859)\r\n        at org.apache.hadoop.ipc.Client$Connection.access$3800(Client.java:437)\r\n        at org.apache.hadoop.ipc.Client.getConnection(Client.java:1621)\r\n        at org.apache.hadoop.ipc.Client.call(Client.java:1452)\r\n        ... 27 more\r\nCaused by: javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]\r\n        at com.sun.security.sasl.gsskerb.GssKrb5Client.evaluateChallenge(GssKrb5Client.java:211)\r\n        at org.apache.hadoop.security.SaslRpcClient.saslConnect(SaslRpcClient.java:408)\r\n{code}\r\n",
+    "commits": [
+      {
+        "sha": "9318ac722bcdfd78486fa794c1b9c242297738f5",
+        "message": "YARN-9689: Support proxy user for Router to support kerberos",
+        "author": "caneMi",
+        "date": "2019-10-14T11:09:14Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/clientrm/FederationClientInterceptor.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/clientrm/FederationClientInterceptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 854,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6f0190d8e49c91cb4b977472f944c124c53c78e1",
+    "sha_after": "7d0adddf095962751a4e1f0fadc21720d51ceced",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/clientrm/FederationClientInterceptor.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/clientrm/FederationClientInterceptor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 854,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  },
+  "YARN-9966": {
+    "jira_id": "YARN-9966",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Code duplication in UserGroupMappingPlacementRule",
+    "description": "The methods org.apache.hadoop.yarn.server.resourcemanager.placement.UserGroupMappingPlacementRule#validateParentQueue and org.apache.hadoop.yarn.server.resourcemanager.placement.QueuePlacementRuleUtils#validateQueueMappingUnderParentQueue are exactly the same. \r\nIn these 2 classes, we also have a duplicate method named \"extractQueuePath\".\r\n\r\nWe need to extract these to a common method and delete one of these dupes.",
+    "commits": [
+      {
+        "sha": "abe51c035bf060fe4b5bda6e88b50fd939b68379",
+        "message": "YARN-9966. Code duplication in UserGroupMappingPlacementRule",
+        "author": "pingsutw",
+        "date": "2019-11-12T09:19:01Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/QueuePlacementRuleUtils.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/QueuePlacementRuleUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 138,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/UserGroupMappingPlacementRule.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/UserGroupMappingPlacementRule.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 70,
+            "PARENT_LOC": 489,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "30dd0c37c2ab701670c1aab13fc6ee0d8d23064d",
+        "message": "Fix checkstyle warnings",
+        "author": "pingsutw",
+        "date": "2019-11-21T04:37:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/QueuePlacementRuleUtils.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/QueuePlacementRuleUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 139,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/UserGroupMappingPlacementRule.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/UserGroupMappingPlacementRule.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 422,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "da9435182a8fccec743406e089325655138d9de8",
+    "sha_after": "f8e36e03b4e65f173bf2330715dceafdb6111190",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/QueuePlacementRuleUtils.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/QueuePlacementRuleUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 138,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/UserGroupMappingPlacementRule.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/placement/UserGroupMappingPlacementRule.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 72,
+        "PARENT_LOC": 510,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Change Method Access Modifier": 1
+    }
+  },
+  "YARN-10399": {
+    "jira_id": "YARN-10399",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Refactor NodeQueueLoadMonitor class to make it extendable",
+    "description": "Currently the NodeQueueLoadMonitor is written is a way that doesn't allow overriding the node selection logic, this refactor will extract the core logic piece to allow extended class to override the default logics.",
+    "commits": [
+      {
+        "sha": "df923741d5163bae15cf2a9769390649007ca53b",
+        "message": "Refactor NodeQueueLoadMonitor class to make it extendable",
+        "author": "zhengbli",
+        "date": "2020-08-14T18:51:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/ClusterNode.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/ClusterNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 93,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/NodeQueueLoadMonitor.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/NodeQueueLoadMonitor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 101,
+            "LINES_DELETED": 105,
+            "PARENT_LOC": 434,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/QueueLimitCalculator.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/QueueLimitCalculator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 125,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "0932068f0e6a879e42cff44754910f3154562c0f",
+        "message": "Use proper logging format",
+        "author": "zhengbli",
+        "date": "2020-08-14T19:34:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/NodeQueueLoadMonitor.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/NodeQueueLoadMonitor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 430,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "c1e760627947d29632352a6a76ea2d5b57dc8773",
+        "message": "Add more comments",
+        "author": "zhengbli",
+        "date": "2020-08-18T22:16:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/NodeQueueLoadMonitor.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/NodeQueueLoadMonitor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 438,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "dd013f2fdf1ecbeb6c877e26951cd0d8922058b0",
+    "sha_after": "9b9f7ea16a299911fc75738401cb5a0f8713ead7",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/ClusterNode.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/ClusterNode.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 93,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/NodeQueueLoadMonitor.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/NodeQueueLoadMonitor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 112,
+        "LINES_DELETED": 105,
+        "PARENT_LOC": 434,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/QueueLimitCalculator.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/distributed/QueueLimitCalculator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 125,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 32,
+    "refactorings": {
+      "Change Attribute Access Modifier": 10,
+      "Encapsulate Attribute": 4,
+      "Extract Method": 3,
+      "Change Method Access Modifier": 3,
+      "Parameterize Variable": 2,
+      "Change Variable Type": 2,
+      "Add Attribute Modifier": 2,
+      "Move Class": 1,
+      "Rename Variable": 1,
+      "Change Return Type": 1,
+      "Add Parameter": 1,
+      "Change Class Access Modifier": 1,
+      "Remove Class Modifier": 1
+    }
+  },
+  "YARN-10737": {
+    "jira_id": "YARN-10737",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Fix typos in CapacityScheduler#schedule.",
+    "description": "",
+    "commits": [
+      {
+        "sha": "849d69457390f769479a7cd1210a57feb98f1dcc",
+        "message": "YARN-10737: Fix typos in CapacityScheduler#schedule.",
+        "author": "zhuqi",
+        "date": "2021-04-15T03:43:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/CapacityScheduler.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/CapacityScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 3530,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "5404ab4bca1884a7421d17a96b1b188790eecc47",
+    "sha_after": "d2b0675d6132c271feb506fcac699db63962d9b0",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/CapacityScheduler.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/CapacityScheduler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 3441,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Rename Variable": 2
+    }
+  }
+}

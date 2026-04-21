@@ -1,0 +1,166 @@
+{
+  "YARN-11806": {
+    "jira_id": "YARN-11806",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "[JDK18] Skip tests that depend on custom SecurityManager when Java doesn't support it",
+    "description": "TestCGroupsHandlerImpl and TestCapacitySchedulerAsyncScheduling both include tests that depend on setting custom a SecurityManger which is no longer possible on recent Java versions.",
+    "commits": [
+      {
+        "sha": "1c05505a0971af06e62149e803c525d7f6fd6177",
+        "message": "YARN-11806. Skip tests that depend on custom SecurityManager when Java doesn't support it",
+        "author": "stoty",
+        "date": "2025-03-14T14:04:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/linux/resources/TestCGroupsHandlerImpl.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/linux/resources/TestCGroupsHandlerImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 554,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/TestCapacitySchedulerAsyncScheduling.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/TestCapacitySchedulerAsyncScheduling.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 1315,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "0a149188fcd85fcba41b734e06d534225bb650b3",
+    "sha_after": "0928d15c2d388ad0d32a8cce9498f9eddea98c5c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/linux/resources/TestCGroupsHandlerImpl.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/linux/resources/TestCGroupsHandlerImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 554,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/TestCapacitySchedulerAsyncScheduling.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/TestCapacitySchedulerAsyncScheduling.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 1315,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Replace Conditional With Assumption": 1
+    }
+  },
+  "YARN-11876": {
+    "jira_id": "YARN-11876",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Fix AsyncDispatcher crash in TestAppManager",
+    "description": "h3. *Description*\r\n\r\nAfter upgrading to {*}JUnit 5{*}, the {{ResourceManager}} module encounters a crash when running unit tests. Specifically, the failure occurs in the test case {{{}TestAppManager#testRMAppSubmitWithQueueChanged{}}}.\r\nDuring application submission, the test changes the queue assignment, which triggers a {{SchedulerEvent}} that the {{AsyncDispatcher}} cannot handle.\r\n\r\nAs a result, the dispatcher thread throws an exception and terminates, causing the test JVM to exit abnormally with a {{{}SurefireBooterForkException{}}}.\r\n\r\n*Error Details*\r\n{code:java}\r\n2025-10-08 07:56:46,833 ERROR [AsyncDispatcher event handler] event.AsyncDispatcher (MarkerIgnoringBase.java:error(159)) - Error in dispatcher thread\r\njava.lang.Exception: No handler registered for class org.apache.hadoop.yarn.server.resourcemanager.scheduler.event.SchedulerEventType\r\n    at org.apache.hadoop.yarn.event.AsyncDispatcher.dispatch(AsyncDispatcher.java:277)\r\n    at org.apache.hadoop.yarn.event.AsyncDispatcher$1.run(AsyncDispatcher.java:162)\r\n    at java.lang.Thread.run(Thread.java:750) {code}\r\nThis leads to Maven Surefire reporting a forked VM crash:\r\n{code:java}\r\norg.apache.maven.surefire.booter.SurefireBooterForkException: ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\r\nProcess Exit Code: 255\r\nCrashed tests: org.apache.hadoop.yarn.server.resourcemanager.TestAppManager {code}",
+    "commits": [
+      {
+        "sha": "e934ce323eb8ba9bcabd6c1feebfe2006ba32e73",
+        "message": "YARN-11876. Fix AsyncDispatcher crash in TestAppManager.",
+        "author": "slfan1989",
+        "date": "2025-10-07T16:23:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestAppManager.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestAppManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 2126,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "d9c33088628d7146664ba97e4ef5f196b5f12d15",
+    "sha_after": "5f369433d2dbf8f7eea4b6054a58c42a8c713167",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestAppManager.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestAppManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 2126,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Change Variable Type": 1
+    }
+  },
+  "YARN-11898": {
+    "jira_id": "YARN-11898",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "TestRMHA.testTransitionedToStandbyShouldNotHang hangs",
+    "description": "TestRMHA.testTransitionedToStandbyShouldNotHang hangs.\r\n\r\nThis happens both on branch-3.4 and trunk, but on branch-3.4 the tests uses Junit4, and is silently killed after a short while.\r\n\r\nThe same test on trunk uses Junit 5 and hangs forever.",
+    "commits": [
+      {
+        "sha": "307b047e72c1bde94dd00a95ade159f417ef137b",
+        "message": "YARN-11898. TestRMHA.testTransitionedToStandbyShouldNotHang hangs",
+        "author": "stoty",
+        "date": "2025-11-20T18:26:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMHA.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMHA.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1005,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "6574c07afd98edc731d7aef8e99d375aeff411d6",
+        "message": "extend from AbstractHadoopTestBase",
+        "author": "stoty",
+        "date": "2025-11-21T05:39:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMHA.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMHA.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1008,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "1f099fe2db7dbfd1f1bd6e1ef11edcf2d7b59ca8",
+    "sha_after": "6efed68d5f84e22b05edfbb98fd0dc40075cc044",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMHA.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMHA.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1005,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Modify Method Annotation": 1
+    }
+  }
+}

@@ -1,0 +1,1537 @@
+{
+  "YARN-10891": {
+    "jira_id": "YARN-10891",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Extend QueueInfo with max-parallel-apps in CapacityScheduler",
+    "description": "Add max-parallel-apps to the Cluster Scheduler API's [response|[https://hadoop.apache.org/docs/stable/hadoop-yarn/hadoop-yarn-site/ResourceManagerRest.html#Cluster_Scheduler_API]] and extend the Yarn-API's QueueInfoProto with the max-parallel-apps property.\r\n\r\n \r\n\r\nThe REST api can be tested with:\r\n{code:java}\r\ncurl \"http://localhost:8088/ws/v1/cluster/scheduler\" | jq {code}\r\n \r\n\r\nThe protobuf api can be tested with the yarn client:\r\n{code:java}\r\nyarn queue --status root.queue.foo\r\nQueue Information :\r\nQueue Name : foo\r\nQueue Path : root.queue.foo\r\n\tState : RUNNING\r\n\tCapacity : 75.00%\r\n\tCurrent Capacity : .00%\r\n\tMaximum Capacity : 100.00%\r\n\tWeight : -1.00\r\n\tMaximum Parallel Apps : 9\r\n\tDefault Node Label expression : <DEFAULT_PARTITION>\r\n\tAccessible Node Labels : *\r\n\tPreemption : disabled\r\n\tIntra-queue Preemption : disabled {code}\r\n \r\n\r\nAbout the max-parallel-apps:\r\n\r\nMaximum number of applications that can run at the same time. Unlike to {{maximum-applications}}, application submissions are _not_ rejected when this limit is reached. Instead they stay in {{ACCEPTED}} state until they are eligible to run. This can be set for all queues with {{yarn.scheduler.capacity.max-parallel-apps}} and can also be overridden on a per queue basis by setting {{yarn.scheduler.capacity.<queue-path>.max-parallel-apps}}. Integer value is expected. By default, there is no limit.",
+    "commits": [
+      {
+        "sha": "ecb67beb5faac77f8a2d2dc4e5c64e82ab10c30d",
+        "message": "YARN-10891. Extend QueueInfo with max-parallel-apps in CS.",
+        "author": "tomicooler",
+        "date": "2021-08-18T10:46:45Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/QueueInfo.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/QueueInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 328,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/main/java/org/apache/hadoop/yarn/client/cli/QueueCLI.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/main/java/org/apache/hadoop/yarn/client/cli/QueueCLI.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 172,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/ProtocolHATestBase.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/ProtocolHATestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 831,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/cli/TestYarnCLI.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/cli/TestYarnCLI.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 2432,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/QueueInfoPBImpl.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/QueueInfoPBImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 544,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java/org/apache/hadoop/yarn/api/TestPBImplRecords.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java/org/apache/hadoop/yarn/api/TestPBImplRecords.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1334,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/AbstractCSQueue.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/AbstractCSQueue.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1749,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/CSQueue.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/CSQueue.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 480,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/dao/CapacitySchedulerQueueInfo.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/dao/CapacitySchedulerQueueInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 358,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/TestConfigurationMutationACLPolicies.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/TestConfigurationMutationACLPolicies.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/TestSchedulerApplicationAttempt.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/TestSchedulerApplicationAttempt.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 442,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/TestLeafQueue.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/TestLeafQueue.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 5168,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesCapacitySched.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesCapacitySched.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 803,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "9e7b6136ce240e29adaa3043422d324ae2cc8d94",
+        "message": "Trigger the jenkins job",
+        "author": "tomicooler",
+        "date": "2021-08-26T05:25:18Z",
+        "files": []
+      }
+    ],
+    "sha_before": "4c94831364e9258247029c22a222a665771ab4c0",
+    "sha_after": "16e6030e25a6607b9886d01f9174984b1e71fb38",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/QueueInfo.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/QueueInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 328,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/main/java/org/apache/hadoop/yarn/client/cli/QueueCLI.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/main/java/org/apache/hadoop/yarn/client/cli/QueueCLI.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 172,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/ProtocolHATestBase.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/ProtocolHATestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 831,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/cli/TestYarnCLI.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/cli/TestYarnCLI.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 2432,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/QueueInfoPBImpl.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/QueueInfoPBImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 544,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java/org/apache/hadoop/yarn/api/TestPBImplRecords.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java/org/apache/hadoop/yarn/api/TestPBImplRecords.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1334,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/AbstractCSQueue.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/AbstractCSQueue.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1749,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/CSQueue.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/CSQueue.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 480,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/dao/CapacitySchedulerQueueInfo.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/dao/CapacitySchedulerQueueInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 358,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/TestConfigurationMutationACLPolicies.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/TestConfigurationMutationACLPolicies.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 175,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/TestSchedulerApplicationAttempt.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/TestSchedulerApplicationAttempt.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 442,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/TestLeafQueue.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/TestLeafQueue.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 5168,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesCapacitySched.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesCapacitySched.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 803,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Add Parameter": 3,
+      "Add Method Annotation": 1
+    }
+  },
+  "YARN-10884": {
+    "jira_id": "YARN-10884",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "EntityGroupFSTimelineStore fails to parse log files which has empty owner",
+    "description": "Due to [HADOOP-17848|https://issues.apache.org/jira/browse/HADOOP-17848] - Wasb FileSystem sets owner as empty during append operation. \r\n\r\nATS1.5 fails to read such files with below error \r\n{code:java}\r\n\r\n java.lang.IllegalArgumentException: Null user\r\n        at org.apache.hadoop.security.UserGroupInformation.createRemoteUser(UserGroupInformation.java:1271)\r\n        at org.apache.hadoop.security.UserGroupInformation.createRemoteUser(UserGroupInformation.java:1258)\r\n        at org.apache.hadoop.yarn.server.timeline.LogInfo.parsePath(LogInfo.java:141)\r\n        at org.apache.hadoop.yarn.server.timeline.LogInfo.parseForStore(LogInfo.java:114)\r\n        at org.apache.hadoop.yarn.server.timeline.EntityGroupFSTimelineStore$AppLogs.parseSummaryLogs(EntityGroupFSTimelineStore.java:701)\r\n        at org.apache.hadoop.yarn.server.timeline.EntityGroupFSTimelineStore$AppLogs.parseSummaryLogs(EntityGroupFSTimelineStore.java:675)\r\n        at org.apache.hadoop.yarn.server.timeline.EntityGroupFSTimelineStore$ActiveLogParser.run(EntityGroupFSTimelineStore.java:888)\r\n        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)\r\n        at java.util.concurrent.FutureTask.run(FutureTask.java:266)\r\n        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180)\r\n        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293)\r\n        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)\r\n        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)\r\n        at java.lang.Thread.run(Thread.java:748){code}\r\n\r\nIt gets ownership of the file to check ACL. In case of disabled ACL check, this is not required. Will suggest to add anonymous user in case of empty user.\r\n\r\n{code}\r\n    if (owner.isEmpty()) {\r\n      user = \"anonymous\";\r\n    } else {\r\n      user = owner;\r\n    }\r\n{code}\r\n",
+    "commits": [
+      {
+        "sha": "0d81aab6b1c11debd39119dc5cfa287f317c80b9",
+        "message": "YARN 10884 : Parse log files which has empty owner",
+        "author": "Swathi C",
+        "date": "2021-08-22T03:32:05Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1180,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "ece7d0bdb58962305bdfbb0900267fb3ad243873",
+        "message": "Removing the whitespace",
+        "author": "Swathi C",
+        "date": "2021-08-22T16:56:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1191,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "078ff6d66b1f6c98b43f7614fe1013c3b72e64f1",
+        "message": "Added a test case for null user",
+        "author": "Swathi C",
+        "date": "2021-08-23T15:18:25Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1191,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/test/java/org/apache/hadoop/yarn/server/timeline/TestEntityGroupFSTimelineStore.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/test/java/org/apache/hadoop/yarn/server/timeline/TestEntityGroupFSTimelineStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 611,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e68ad6f726331f31d64a2b27f9678560b955e4eb",
+        "message": "Fixed indentations",
+        "author": "Swathi C",
+        "date": "2021-09-06T13:44:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 1191,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "a62ef170bae47539705d354c4410b161142297e2",
+        "message": "Fixed the indentation for test cases",
+        "author": "Swathi C",
+        "date": "2021-09-07T06:42:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/test/java/org/apache/hadoop/yarn/server/timeline/TestEntityGroupFSTimelineStore.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/test/java/org/apache/hadoop/yarn/server/timeline/TestEntityGroupFSTimelineStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 631,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6e3aeb15444bb53711d6b3b0970be9bb6d4db966",
+    "sha_after": "9512c774c00c15e553bcf879a7abff338ce55580",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/main/java/org/apache/hadoop/yarn/server/timeline/EntityGroupFSTimelineStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1181,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/test/java/org/apache/hadoop/yarn/server/timeline/TestEntityGroupFSTimelineStore.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-timeline-pluginstorage/src/test/java/org/apache/hadoop/yarn/server/timeline/TestEntityGroupFSTimelineStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 636,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  },
+  "YARN-11048": {
+    "jira_id": "YARN-11048",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add tests that shows how to delete config values with Mutation API",
+    "description": "There are no tests that really show how to delete configs via the Mutation API. \r\nI discovered that null values coming in the global conf update of the SchedConfUpdateInfo DTO class will be translated to an action that deletes the config from the Configuration object.\r\nThe request field of this global config map is called \"global-updates\" and the corresponding code is [here|https://github.com/apache/hadoop/blob/09c5dfe937f0570cd9494b34d210df2d5f0737a7/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/dao/SchedConfUpdateInfo.java#L47].\r\n\r\nSee the code fragment of MutableCSConfigurationProvider that deletes the configuration: [here|https://github.com/apache/hadoop/blob/d336227e5c63a70db06ac26697994c96ed89d230/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/conf/MutableCSConfigurationProvider.java#L163-L171]\r\n\r\nA good candidate class would be: TestRMWebServicesConfigurationMutation.\r\nHere, we can add a testcase that does some Node label related API actions, as when deleting node labels and de-assigning the capacities from labels and queues, some residual config will stay in the Configuration object, so it's easy to show what's going on and how to get rid of those configs.\r\nThe testcase should perform the following: \r\n\r\n\r\n1. Create a node label by calling the \"add-node-labels\" endpoint.\r\n2. Verify that the node label is created by calling the \"get-node-labels\" endpoint\r\n3. Assign some queues to the new label\r\n4. Set partition capacities to queues\r\n5. Verify if the capacities are applied to the partitions.\r\n6. De-assign node label from the queues + remove the residual configs by sending empty strings or null values. Basically, this is inverting the configs set by step 3.\r\n7. Remove the node label\r\n8. Check if the residual configs are in the Configuration object. They shouldn't be in it.",
+    "commits": [
+      {
+        "sha": "44772d020003e0dea57c55602a1f1abf1bca5f7c",
+        "message": "YARN-11048: Refactor RMWebServices#updateSchedulerConfiguration",
+        "author": "szilard-nemeth",
+        "date": "2021-12-13T17:28:23Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 36,
+            "PARENT_LOC": 2938,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "60032f99fff9e916935e10358968c9aac1056e9c",
+        "message": "Resolve conflicts",
+        "author": "szilard-nemeth",
+        "date": "2021-12-14T20:49:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/ParentQueue.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/ParentQueue.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1655,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 204,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 805,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "ca30bb5ab902d5becea0db1865e0c101a448a957",
+        "message": "YARN-11048: Log requests",
+        "author": "szilard-nemeth",
+        "date": "2021-12-14T19:42:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 22,
+            "PARENT_LOC": 988,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "535c5e36ba76d5426756df25073e9b1abfb43fa6",
+        "message": "YARN-11048: Make tests fail again on residual node label configs",
+        "author": "szilard-nemeth",
+        "date": "2021-12-14T20:01:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 995,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "65dda479e9b6ddcd9d2e2a856b8b38975ff5ad18",
+        "message": "YARN-11048: Set NL capacity / max capacity to empty string so they will be deleted from Configuration",
+        "author": "szilard-nemeth",
+        "date": "2021-12-14T20:27:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 1012,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3feeb747aef4f656e7ada7678bf8a9b0f1fe32a7",
+        "message": "Extract queue names",
+        "author": "szilard-nemeth",
+        "date": "2021-12-14T20:47:18Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 56,
+            "LINES_DELETED": 51,
+            "PARENT_LOC": 1012,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "bf36d7cdebad7229ba5de364f6321ef1d7564f3e",
+        "message": "Fix compilation errors",
+        "author": "szilard-nemeth",
+        "date": "2021-12-14T22:23:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 48,
+            "LINES_DELETED": 39,
+            "PARENT_LOC": 1017,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "fb0bc8e64cbfa7e938526a33b5e54b43825189c1",
+        "message": "Fix QueuePath compilation error",
+        "author": "szilard-nemeth",
+        "date": "2021-12-15T13:22:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1026,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "29903be322b917dd19c58a746b39599a3ac7453b",
+        "message": "fix checkstyle, blank lines, javadoc",
+        "author": "szilard-nemeth",
+        "date": "2021-12-15T22:53:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 2942,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServices.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1101,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 1026,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "039f0d18c56afbe9019c3fdc8760c04d99d3d7b9",
+        "message": "Fix review comments",
+        "author": "szilard-nemeth",
+        "date": "2021-12-16T14:25:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 224,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "bdec546671c8c226554f3dfb445b2ef8cf20a2e4",
+    "sha_after": "a9a5830f311a79f5de314b77cf5fc180d259df5f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/ParentQueue.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/ParentQueue.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1655,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/scheduler/capacity/QueuePath.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 223,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 42,
+        "LINES_DELETED": 36,
+        "PARENT_LOC": 2938,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServices.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1101,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesConfigurationMutation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 249,
+        "LINES_DELETED": 22,
+        "PARENT_LOC": 805,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 9,
+    "refactorings": {
+      "Extract Method": 7,
+      "Rename Method": 1,
+      "Change Return Type": 1
+    }
+  },
+  "YARN-11050": {
+    "jira_id": "YARN-11050",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Typo in method name: RMWebServiceProtocol#removeFromCluserNodeLabels",
+    "description": "",
+    "commits": [
+      {
+        "sha": "467e58ef826480e0cdc6339414837bd6ed046e31",
+        "message": "YARN-11050",
+        "author": "szilard-nemeth",
+        "date": "2021-12-15T23:45:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWSConsts.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWSConsts.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 282,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServiceProtocol.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServiceProtocol.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 748,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2938,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/DefaultRequestInterceptorREST.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/DefaultRequestInterceptorREST.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 585,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/FederationInterceptorREST.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/FederationInterceptorREST.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1369,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/RouterWebServices.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/RouterWebServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 978,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/BaseRouterWebServicesTest.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/BaseRouterWebServicesTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 398,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/MockRESTRequestInterceptor.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/MockRESTRequestInterceptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 376,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/PassThroughRESTRequestInterceptor.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/PassThroughRESTRequestInterceptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 382,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/TestRouterWebServices.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/TestRouterWebServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 334,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/TestRouterWebServicesREST.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/TestRouterWebServicesREST.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1480,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "4483607a4edc0f13264f4ea37abd90aba97e1ef0",
+    "sha_after": "07141426e08e1586833018a8f367d27cd5bcb8e2",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWSConsts.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWSConsts.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 282,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServiceProtocol.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServiceProtocol.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 748,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/RMWebServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 2944,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/DefaultRequestInterceptorREST.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/DefaultRequestInterceptorREST.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 585,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/FederationInterceptorREST.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/FederationInterceptorREST.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1369,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/RouterWebServices.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/main/java/org/apache/hadoop/yarn/server/router/webapp/RouterWebServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 978,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/BaseRouterWebServicesTest.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/BaseRouterWebServicesTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 398,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/MockRESTRequestInterceptor.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/MockRESTRequestInterceptor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 376,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/PassThroughRESTRequestInterceptor.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/PassThroughRESTRequestInterceptor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 382,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/TestRouterWebServices.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/TestRouterWebServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 334,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/TestRouterWebServicesREST.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-router/src/test/java/org/apache/hadoop/yarn/server/router/webapp/TestRouterWebServicesREST.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1480,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 9,
+    "refactorings": {
+      "Rename Method": 9
+    }
+  },
+  "YARN-11116": {
+    "jira_id": "YARN-11116",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Migrate Times util from SimpleDateFormat to thread-safe DateTimeFormatter class",
+    "description": "Came across a stack trace with SimpleDateFormatter in it which led me to investigate current practices\r\n\r\n \r\n\r\n{noformat}\r\n\r\n 6578 \"IPC Server handler 29 on 8032\" #797 daemon prio=5 os_prio=0 tid=0x00007fb6527d0000 nid=0x953b runnable [0x00007fb5ba034000]\r\n 6579    java.lang.Thread.State: RUNNABLE\r\n 6580     at org.apache.hadoop.yarn.util.Times.formatISO8601(Times.java:95)\r\n 6581     at org.apache.hadoop.yarn.server.resourcemanager.rmapp.RMAppImpl.createAndGetApplicationReport(RMAppImpl.java:810)\r\n 6582     at org.apache.hadoop.yarn.server.resourcemanager.ClientRMService.getApplicationReport(ClientRMService.java:396)\r\n 6583     at org.apache.hadoop.yarn.api.impl.pb.service.ApplicationClientProtocolPBServiceImpl.getApplicationReport(ApplicationClientProtocolPBServiceImpl.java:224)\r\n 6584     at org.apache.hadoop.yarn.proto.ApplicationClientProtocol$ApplicationClientProtocolService$2.callBlockingMethod(ApplicationClientProtocol.java:529)\r\n 6585     at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:530)\r\n 6586     at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:500)\r\n 6587     at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:1069)\r\n 6588     at org.apache.hadoop.ipc.Server$RpcCall.run(Server.java:1003)\r\n 6589     at org.apache.hadoop.ipc.Server$RpcCall.run(Server.java:936)\r\n 6590     at java.security.AccessController.doPrivileged(Native Method)\r\n 6591     at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:2135)\r\n 6592     at org.apache.hadoop.security.UserGroupInformation.doAsPrivileged(UserGroupInformation.java:2123)\r\n 6593     at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2875)\r\n 6594 \r\n{noformat}\r\n\r\n \r\n\r\nDateTimeFormatter is thread-safe meaning no need to wrap the class in Thread local as they can be reused safely across threads. In addition, the new classes are slightly more performant.",
+    "commits": [
+      {
+        "sha": "e194e3fae5ca1fb7e807de78255b0a8f162a4914",
+        "message": "YARN-11116. Migrate Times util from SimpleDateFormat to thread-safe DateTimeFormatter class",
+        "author": "Jonathan Eagles",
+        "date": "2022-04-27T22:33:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/util/Times.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/util/Times.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java/org/apache/hadoop/yarn/util/TestTimes.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java/org/apache/hadoop/yarn/util/TestTimes.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a74acc755edcde38203416f9d5225343ea877c08",
+    "sha_after": "d4a91bd0c0d9d438ffe95fafee0212499b0abcfd",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/util/Times.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/util/Times.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java/org/apache/hadoop/yarn/util/TestTimes.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java/org/apache/hadoop/yarn/util/TestTimes.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 64,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Attribute": 1
+    }
+  },
+  "YARN-11125": {
+    "jira_id": "YARN-11125",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Backport YARN-6483 to branch-2.10",
+    "description": "Backport YARN-6483 to branch-2.10",
+    "commits": [
+      {
+        "sha": "7e81bd07f62c945e1c5317ce5cef5e7455eea797",
+        "message": "YARN-11125. Backport YARN-6483 to branch-2.10",
+        "author": "Ashutosh Gupta",
+        "date": "2022-05-03T01:01:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/NodeReport.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/NodeReport.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 230,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/NodeUpdateType.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/NodeUpdateType.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/ProtocolHATestBase.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/ProtocolHATestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 25,
+            "PARENT_LOC": 837,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/cli/TestYarnCLI.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/cli/TestYarnCLI.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 2261,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/NodeReportPBImpl.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/NodeReportPBImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 45,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 390,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/ProtoUtils.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/ProtoUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 498,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/main/java/org/apache/hadoop/yarn/server/utils/BuilderUtils.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/main/java/org/apache/hadoop/yarn/server/utils/BuilderUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 520,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ClientRMService.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ClientRMService.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1855,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/DecommissioningNodesWatcher.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/DecommissioningNodesWatcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 439,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/DefaultAMSProcessor.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/DefaultAMSProcessor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 475,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/NodesListManager.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/NodesListManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 60,
+            "LINES_DELETED": 24,
+            "PARENT_LOC": 672,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/NodesListManagerEventType.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/NodesListManagerEventType.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 24,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMApp.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMApp.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 314,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMAppImpl.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMAppImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 2106,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMAppNodeUpdateEvent.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMAppNodeUpdateEvent.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 49,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmnode/RMNode.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmnode/RMNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 187,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmnode/RMNodeImpl.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmnode/RMNodeImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1567,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/MockRM.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/MockRM.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1353,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestClientRMService.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestClientRMService.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 69,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 2165,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestDecommissioningNodesWatcher.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestDecommissioningNodesWatcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 130,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMNodeTransitions.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMNodeTransitions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 1100,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestResourceTrackerService.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestResourceTrackerService.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 121,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 2214,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/applicationsmanager/MockAsm.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/applicationsmanager/MockAsm.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 385,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/applicationsmanager/TestAMRMRPCNodeUpdates.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/applicationsmanager/TestAMRMRPCNodeUpdates.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 79,
+            "LINES_DELETED": 28,
+            "PARENT_LOC": 215,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/MockRMApp.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/MockRMApp.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 345,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1bf8edd848e28c983dd4d432d3cbc601826b725f",
+        "message": "Ignored testGracefulDecommissionDefaultTimeoutResolution",
+        "author": "hotcodemacha",
+        "date": "2022-05-08T00:20:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestResourceTrackerService.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestResourceTrackerService.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2319,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "b4d9905fd67e0fbda9c52a649f5c908ffb848660",
+    "sha_after": "ec5f3e4ed16c4aedf06fcbf0eda28e7bcfe8d22e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/NodeReport.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/NodeReport.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 39,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 230,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/NodeUpdateType.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/NodeUpdateType.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 29,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/ProtocolHATestBase.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/ProtocolHATestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 25,
+        "PARENT_LOC": 837,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/cli/TestYarnCLI.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/cli/TestYarnCLI.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 2261,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/NodeReportPBImpl.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/NodeReportPBImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 45,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 390,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/ProtoUtils.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/records/impl/pb/ProtoUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 498,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/main/java/org/apache/hadoop/yarn/server/utils/BuilderUtils.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/main/java/org/apache/hadoop/yarn/server/utils/BuilderUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 520,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ClientRMService.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ClientRMService.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1855,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/DecommissioningNodesWatcher.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/DecommissioningNodesWatcher.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 32,
+        "PARENT_LOC": 439,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/DefaultAMSProcessor.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/DefaultAMSProcessor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 475,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/NodesListManager.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/NodesListManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 60,
+        "LINES_DELETED": 24,
+        "PARENT_LOC": 672,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/NodesListManagerEventType.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/NodesListManagerEventType.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 24,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMApp.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMApp.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 314,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMAppImpl.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMAppImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 2106,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMAppNodeUpdateEvent.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/RMAppNodeUpdateEvent.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 49,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmnode/RMNode.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmnode/RMNode.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 187,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmnode/RMNodeImpl.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/rmnode/RMNodeImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1567,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/MockRM.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/MockRM.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1353,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestClientRMService.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestClientRMService.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 69,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 2165,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestDecommissioningNodesWatcher.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestDecommissioningNodesWatcher.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 130,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMNodeTransitions.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestRMNodeTransitions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 28,
+        "LINES_DELETED": 21,
+        "PARENT_LOC": 1100,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestResourceTrackerService.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestResourceTrackerService.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 123,
+        "LINES_DELETED": 16,
+        "PARENT_LOC": 2214,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/applicationsmanager/MockAsm.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/applicationsmanager/MockAsm.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 385,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/applicationsmanager/TestAMRMRPCNodeUpdates.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/applicationsmanager/TestAMRMRPCNodeUpdates.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 79,
+        "LINES_DELETED": 28,
+        "PARENT_LOC": 215,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/MockRMApp.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/rmapp/MockRMApp.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 345,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 21,
+    "refactorings": {
+      "Add Parameter": 7,
+      "Change Parameter Type": 5,
+      "Extract Method": 3,
+      "Change Variable Type": 2,
+      "Rename Variable": 1,
+      "Change Attribute Type": 1,
+      "Replace Generic With Diamond": 1,
+      "Rename Parameter": 1
+    }
+  },
+  "YARN-11172": {
+    "jira_id": "YARN-11172",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Fix testDelegationToken",
+    "description": "UT fail after HDFS-16563, other PR is blocked.\r\n{code:java}\r\n[ERROR] testDelegationToken(org.apache.hadoop.yarn.server.resourcemanager.TestClientRMTokens)  Time elapsed: 17.379 s  <<< FAILURE!\r\njava.lang.AssertionError\r\n\tat org.junit.Assert.fail(Assert.java:87)\r\n\tat org.junit.Assert.assertTrue(Assert.java:42)\r\n\tat org.junit.Assert.assertTrue(Assert.java:53)\r\n\tat org.apache.hadoop.yarn.server.resourcemanager.TestClientRMTokens.testDelegationToken(TestClientRMTokens.java:207)\r\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\r\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\r\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) {code}",
+    "commits": [
+      {
+        "sha": "235be55298bb38e0d61eed1c72ace8be231672a0",
+        "message": "YARN-11172. Fix TestClientRMTokens#testDelegationToken introduced by HDFS-16563.",
+        "author": "zhengchenyu",
+        "date": "2022-06-06T12:00:01Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/token/delegation/AbstractDelegationTokenSecretManager.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/token/delegation/AbstractDelegationTokenSecretManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 998,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestClientRMTokens.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestClientRMTokens.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 592,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2ab32a9a7374d80f32a796763726a4cc74aab7f6",
+        "message": "trigger ci",
+        "author": "zhengchenyu",
+        "date": "2022-06-12T01:52:04Z",
+        "files": []
+      }
+    ],
+    "sha_before": "e199da3fae1c82e87f88c8c50f6a96c6515e2edd",
+    "sha_after": "80446dcd086b23078b0a4d913b6baf25164bf9c3",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/token/delegation/AbstractDelegationTokenSecretManager.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/token/delegation/AbstractDelegationTokenSecretManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 998,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestClientRMTokens.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/TestClientRMTokens.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 592,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Change Thrown Exception Type": 1
+    }
+  }
+}
