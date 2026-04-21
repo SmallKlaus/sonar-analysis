@@ -1,0 +1,1714 @@
+{
+  "HADOOP-10848": {
+    "jira_id": "HADOOP-10848",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Cleanup calling of sun.security.krb5.Config",
+    "description": "As was told by Max (Oracle), JDK9 is likely to block all accesses to sun.* classes.\n\nIn ./hadoop-common-project/hadoop-auth/src/main/java/org/apache/hadoop/security/authentication/util/KerberosUtil.java,\n\nsun.security.krb5.Config is called against the method getDefaultRealm() to get default Kerberos realm. It was proposed to remove the call by Oracle:\n{code}\nnew javax.security.auth.kerberos.KerberosPrincipal(\"dummy\").toString().split(\"@\")[1]\n{code}",
+    "commits": [
+      {
+        "sha": "d019ad51df7e84d6d28ef24f7f69122a0dbe61e4",
+        "message": "HADOOP-16935. Backport HADOOP-10848. Cleanup calling of sun.security.krb5.Config.",
+        "author": "aajisaka",
+        "date": "2019-04-08T01:02:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-auth/src/main/java/org/apache/hadoop/security/authentication/util/KerberosUtil.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-auth/src/main/java/org/apache/hadoop/security/authentication/util/KerberosUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 24,
+            "PARENT_LOC": 454,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-registry/src/main/java/org/apache/hadoop/registry/client/impl/zk/RegistrySecurity.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-registry/src/main/java/org/apache/hadoop/registry/client/impl/zk/RegistrySecurity.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 1143,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "1bbbef38d02015a8d74f21492147f32347af4226",
+    "sha_after": "29e1880d276da27df2c90cbefb463a0fa8a81e46",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-auth/src/main/java/org/apache/hadoop/security/authentication/util/KerberosUtil.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-auth/src/main/java/org/apache/hadoop/security/authentication/util/KerberosUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 24,
+        "PARENT_LOC": 454,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-registry/src/main/java/org/apache/hadoop/registry/client/impl/zk/RegistrySecurity.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-registry/src/main/java/org/apache/hadoop/registry/client/impl/zk/RegistrySecurity.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 13,
+        "PARENT_LOC": 1143,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Extract Variable": 1,
+      "Inline Variable": 1
+    }
+  },
+  "HADOOP-16396": {
+    "jira_id": "HADOOP-16396",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Allow authoritative mode on a subdirectory",
+    "description": "Let's allow authoritative mode to be applied only to a subset of a bucket. This is coming primarily from a Hive warehousing use-case where Hive-managed tables can benefit from query planning, but can't speak for the rest of the bucket. This should be limited in scope and is not a general attempt to allow configuration on a per-path basis, as configuration is currently done on a per-process of a per-bucket basis.\r\n\r\nI propose a new property (we could overload fs.s3a.metadatastore.authoritative, but that seems likely to cause confusion somewhere). A string would be allowed that would then be qualified in the context of the FileSystem, and used to check if it is a prefix for a given path. If it is, we act as though authoritative mode is enabled. If not, we revert to the existing behavior of fs.s3a.metadatastore.authoritative (which in practice will probably be false, the default, if the new property is in use).\r\n\r\nLet's be clear about a few things:\r\n* Currently authoritative mode only short-cuts the process to avoid a round-trip to S3 if we know it is safe to do so. This means that even when authoritative mode is enabled for a bucket, if the metadata store does not have a complete (or \"authoritative\") current listing cached, authoritative mode still has no effect. This will still apply.\r\n* This will only apply to getFileStatus and listStatus, and internal calls to their internal counterparts. No other API is currently using authoritative mode to change behavior.\r\n* This will only apply to getFileStatus and listStatus calls INSIDE the configured prefix. If there is a recursvie listing on the parent of the configured prefix, no change in behavior will be observed.",
+    "commits": [
+      {
+        "sha": "38cd137a134bd2d81ba295fb94827bb9a3119dad",
+        "message": "HADOOP-16396",
+        "author": "Sean Mackrory",
+        "date": "2019-06-26T22:38:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 760,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 4226,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/commit/CommitOperations.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/commit/CommitOperations.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 727,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBMetadataStore.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBMetadataStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2410,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3GuardTool.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3GuardTool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1691,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestAuthoritativePath.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestAuthoritativePath.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 308,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3GuardOutOfBandOperations.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3GuardOutOfBandOperations.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 43,
+            "PARENT_LOC": 975,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 51,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1219,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3637cf1015d7b18d91ddf698089b21ce8d75383f",
+        "message": "Iterating on Gabor's feedback",
+        "author": "Sean Mackrory",
+        "date": "2019-07-01T15:14:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 34,
+            "PARENT_LOC": 4255,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3Guard.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3Guard.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 775,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestAuthoritativePath.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestAuthoritativePath.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 23,
+            "PARENT_LOC": 308,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a2a8be18cb5e912c8de0ea6beec1de4a99de656b",
+    "sha_after": "34747c373f40a33d36a2e21ecb33fa791ccd939f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 760,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 4226,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/commit/CommitOperations.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/commit/CommitOperations.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 727,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBMetadataStore.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBMetadataStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 2410,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3Guard.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3Guard.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 775,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3GuardTool.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3GuardTool.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1691,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestAuthoritativePath.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestAuthoritativePath.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 301,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3GuardOutOfBandOperations.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3GuardOutOfBandOperations.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 43,
+        "PARENT_LOC": 975,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 51,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1219,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 10,
+    "refactorings": {
+      "Replace Attribute With Variable": 4,
+      "Change Method Access Modifier": 2,
+      "Add Method Annotation": 1,
+      "Rename Attribute": 1,
+      "Add Method Modifier": 1,
+      "Move Method": 1
+    }
+  },
+  "HADOOP-16158": {
+    "jira_id": "HADOOP-16158",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "DistCp to support checksum validation when copy blocks in parallel",
+    "description": "Copying blocks in parallel (enabled when blocks per chunk > 0) is a great DistCp improvement that can hugely speed up copying big files. \r\n\r\nBut its checksum validation is skipped, e.g. in `RetriableFileCopyCommand.java`\r\n\r\n \r\n{code:java}\r\nif (!source.isSplit()) {\r\n  compareCheckSums(sourceFS, source.getPath(), sourceChecksum,\r\n      targetFS, targetPath);\r\n}\r\n{code}\r\nand this could result in checksum/data mismatch without notifying developers/users (e.g. HADOOP-16049).\r\n\r\nI'd like to provide a patch to add the checksum validation.\r\n\r\n ",
+    "commits": [
+      {
+        "sha": "f26004c4be12451ff6a6b391dccdfd906ecf5bb7",
+        "message": "DistCp to support checksum validation when copy blocks in parallel",
+        "author": "kai33",
+        "date": "2019-06-06T15:41:10Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/CopyCommitter.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/CopyCommitter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 655,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/RetriableFileCopyCommand.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/RetriableFileCopyCommand.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 54,
+            "PARENT_LOC": 411,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/util/DistCpUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/util/DistCpUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 600,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/mapred/TestCopyCommitter.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/mapred/TestCopyCommitter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 156,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 461,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/util/TestDistCpUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/util/TestDistCpUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 67,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1306,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7b24010983cb54cd01ac2c9d289f1a16fb53799b",
+        "message": "address review comments",
+        "author": "kai33",
+        "date": "2019-08-12T18:26:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/util/DistCpUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/util/DistCpUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 657,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2dcb47d41378ee3f94ecf635de5bbe53eaa504a0",
+        "message": "add checksums comparison test for combine mode",
+        "author": "kai33",
+        "date": "2019-08-18T11:21:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/util/TestDistCpUtilsWithCombineMode.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/util/TestDistCpUtilsWithCombineMode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 115,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a707bb7c1b1fa9d14470b8880d233cb62e5d9aa7",
+    "sha_after": "c765584eb231f8482f5b90b7e8f61f9f7a931d09",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/CopyCommitter.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/CopyCommitter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 655,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/RetriableFileCopyCommand.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/RetriableFileCopyCommand.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 54,
+        "PARENT_LOC": 411,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/util/DistCpUtils.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/util/DistCpUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 60,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 600,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/mapred/TestCopyCommitter.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/mapred/TestCopyCommitter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 156,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 461,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/util/TestDistCpUtils.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/util/TestDistCpUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 67,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1306,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/util/TestDistCpUtilsWithCombineMode.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/util/TestDistCpUtilsWithCombineMode.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 115,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 6,
+    "refactorings": {
+      "Add Parameter": 2,
+      "Remove Attribute Modifier": 1,
+      "Change Method Access Modifier": 1,
+      "Add Method Modifier": 1,
+      "Move And Rename Method": 1
+    }
+  },
+  "HADOOP-16445": {
+    "jira_id": "HADOOP-16445",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Allow separate custom signing algorithms for S3 and DDB",
+    "description": "fs.s3a.signing-algorithm allows overriding the signer. This applies to both the S3 and DDB clients. Need to be able to specify separate signing algorithm overrides for S3 and DDB.\r\n\r\n ",
+    "commits": [
+      {
+        "sha": "586cff1b1c6006762e4b504e215dc0acc88c309c",
+        "message": "HADOOP-16445. Allow separate custom signing algorithms for S3 and DDB",
+        "author": "sidseth",
+        "date": "2019-07-29T19:59:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 792,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/DefaultS3ClientFactory.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/DefaultS3ClientFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 134,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 4302,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 72,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1678,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBClientFactory.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBClientFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 134,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AConfiguration.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 138,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 620,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "38a3f367cdd895d5308286a792fde4f4639f4e4a",
+        "message": "Incorporated review comments, and other changes.",
+        "author": "sidseth",
+        "date": "2019-09-18T06:21:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 820,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/DefaultS3ClientFactory.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/DefaultS3ClientFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 4304,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 68,
+            "PARENT_LOC": 1747,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/SignerManager.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/SignerManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 99,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/STSClientFactory.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/STSClientFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 237,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/delegation/SessionTokenBinding.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/delegation/SessionTokenBinding.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 424,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBClientFactory.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBClientFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AConfiguration.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 87,
+            "PARENT_LOC": 758,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/TestSignerManager.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/TestSignerManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 124,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "52d44c2710fa736853b33e5fbfeb6ae4d25b9dcd",
+        "message": "Checkstyle fixes.",
+        "author": "sidseth",
+        "date": "2019-09-18T09:28:42Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 4308,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 1722,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/SignerManager.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/SignerManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/TestSignerManager.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/TestSignerManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 124,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3fbe3b04b8b39ed35c437912635c6ff727f7a207",
+        "message": "Removed deprecation warnings",
+        "author": "sidseth",
+        "date": "2019-09-18T18:42:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3ATemporaryCredentials.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3ATemporaryCredentials.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 446,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1346,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d1ba60e5d55a8ff204316122578f1c72f705e91b",
+        "message": "re-ordered imports",
+        "author": "sidseth",
+        "date": "2019-09-19T15:31:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/SignerManager.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/SignerManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "007360f68a2fb6b5fca128d6132783001c65eb61",
+        "message": "More import order fixes",
+        "author": "sidseth",
+        "date": "2019-09-20T18:16:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/STSClientFactory.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/STSClientFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 240,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/delegation/SessionTokenBinding.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/delegation/SessionTokenBinding.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 426,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBClientFactory.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBClientFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 136,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AConfiguration.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 687,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/TestSignerManager.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/TestSignerManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 129,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "dbdc612b3b67b015b8811cd021f0fd1b97015a9a",
+    "sha_after": "e02b1023c2f42b6792d2941c1f987ae06259b021",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/Constants.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 38,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 799,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/DefaultS3ClientFactory.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/DefaultS3ClientFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 134,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 4302,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AUtils.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 45,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1701,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/SignerManager.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/SignerManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 99,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/STSClientFactory.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/STSClientFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 237,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/delegation/SessionTokenBinding.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/auth/delegation/SessionTokenBinding.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 424,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBClientFactory.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/DynamoDBClientFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 134,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AConfiguration.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 68,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 620,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3ATemporaryCredentials.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3ATemporaryCredentials.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 446,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1346,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/TestSignerManager.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/TestSignerManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 130,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Extract Method": 1,
+      "Add Method Annotation": 1
+    }
+  },
+  "HADOOP-15691": {
+    "jira_id": "HADOOP-15691",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Add PathCapabilities to FS and FC to complement StreamCapabilities",
+    "description": "This complements the {{StreamCapabilities}} interface by allowing applications \r\nto probe for a specific path on a specific instance of a {{FileSystem}}\r\nor {{FileContext}} offering a specific feature.\r\n\r\nThis is intended to allow applications to determine \r\n\r\n* Whether a method is implemented before calling it and dealing with\r\n  any subsequent UnsupportedOperationException.\r\n* Whether a specific feature is believed to be available in the remote store.\r\n\r\nAs well as a common set of capabilities defined in CommonPathCapabilities,\r\nfile systems are free to add their own capabilities, prefixed with\r\n fs. + schema + .\r\n \r\nThe plan is to identify and document more capabilities -and for file systems\r\nwhich add new features, for a declaration of the availability of the feature to\r\nalways be available.\r\n\r\nThe interface may be offered by other classes too; there is no restriction here.\r\n\r\nNote\r\n\r\n* The remote store is not expected to be checked for the feature;\r\n  It is more a check of client API and the client's configuration/knowledge\r\n  of the state of the remote system.\r\n* Permissions are not checked.\r\n\r\nThis is needed for \r\n* HADOOP-14707: declare that a dest FS supports permissions\r\n* object stores to declare that they offer PUT-in-place alongside (slow-rename)\r\n* Anything else where the implementation semantics of an FS is so different caller apps would benefit from probing for the underlying semantics\r\n\r\nI know, we want all filesystem to work *exactly* the same. But it doesn't hold, especially for object stores —and to efficiently use them, callers need to be able to ask for specific features.",
+    "commits": [
+      {
+        "sha": "2a7d4fdd7fb44e5f545e6fdb738aa4ef7772eb7d",
+        "message": "HADOOP-15691 Add PathCapabilities to FileSystem and FileContext.",
+        "author": "steveloughran",
+        "date": "2019-09-25T11:16:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/AbstractFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/AbstractFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1312,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/ChecksumFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/ChecksumFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 783,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/CommonPathCapabilities.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/CommonPathCapabilities.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 126,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/DelegateToFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/DelegateToFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 264,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileContext.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 2849,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 4286,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FilterFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FilterFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 694,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FilterFs.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FilterFs.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 431,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/HarFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/HarFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1296,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/PathCapabilities.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/PathCapabilities.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 61,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/RawLocalFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/RawLocalFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1063,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/http/AbstractHttpFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/http/AbstractHttpFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/FsLinkResolution.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/FsLinkResolution.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 98,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/PathCapabilitiesSupport.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/PathCapabilitiesSupport.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/viewfs/ChRootedFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/viewfs/ChRootedFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 477,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/viewfs/ViewFileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/viewfs/ViewFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1644,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/AbstractContractAppendTest.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/AbstractContractAppendTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 152,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/AbstractContractConcatTest.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/AbstractContractConcatTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/ContractTestUtils.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/ContractTestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 76,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 1806,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DistributedFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DistributedFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 3403,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/client/DfsPathCapabilities.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/client/DfsPathCapabilities.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 62,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2425,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1564,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3ABlockOutputStream.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3ABlockOutputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 774,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 3396,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/commit/CommitConstants.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/commit/CommitConstants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 240,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3GuardTool.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3GuardTool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1563,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AMiscOperations.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AMiscOperations.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 237,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1023,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/commit/ITestCommitOperations.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/commit/ITestCommitOperations.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 547,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/s3guard/AbstractS3GuardToolTestBase.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/s3guard/AbstractS3GuardToolTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 484,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-azure-datalake/src/main/java/org/apache/hadoop/fs/adl/AdlFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-azure-datalake/src/main/java/org/apache/hadoop/fs/adl/AdlFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1032,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-azure/src/main/java/org/apache/hadoop/fs/azure/NativeAzureFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-azure/src/main/java/org/apache/hadoop/fs/azure/NativeAzureFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 3905,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-azure/src/main/java/org/apache/hadoop/fs/azurebfs/AzureBlobFileSystem.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-azure/src/main/java/org/apache/hadoop/fs/azurebfs/AzureBlobFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1123,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "da127909a23313dd932e942a4b58efa744248a15",
+        "message": "HADOOP-15961 fix import checkstyles on the backport",
+        "author": "steveloughran",
+        "date": "2020-08-17T17:27:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/package-info.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/package-info.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 49,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DistributedFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DistributedFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 3425,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 2455,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1594,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/commit/ITestCommitOperations.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/commit/ITestCommitOperations.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 544,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "2a40a33dfecb17eba42f67c0151be9b1e86740aa",
+    "sha_after": "42c71a5790e1e6714e4ad57d33fb3df1580ac29f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/AbstractFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/AbstractFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1312,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/ChecksumFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/ChecksumFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 783,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/CommonPathCapabilities.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/CommonPathCapabilities.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 126,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/DelegateToFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/DelegateToFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 264,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileContext.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 2849,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 4286,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FilterFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FilterFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 694,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FilterFs.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FilterFs.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 431,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/HarFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/HarFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1296,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/PathCapabilities.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/PathCapabilities.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 61,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/RawLocalFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/RawLocalFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1063,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/http/AbstractHttpFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/http/AbstractHttpFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 153,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/FsLinkResolution.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/FsLinkResolution.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 98,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/PathCapabilitiesSupport.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/PathCapabilitiesSupport.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/package-info.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/impl/package-info.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 49,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/viewfs/ChRootedFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/viewfs/ChRootedFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 477,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/viewfs/ViewFileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/viewfs/ViewFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1644,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/AbstractContractAppendTest.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/AbstractContractAppendTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 152,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/AbstractContractConcatTest.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/AbstractContractConcatTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 96,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/ContractTestUtils.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/contract/ContractTestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 76,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 1806,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DistributedFileSystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DistributedFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 3403,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/client/DfsPathCapabilities.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/client/DfsPathCapabilities.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 62,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2425,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 29,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1564,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3ABlockOutputStream.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3ABlockOutputStream.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 774,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/S3AFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 3396,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/commit/CommitConstants.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/commit/CommitConstants.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 240,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3GuardTool.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3a/s3guard/S3GuardTool.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1563,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AMiscOperations.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/ITestS3AMiscOperations.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 237,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/S3ATestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1023,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/commit/ITestCommitOperations.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/commit/ITestCommitOperations.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 547,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/s3guard/AbstractS3GuardToolTestBase.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-aws/src/test/java/org/apache/hadoop/fs/s3a/s3guard/AbstractS3GuardToolTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 484,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-azure-datalake/src/main/java/org/apache/hadoop/fs/adl/AdlFileSystem.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-azure-datalake/src/main/java/org/apache/hadoop/fs/adl/AdlFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1032,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-azure/src/main/java/org/apache/hadoop/fs/azure/NativeAzureFileSystem.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-azure/src/main/java/org/apache/hadoop/fs/azure/NativeAzureFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 3905,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-azure/src/main/java/org/apache/hadoop/fs/azurebfs/AzureBlobFileSystem.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-azure/src/main/java/org/apache/hadoop/fs/azurebfs/AzureBlobFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1123,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Add Method Annotation": 2,
+      "Extract Method": 1,
+      "Add Thrown Exception Type": 1,
+      "Extract Variable": 1
+    }
+  },
+  "HADOOP-16678": {
+    "jira_id": "HADOOP-16678",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Review of ArrayWritable",
+    "description": "I originally wanted to include a {{toString()}} method so I could debug an issue in another project, but since I opened up, figured I'd put in a few more changes for cleanup.",
+    "commits": [
+      {
+        "sha": "09bc684dcf2bd0dfe2eebe226e064f6c3441f0c2",
+        "message": "HADOOP-16678: Review of ArrayWritable",
+        "author": "belugabehr",
+        "date": "2019-11-04T18:23:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/ArrayWritable.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/ArrayWritable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 109,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/TestArrayWritable.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/TestArrayWritable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "2ffec347eb4303ad78643431cd2e517d54bc3282",
+    "sha_after": "6f0190d8e49c91cb4b977472f944c124c53c78e1",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/ArrayWritable.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/ArrayWritable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 109,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/TestArrayWritable.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/TestArrayWritable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 15,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Add Attribute Modifier": 1,
+      "Change Return Type": 1,
+      "Modify Method Annotation": 1,
+      "Remove Method Annotation": 1
+    }
+  },
+  "HADOOP-16661": {
+    "jira_id": "HADOOP-16661",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Support TLS 1.3",
+    "description": "HADOOP-16152 is going to update Jetty from 9.3 to 9.4.20, which should allow us to support TLS 1.3 https://www.eclipse.org/lists/jetty-users/msg08569.html\r\n\r\nWe should test and document the support of TLS 1.3. Assuming its support depends on JDK, then it is likely only supported in JDK11 and above.",
+    "commits": [
+      {
+        "sha": "d9e2dd74b75beba80e6d9f845285fc82cfbb7d68",
+        "message": "tls1.3",
+        "author": "jojochuang",
+        "date": "2020-03-05T03:13:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 478,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2670160d36809ddea601d51a0017052f6d866994",
+        "message": "Added test to verify TLSv1.3 support. Updated core-default.xml to add description for TLSv1.3",
+        "author": "jojochuang",
+        "date": "2020-03-06T01:32:11Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 480,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "dda227280d3325016aba932bf194730f2cf87b70",
+        "message": "Update code per Akira's review comments.",
+        "author": "jojochuang",
+        "date": "2020-03-07T01:18:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 503,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ea688631b02bee4d514b4baa4d754fac8c41ff3a",
+    "sha_after": "f197f05cff17a3ae8c4f2d377a0375b38c404879",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 48,
+        "LINES_DELETED": 13,
+        "PARENT_LOC": 478,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Rename Attribute": 2,
+      "Extract Variable": 1
+    }
+  }
+}

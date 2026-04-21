@@ -1,0 +1,1154 @@
+{
+  "HADOOP-18573": {
+    "jira_id": "HADOOP-18573",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Improve error reporting on non-standard kerberos names",
+    "description": "The kerberos RFC does not declare any restriction on\r\ncharacters used in kerberos names, though\r\nimplementations MAY be more restrictive.\r\n\r\nIf the kerberos controller supports use non-conventional\r\nuser names *and the kerberos admin chooses to use them*\r\nthis can confuse some of the parsing.\r\n\r\nThe obvious solution is for the enterprise admins to \"not do that\"\r\nas a lot of things break, bits of hadoop included.\r\n\r\nHarden the hadoop code slightly so at least we fail more gracefully,\r\nso people can then get in touch with their sysadmin and tell them\r\nto stop it.\r\n\r\nNote: given the kerberos admin is implicitly a superuser, being\r\nable to create malformed principal names.\r\ndoesn't give them any privileges, just offers a different way\r\nto stop the cluster working.",
+    "commits": [
+      {
+        "sha": "e4379b6f13040f3136ccb452430c19e963bc3ea2",
+        "message": "HADOOP-18573. Improve error reporting on non-standard kerberos names",
+        "author": "steveloughran",
+        "date": "2022-12-13T11:24:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/ShellBasedIdMapping.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/ShellBasedIdMapping.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 718,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/Shell.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/Shell.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1463,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "32414cfe46c6b691f6fa84896207941124dd1317",
+    "sha_after": "f7b1bb4dccc83eb26e661241ebf9f767f52b291b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/ShellBasedIdMapping.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/ShellBasedIdMapping.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 718,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/Shell.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/Shell.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1463,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Extract Variable": 1,
+      "Add Method Annotation": 1,
+      "Change Method Access Modifier": 1
+    }
+  },
+  "HADOOP-18592": {
+    "jira_id": "HADOOP-18592",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Sasl connection failure should log remote address",
+    "description": "If Sasl connection fails with some generic error, we miss logging remote server that the client was trying to connect to.\r\n\r\nSample log:\r\n{code:java}\r\n2023-01-12 00:22:28,148 WARN  [20%2C1673404849949,1] ipc.Client - Exception encountered while connecting to the server \r\njava.io.IOException: Connection reset by peer\r\n    at sun.nio.ch.FileDispatcherImpl.read0(Native Method)\r\n    at sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:39)\r\n    at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)\r\n    at sun.nio.ch.IOUtil.read(IOUtil.java:197)\r\n    at sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:379)\r\n    at org.apache.hadoop.net.SocketInputStream$Reader.performIO(SocketInputStream.java:57)\r\n    at org.apache.hadoop.net.SocketIOWithTimeout.doIO(SocketIOWithTimeout.java:141)\r\n    at org.apache.hadoop.net.SocketInputStream.read(SocketInputStream.java:161)\r\n    at org.apache.hadoop.net.SocketInputStream.read(SocketInputStream.java:131)\r\n    at java.io.FilterInputStream.read(FilterInputStream.java:133)\r\n    at java.io.BufferedInputStream.fill(BufferedInputStream.java:246)\r\n    at java.io.BufferedInputStream.read(BufferedInputStream.java:265)\r\n    at java.io.DataInputStream.readInt(DataInputStream.java:387)\r\n    at org.apache.hadoop.ipc.Client$IpcStreams.readResponse(Client.java:1950)\r\n    at org.apache.hadoop.security.SaslRpcClient.saslConnect(SaslRpcClient.java:367)\r\n    at org.apache.hadoop.ipc.Client$Connection.setupSaslConnection(Client.java:623)\r\n    at org.apache.hadoop.ipc.Client$Connection.access$2300(Client.java:414)\r\n...\r\n... {code}\r\nWe should log the remote server address.",
+    "commits": [
+      {
+        "sha": "8d1eb66858acda7405322224225190b3564af60c",
+        "message": "HADOOP-18592 Sasl connection failure should log remote address",
+        "author": "virajjasani",
+        "date": "2023-01-12T02:57:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Client.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Client.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 1956,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "9adc93105d22d8a56be2cf99ba8d759445dee8d9",
+        "message": "addendum",
+        "author": "virajjasani",
+        "date": "2023-01-16T18:36:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Client.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Client.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1951,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1745820fae35bc08bd4509edf32b88445ee80268",
+        "message": "addendum",
+        "author": "virajjasani",
+        "date": "2023-01-17T20:12:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Client.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Client.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1955,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6d325d9d09cf8595e1e39e39128abd98dea75220",
+    "sha_after": "ad0cff2f973edb927130f4d206fcb1ecdc079e60",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Client.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Client.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 1956,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Change Parameter Type": 1
+    }
+  },
+  "HADOOP-18625": {
+    "jira_id": "HADOOP-18625",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Fix method name  of RPC.Builder#setnumReaders",
+    "description": "",
+    "commits": [
+      {
+        "sha": "1314b1e2032ebaf343c65222068e57647b5bcac4",
+        "message": "HADOOP-18625. Fix method name of RPC.Builder#setnumReaders",
+        "author": "haiyang1987",
+        "date": "2023-01-14T06:11:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RPC.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RPC.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1217,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2006,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2113,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "d5c046518e9b519747d746e233ca256fbd66176d",
+    "sha_after": "113a9e40cbf2b8303910547d8d4476af60846996",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RPC.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RPC.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 15,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1217,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 2006,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 2113,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Encapsulate Attribute": 1,
+      "Add Method Annotation": 1
+    }
+  },
+  "HADOOP-18691": {
+    "jira_id": "HADOOP-18691",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add a CallerContext getter on the Schedulable interface",
+    "description": "We would like to add a default *{color:#00875a}CallerContext{color}* getter on the *{color:#00875a}Schedulable{color}* interface\r\n{code:java}\r\ndefault public CallerContext getCallerContext() {\r\n  return null;  \r\n} {code}\r\nand then override it on the *{color:#00875a}i{color}{color:#00875a}{*}pc/{*}Server.Call{color}* class\r\n{code:java}\r\n@Override\r\npublic CallerContext getCallerContext() {  \r\n  return this.callerContext;\r\n} {code}\r\nto expose the already existing *{color:#00875a}callerContext{color}* field.\r\n\r\n \r\n\r\nThis change will help us access the *{color:#00875a}CallerContext{color}* on an Apache Ozone *{color:#00875a}IdentityProvider{color}* implementation.\r\n\r\nOn Ozone side the *{color:#00875a}FairCallQueue{color}* doesn't work with the Ozone S3G, because all users are masked under a special S3G user and there is no impersonation. Therefore, the FCQ reads only 1 user and becomes ineffective. We can use the *{color:#00875a}CallerContext{color}* field to store the current user and access it on the Ozone {*}{color:#00875a}IdentityProvider{color}{*}.\r\n\r\n \r\n\r\nThis is a presentation with the proposed approach.\r\n\r\n[https://docs.google.com/presentation/d/1iChpCz_qf-LXiPyvotpOGiZ31yEUyxAdU4RhWMKo0c0/edit#slide=id.p]",
+    "commits": [
+      {
+        "sha": "9cb741fcb5d59190b0aa62972db7432e6c2caed4",
+        "message": "Add a CallerContext getter on the Schedulable interface",
+        "author": "xBis7",
+        "date": "2023-04-06T19:16:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 33,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 4190,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e92775e99e142eb7f7a349159bed299a888540fb",
+        "message": "fix checkstyle warning",
+        "author": "xBis7",
+        "date": "2023-04-07T15:58:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 37,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "60bd1d16177a951dadeac7209dfeee0349c6f03a",
+        "message": "test CallerContext field",
+        "author": "xBis7",
+        "date": "2023-04-07T16:52:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 82,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "16cbe024b7666998a6b6ec7899162b85ca871c41",
+        "message": "default getCallerContext() throws NotImplementedException",
+        "author": "xBis7",
+        "date": "2023-04-13T17:51:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 37,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 87,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "df8fdba7edaa7fb368ef35f470145c0ca3564138",
+        "message": "replacing depr ExpectedException with assertThrows",
+        "author": "xBis7",
+        "date": "2023-04-15T07:53:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4333d22b3d0165f68c4b9673a7b74547f263a9d7",
+        "message": "default getCallerContext throws UnsupportedOperationException - cleanup",
+        "author": "xBis7",
+        "date": "2023-04-15T18:02:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 38,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 92,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2fde5f48b6809083dd650cbf0ed7f7e4e307c7c0",
+        "message": "add @return to getCallerContext() javadoc",
+        "author": "xBis7",
+        "date": "2023-04-15T22:02:06Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "16c2b412308c0515f9e1e9214a472049923a09c4",
+        "message": "delete accidentally added log file",
+        "author": "xBis7",
+        "date": "2023-04-17T21:39:29Z",
+        "files": []
+      }
+    ],
+    "sha_before": "0918c87fa2072100c51c774a0b0861cd5d09daaf",
+    "sha_after": "9e24ed2196e062289e1ad81a90b0cc1a4ad45c32",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Schedulable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 33,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 4190,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestIdentityProviders.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 82,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Extract Variable": 1,
+      "Change Thrown Exception Type": 1,
+      "Add Class Modifier": 1
+    }
+  },
+  "HADOOP-18880": {
+    "jira_id": "HADOOP-18880",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add some rpc related metrics to Metrics.md",
+    "description": "Add some rpc related metrics to Metrics.md\r\nsuch as \r\n# DeferredRpcProcessingTime\r\n# RpcResponseTime\r\n# RpcRequeueCalls",
+    "commits": [
+      {
+        "sha": "7f4cdb34a292908cd9d74b819e9ab6ae724d9839",
+        "message": "HADOOP-18880. Add some rpc related metrics to Metrics.md",
+        "author": "haiyang1987",
+        "date": "2023-09-02T13:56:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 440,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a6c2526c6c7ccfc4483f58695aedf0cb892b4c4d",
+    "sha_after": "2831c7ce266b2132ab5a137afd624f689d070677",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 440,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Modify Attribute Annotation": 1
+    }
+  },
+  "HADOOP-18919": {
+    "jira_id": "HADOOP-18919",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Zookeeper SSL/TLS support in HDFS ZKFC",
+    "description": "HADOOP-18709 added support for Zookeeper to communicate with SSL/TLS enabled in hadoop-common. With those changes we have the necessary parameters, that we need to set to enable SSL/TLS in a ZK Client.\r\n\r\nIn YARN-11468 the SSL communication can be set in Yarn, now we need to similar changes in HDFS to enable it correctly. In HDFS ZK Client is used in the Failover Controller. In this improvement we need to create the ZK client with the necessary SSL configs if we enable it, which we can track under a new HDFS config.  ",
+    "commits": [
+      {
+        "sha": "403a78250a656d89b9141726d8961a2ed675235e",
+        "message": "Add ZK SSL enablement config to HDFS",
+        "author": "dombizita",
+        "date": "2023-09-28T22:21:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2053,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "13b1652a048201fe5b76fc3c1450aef593214c88",
+        "message": "Move methods and TruststoreKeystore class from ZKCuratorManager",
+        "author": "dombizita",
+        "date": "2023-09-28T22:23:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 124,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 789,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2148cd6594facb430704bee70234ccff3e915ce6",
+        "message": "Add isSSLEnabled abstract method",
+        "author": "dombizita",
+        "date": "2023-09-28T22:24:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ZKFailoverController.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ZKFailoverController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1012,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "27830492fef93daea854bb3840464869b8a27064",
+        "message": "Implement isSSLEnabled method",
+        "author": "dombizita",
+        "date": "2023-09-28T22:25:10Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/DFSZKFailoverController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/DFSZKFailoverController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 297,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b4e7c3ea3f029aa1b235c29de01cf9351f07bfb0",
+        "message": "Refactoring changes, moved things to SecurityUtil class",
+        "author": "dombizita",
+        "date": "2023-09-28T22:26:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/curator/ZKCuratorManager.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/curator/ZKCuratorManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 97,
+            "PARENT_LOC": 692,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "635645a7134b5bf54244bf5c1202eb675004f8bb",
+        "message": "Handle SSL enablement while creating ZooKeeper client",
+        "author": "dombizita",
+        "date": "2023-09-28T22:27:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1263,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "600da5a7f018c7a6ad9f72ec8a6312618e1879af",
+        "message": "Test changes",
+        "author": "dombizita",
+        "date": "2023-09-28T22:27:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/MiniZKFCCluster.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/MiniZKFCCluster.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 374,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 812,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElectorRealZK.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElectorRealZK.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 286,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/curator/TestSecureZKCuratorManager.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/curator/TestSecureZKCuratorManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 214,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/curator/TestZKCuratorManager.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/curator/TestZKCuratorManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 243,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1ece9e619dd9fce4166a6293ea6ccc8f054193ee",
+        "message": "Rename HDFS config to be more specific",
+        "author": "dombizita",
+        "date": "2023-10-17T08:31:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2056,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "94598d2a1e865b990078c24a897bc4cd080d52a3",
+        "message": "Add testing to the TestActiveStandbyElector",
+        "author": "dombizita",
+        "date": "2023-10-17T08:41:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 78,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 812,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "300398ea13df24a5a3f0f0eff29ef8819c3fe5ef",
+        "message": "Use TruststoreKeystore when creating an ActiveStandbyElector",
+        "author": "dombizita",
+        "date": "2023-10-17T09:03:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 1281,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ZKFailoverController.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ZKFailoverController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1013,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElectorRealZK.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElectorRealZK.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 286,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ActiveStandbyElectorBasedElectorService.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ActiveStandbyElectorBasedElectorService.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 271,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "06885e9a0dc87d054c18cf53d9b0f1ff8c28f85a",
+        "message": "Small refactoring changes",
+        "author": "dombizita",
+        "date": "2023-10-17T09:05:02Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1284,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 913,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/curator/ZKCuratorManager.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/curator/ZKCuratorManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 600,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 888,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElectorRealZK.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElectorRealZK.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 288,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2e93427475c3d07995471e13805faa8505dfeb78",
+        "message": "Fix javadoc",
+        "author": "dombizita",
+        "date": "2023-10-18T10:08:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1283,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 884,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e7494defd780301315e0e4d14d20ea87ab1e1fa9",
+        "message": "Fix constructor",
+        "author": "dombizita",
+        "date": "2023-10-19T11:51:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ActiveStandbyElectorBasedElectorService.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ActiveStandbyElectorBasedElectorService.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 275,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "00e37c8ed9aa37ef9b357d5668dd5984860ef5d4",
+        "message": "Fix checkstyle",
+        "author": "dombizita",
+        "date": "2023-10-19T23:46:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1285,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 886,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 888,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "66c6ea9ded646d3600e3b0453882ad1aa186dcb6",
+        "message": "Fix checkstyle",
+        "author": "dombizita",
+        "date": "2023-10-21T23:36:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1285,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ActiveStandbyElectorBasedElectorService.java",
+            "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ActiveStandbyElectorBasedElectorService.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 275,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "5eeab5e1b9721326cfbb2e7f8fbc4f4b372a2697",
+    "sha_after": "4c04818d3da5d136a6e332b66b1268d8c46f4d35",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ActiveStandbyElector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 1263,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ZKFailoverController.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ha/ZKFailoverController.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1012,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/SecurityUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 102,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 789,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/curator/ZKCuratorManager.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/curator/ZKCuratorManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 95,
+        "PARENT_LOC": 692,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/MiniZKFCCluster.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/MiniZKFCCluster.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 374,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 88,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 812,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElectorRealZK.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ha/TestActiveStandbyElectorRealZK.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 286,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/curator/TestSecureZKCuratorManager.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/curator/TestSecureZKCuratorManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 214,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/curator/TestZKCuratorManager.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/curator/TestZKCuratorManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 243,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2053,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/DFSZKFailoverController.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/DFSZKFailoverController.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 297,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ActiveStandbyElectorBasedElectorService.java",
+        "CHILD_PATH": "hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/ActiveStandbyElectorBasedElectorService.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 271,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 16,
+    "refactorings": {
+      "Add Parameter": 4,
+      "Change Variable Type": 2,
+      "Change Method Access Modifier": 2,
+      "Add Method Modifier": 2,
+      "Move Method": 2,
+      "Move Class": 1,
+      "Extract Method": 1,
+      "Inline Method": 1,
+      "Extract And Move Method": 1
+    }
+  },
+  "HADOOP-18868": {
+    "jira_id": "HADOOP-18868",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Optimize the configuration and use of callqueue overflow trigger failover",
+    "description": "In HADOOP-16268 implemented enable callqueue overflow trigger failover when RPC call queue is filled for hdfs router servers .\r\n\r\nIn order to configure and use parameters more conveniently, we are going to make the following optimizations:\r\n\r\n* provide default properties for callqueue.overflow.trigger.failover such that if properties with port is not configured, we can fallback to default property (port-less)\r\n* support refreshCallQueue to update callqueue.overflow.trigger.failover\r\n* update callqueue.overflow.trigger.failover description information in core-site.xml\r\n",
+    "commits": [
+      {
+        "sha": "315fc0aacc8ed695eeea9a5c11ae29d92d19c512",
+        "message": "HADOOP-18868. Optimize the configuration and use of callqueue overflow trigger failover",
+        "author": "haiyang1987",
+        "date": "2023-08-29T10:17:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/CallQueueManager.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/CallQueueManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 62,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 516,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/FairCallQueue.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/FairCallQueue.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 496,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 4210,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/conf/TestCommonConfigurationFields.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/conf/TestCommonConfigurationFields.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 250,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestCallQueueManager.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestCallQueueManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 520,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestFairCallQueue.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestFairCallQueue.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 808,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/TestRefreshCallQueue.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/TestRefreshCallQueue.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 177,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1b03693e361119454e46d2a4ac5c2079f4089eee",
+        "message": "trigger ci",
+        "author": "haiyang1987",
+        "date": "2023-10-21T07:17:02Z",
+        "files": []
+      },
+      {
+        "sha": "d3e1ada23b916e37c0dc429c8b2d6516196a6f7d",
+        "message": "trigger ci",
+        "author": "haiyang1987",
+        "date": "2023-10-22T01:51:03Z",
+        "files": []
+      }
+    ],
+    "sha_before": "4c04818d3da5d136a6e332b66b1268d8c46f4d35",
+    "sha_after": "9d48af8d7027fb2c5124f028356446acbe3e703f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/CallQueueManager.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/CallQueueManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 62,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 516,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/FairCallQueue.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/FairCallQueue.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 496,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 4210,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/conf/TestCommonConfigurationFields.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/conf/TestCommonConfigurationFields.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 250,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestCallQueueManager.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestCallQueueManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 520,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestFairCallQueue.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestFairCallQueue.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 808,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/TestRefreshCallQueue.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/TestRefreshCallQueue.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 177,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Encapsulate Attribute": 2,
+      "Add Parameter": 2,
+      "Add Attribute Modifier": 1
+    }
+  }
+}

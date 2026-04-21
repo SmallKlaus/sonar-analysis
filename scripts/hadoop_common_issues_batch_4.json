@@ -1,0 +1,1388 @@
+{
+  "HADOOP-17408": {
+    "jira_id": "HADOOP-17408",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Optimize NetworkTopology while sorting of block locations",
+    "description": "In {{NetworkTopology}}, I noticed that there are some hanging fruits to improve the performance.\r\n\r\nInside {{sortByDistance}}, collections.shuffle is performed on the list before calling {{secondarySort}}.\r\n\r\n{code:java}\r\nCollections.shuffle(list, r);\r\nif (secondarySort != null) {\r\n  secondarySort.accept(list);\r\n}\r\n{code}\r\n\r\nHowever, in different call sites, {{collections.shuffle}} is passed as the secondarySort to {{sortByDistance}}. This means that the shuffle is executed twice on each list.\r\nAlso, logic wise, it is useless to shuffle before applying a tie breaker which might make the shuffle work obsolete.\r\n\r\nIn addition, [~daryn] reported that:\r\n* topology is unnecessarily locking/unlocking to calculate the distance for every node\r\n* shuffling uses a seeded Random, instead of ThreadLocalRandom, which is heavily synchronized\r\n",
+    "commits": [
+      {
+        "sha": "0a4389786e83d6d66f96a488c463a90327d6faad",
+        "message": "HADOOP-17408. Optimize NetworkTopology sorting block locations.",
+        "author": "amahussein",
+        "date": "2021-01-06T22:36:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/net/NetworkTopology.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/net/NetworkTopology.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 41,
+            "PARENT_LOC": 1027,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/net/TestNetworkTopology.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/net/TestNetworkTopology.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 635,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f41421a041ce3af3e6e43fbe9e8db9914ab6ccf6",
+        "message": "HADOOP-17408. shuffle list of equal weight nodes",
+        "author": "amahussein",
+        "date": "2021-01-08T00:16:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/net/NetworkTopology.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/net/NetworkTopology.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 1021,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/net/TestNetworkTopology.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/net/TestNetworkTopology.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 635,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "e306f594218e4de3d960ecb3cc8876cd03db8b10",
+    "sha_after": "77435a025e5ba2172dc0b5aaf2da9537c6a978ce",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/net/NetworkTopology.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/net/NetworkTopology.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 34,
+        "LINES_DELETED": 43,
+        "PARENT_LOC": 1027,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/net/TestNetworkTopology.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/net/TestNetworkTopology.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 635,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Rename Variable": 2,
+      "Replace Attribute With Variable": 1
+    }
+  },
+  "HADOOP-17620": {
+    "jira_id": "HADOOP-17620",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "DistCp: Use Iterator for listing target directory as well",
+    "description": "Use iterator for listing target directory as well, when {{-useiterator}} option is specified.\r\n\r\nTarget is listed when delete option is specified.",
+    "commits": [
+      {
+        "sha": "e60036b9d4d6e7076ca68b1dea0494e90a5b3ec1",
+        "message": "HADOOP-17620. DistCp: Use Iterator for listing target directory as well.",
+        "author": "ayushtkn",
+        "date": "2021-04-04T10:18:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/SimpleCopyListing.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/SimpleCopyListing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 807,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/CopyCommitter.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/CopyCommitter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 668,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/contract/AbstractContractDistCpTest.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/contract/AbstractContractDistCpTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 705,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "468ea21c6058cef1855c2efa680d5e2504f561fd",
+        "message": "Fix checkstyle.",
+        "author": "ayushtkn",
+        "date": "2021-04-04T17:11:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/SimpleCopyListing.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/SimpleCopyListing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 807,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e2fabb9d26d3d3055e9ac5dcc021ef9ef2d5b568",
+        "message": "Fix.",
+        "author": "ayushtkn",
+        "date": "2021-04-12T15:51:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/SimpleCopyListing.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/SimpleCopyListing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 808,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/contract/AbstractContractDistCpTest.java",
+            "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/contract/AbstractContractDistCpTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 713,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "14a84c47b0efe287fb848856767b115cf5af4175",
+    "sha_after": "6800b21e3b07168fd5820133d20858c6ca4bdf59",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/SimpleCopyListing.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/SimpleCopyListing.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 807,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/CopyCommitter.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/main/java/org/apache/hadoop/tools/mapred/CopyCommitter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 668,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/contract/AbstractContractDistCpTest.java",
+        "CHILD_PATH": "hadoop-tools/hadoop-distcp/src/test/java/org/apache/hadoop/tools/contract/AbstractContractDistCpTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 705,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Change Attribute Access Modifier": 1
+    }
+  },
+  "HADOOP-16290": {
+    "jira_id": "HADOOP-16290",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Enable RpcMetrics units to be configurable",
+    "description": "One resulting discussion from HADOOP-16266 was that it would be better for the RPC metrics (processing time, queue time) to be in micro- or nanoseconds, since milliseconds does not accurately capture the processing time of many RPC operations.  HADOOP-16266 made some small changes in this direction, but to keep the size of the patch down, we did not make it fully configurable. We can complete that work here.\r\n",
+    "commits": [
+      {
+        "sha": "528a51aa3a0eb9fff3d0aeae74cbe80d7eae224c",
+        "message": "HADOOP-16290. Enable RpcMetrics units to be configurable",
+        "author": "virajjasani",
+        "date": "2021-07-13T12:57:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/CommonConfigurationKeys.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/CommonConfigurationKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 465,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1134,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RpcScheduler.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 74,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 3889,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 325,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 66,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1609,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "18990b38525a4d66d85c512efaff749b3d2bdc6c",
+        "message": "update metric timeunit only once",
+        "author": "virajjasani",
+        "date": "2021-07-16T10:36:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 348,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1673,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "5e41ca10b6a1d1cd1d0e6a6ee26719412ebef3db",
+        "message": "addressing comments",
+        "author": "virajjasani",
+        "date": "2021-07-17T09:42:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1135,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RpcScheduler.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 74,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 3889,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 29,
+            "PARENT_LOC": 358,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1674,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8723b394a70598e107e2fccb5467a4370769f9ce",
+        "message": "addressing latest comments",
+        "author": "virajjasani",
+        "date": "2021-07-19T13:19:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 1155,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 350,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1672,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "cee5775ea83aa2eb7eb1d043a40c197061c3eb4c",
+        "message": "resolve checkstyle",
+        "author": "virajjasani",
+        "date": "2021-07-19T16:43:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1139,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "17bf2fcbc5142f7d860207c137fcf1d4d4edb699",
+    "sha_after": "e1d00addb5b6d7240884536aaa57846af34a0dd5",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/CommonConfigurationKeys.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/CommonConfigurationKeys.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 465,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/DecayRpcScheduler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1134,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RpcScheduler.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/RpcScheduler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 74,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/Server.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 3964,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/metrics/RpcMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 325,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/ipc/TestRPC.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 66,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1609,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Attribute": 1
+    }
+  },
+  "HADOOP-17825": {
+    "jira_id": "HADOOP-17825",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add BuiltInGzipCompressor",
+    "description": "Currently, GzipCodec only supports BuiltInGzipDecompressor, if native zlib is not loaded. So, without Hadoop native codec installed, saving SequenceFile using GzipCodec will throw exception like \"SequenceFile doesn't work with GzipCodec without native-hadoop code!\"\r\n\r\nSame as other codecs which we migrated to using prepared packages (lz4, snappy), it will be better if we support GzipCodec generally without Hadoop native codec installed. Similar to BuiltInGzipDecompressor, we can use Java Deflater to support BuiltInGzipCompressor.\r\n\r\n",
+    "commits": [
+      {
+        "sha": "28dd31070f428f15b29a1f1addc4903771b4000c",
+        "message": "Add BuiltInGzipCompressor.",
+        "author": "viirya",
+        "date": "2021-07-30T23:57:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/SequenceFile.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/SequenceFile.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 3840,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/GzipCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/GzipCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 233,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 249,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipDecompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipDecompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 578,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 967,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8069689401a1e4ceb36294af9f28daec6e2d4ee5",
+        "message": "Fix typo.",
+        "author": "viirya",
+        "date": "2021-07-31T07:58:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 249,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "12dca9135e9a9b9de4791784cd3951e003ac1b27",
+        "message": "Fix trailer.",
+        "author": "viirya",
+        "date": "2021-07-31T08:00:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 249,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "c78dcce1bbf04c341ddf033233b3f66d5ee0fd09",
+        "message": "Fix.",
+        "author": "viirya",
+        "date": "2021-08-01T07:02:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 42,
+            "PARENT_LOC": 252,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1394666da39c373e6cbba49b0eae333cdf65cdd0",
+        "message": "Add more tests.",
+        "author": "viirya",
+        "date": "2021-08-02T16:46:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 65,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 964,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b5986c13f238d37faeac778ef75059d1e93ede47",
+        "message": "non-native codec are not reused. Reverted a change.",
+        "author": "viirya",
+        "date": "2021-08-02T20:41:02Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1024,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "49619e3f1ebdc62c89bcb74fd5cbf75a80a0601c",
+        "message": "Address review comments.",
+        "author": "viirya",
+        "date": "2021-08-02T23:04:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/GzipCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/GzipCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 234,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 256,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7a5431f07724d13cbe028951fade5a8e99a9ae7a",
+        "message": "Address review comments.",
+        "author": "viirya",
+        "date": "2021-08-03T21:58:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 178,
+            "LINES_DELETED": 176,
+            "PARENT_LOC": 260,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipDecompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipDecompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 582,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "0a1bb194f29612863d8ad31971a737b30be4d982",
+        "message": "Handle edge case.",
+        "author": "viirya",
+        "date": "2021-08-03T23:38:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 38,
+            "LINES_DELETED": 30,
+            "PARENT_LOC": 262,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1023,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8b752957cb7d7612dc1849244b6064cdd854e20b",
+        "message": "For review comment.",
+        "author": "viirya",
+        "date": "2021-08-04T18:31:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 270,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "6b823c2a3df28393c89a954ecc0e3ad34c49c3ed",
+        "message": "Update set input logic.",
+        "author": "viirya",
+        "date": "2021-08-04T18:53:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 24,
+            "PARENT_LOC": 270,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d7f052a65c680122d111e15428139a5e2fdf43e2",
+        "message": "Address comments.",
+        "author": "viirya",
+        "date": "2021-08-05T07:59:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/SequenceFile.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/SequenceFile.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 3832,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 251,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f1db328eb900b4ffe96f4150ecb4359d389c67de",
+        "message": "For review comment.",
+        "author": "viirya",
+        "date": "2021-08-05T08:28:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 251,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "204709d1bc0ebb41521219367c39d1badc698ab1",
+        "message": "Try with HEADER_BASIC.",
+        "author": "viirya",
+        "date": "2021-08-05T19:58:45Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 251,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "dc2ed926d59297a80240574546ed029a115c0be8",
+        "message": "Set state to HEADER_BASIC in setInput.",
+        "author": "viirya",
+        "date": "2021-08-05T23:16:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 250,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d5ac82e295d0dacc890c74786d15758c4b8e51e3",
+        "message": "Revert last two commits.",
+        "author": "viirya",
+        "date": "2021-08-06T00:05:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 252,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "939b349d899203203998e0ed6ba8125366ec0a5a",
+        "message": "Fix style.",
+        "author": "viirya",
+        "date": "2021-08-06T20:31:40Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 251,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 1024,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e0bec4a7b2a5df7a1148e8b1023893dd6ff50ec6",
+        "message": "Check FINISHED state in needsInput.",
+        "author": "viirya",
+        "date": "2021-08-06T23:52:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 257,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2e04fa60c3d5ae2373dc79f0037b7926a201cfc3",
+        "message": "Write the trailer once finished is called.",
+        "author": "viirya",
+        "date": "2021-08-11T00:21:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 258,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1a1df5e5726beaf90c3112e6a9e4c83ae695658a",
+        "message": "Enable more non-native codec installed tests.",
+        "author": "viirya",
+        "date": "2021-08-11T18:04:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1024,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d661abcbd46f7d907db31b1cd4557f9397430dab",
+        "message": "Fix multiple write usage.",
+        "author": "viirya",
+        "date": "2021-08-12T07:28:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 271,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 1041,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4112e047030ac8318ae5aee0bf3c5d0d104d6c1e",
+        "message": "For review comment.",
+        "author": "viirya",
+        "date": "2021-08-13T01:15:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 22,
+            "PARENT_LOC": 271,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1046,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "87ae6bb66646c1ac6fab8896e443eb0c54500308",
+        "message": "A few smaller changes.",
+        "author": "viirya",
+        "date": "2021-08-13T20:12:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 261,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "92d0671a3368f916bf670c9891143c94098a2c1c",
+        "message": "Restore a test with multi-write version.",
+        "author": "viirya",
+        "date": "2021-08-13T20:58:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1045,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6342d5e523941622a140fd877f06e9b59f48c48b",
+    "sha_after": "6014a089fd9810422160840bad8301319ae1430b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/SequenceFile.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/SequenceFile.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 3840,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/GzipCodec.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/GzipCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 233,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipCompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 261,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipDecompressor.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/compress/zlib/BuiltInGzipDecompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 578,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/io/compress/TestCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 111,
+        "LINES_DELETED": 24,
+        "PARENT_LOC": 967,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Rename Variable": 2,
+      "Change Variable Type": 1,
+      "Remove Variable Modifier": 1,
+      "Change Class Access Modifier": 1
+    }
+  },
+  "HADOOP-17900": {
+    "jira_id": "HADOOP-17900",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Move ClusterStorageCapacityExceededException to Public from LimitedPrivate",
+    "description": "As of now the exception is marked limited private\r\n{code:java}\r\n@InterfaceAudience.LimitedPrivate({ \"HDFS\", \"MapReduce\", \"Tez\" })\r\n{code}\r\nDoesn't allow other projects, Rather than individually adding project, Make it Public itself.\r\n\r\nThis exception can be used to act as a fail-fast marker for different operations.",
+    "commits": [
+      {
+        "sha": "93895a609f884e6bd2f4d0dff6c7f285a0df0f31",
+        "message": "HADOOP-17900. Move ClusterStorageCapacityExceededException to Public from LimitedPrivate.",
+        "author": "ayushtkn",
+        "date": "2021-09-08T10:27:11Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/ClusterStorageCapacityExceededException.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/ClusterStorageCapacityExceededException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 51,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "087e33e512ae6dcf46e560e1e67b18236a7b5a11",
+        "message": "Make Child Classes also private.",
+        "author": "ayushtkn",
+        "date": "2021-09-11T18:48:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/DSQuotaExceededException.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/DSQuotaExceededException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 53,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/NSQuotaExceededException.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/NSQuotaExceededException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 60,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/QuotaByStorageTypeExceededException.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/QuotaByStorageTypeExceededException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 56,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/QuotaExceededException.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/QuotaExceededException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/FSLimitException.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/FSLimitException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 102,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "17c58ac959015f69fffa912bcb30802e2d6272e9",
+    "sha_after": "d9eb5ad6d3dd53e7e20e871b3cde0a4809fa129d",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/ClusterStorageCapacityExceededException.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/ClusterStorageCapacityExceededException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 51,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/DSQuotaExceededException.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/DSQuotaExceededException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 53,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/NSQuotaExceededException.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/NSQuotaExceededException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 60,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/QuotaByStorageTypeExceededException.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/QuotaByStorageTypeExceededException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 56,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/QuotaExceededException.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/QuotaExceededException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 64,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/FSLimitException.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/FSLimitException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 102,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 12,
+    "refactorings": {
+      "Add Class Annotation": 6,
+      "Remove Class Annotation": 6
+    }
+  },
+  "HADOOP-17893": {
+    "jira_id": "HADOOP-17893",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Improve PrometheusSink for Namenode TopMetrics",
+    "description": "HADOOP-16398 added exporter for hadoop metrics to prometheus. But some of metrics can't be exported  validly. For example like these metrics, \r\n\r\n1.  -queue metrics for ResourceManager-\r\n{code:java}\r\nqueue_metrics_max_capacity{queue=\"root.queue1\",context=\"yarn\",hostname=\"rm_host1\"} 1\r\n// queue2's metric can't be exported queue_metrics_max_capacity{queue=\"root.queue2\",context=\"yarn\",hostname=\"rm_host1\"} 2\r\n{code}\r\n-It always exported  only one queue's metric because PrometheusMetricsSink$metricLines only cache one metric  if theses metrics have the same name no matter these metrics has different metric tags.-\r\n\r\n \r\n\r\n2. -rpc metrics for Namenode-\r\n\r\n-Namenode may have rpc metrics with multi port like service-rpc. But because  the same reason  as  Issue 1, it wiil lost some rpc metrics if we use PrometheusSink.-\r\n{code:java}\r\nrpc_rpc_queue_time300s90th_percentile_latency{port=\"9000\",servername=\"ClientNamenodeProtocol\",context=\"rpc\",hostname=\"nnhost\"} 0\r\n// rpc port=9005 metric can't be exported \r\nrpc_rpc_queue_time300s90th_percentile_latency{port=\"9005\",servername=\"ClientNamenodeProtocol\",context=\"rpc\",hostname=\"nnhost\"} 0\r\n{code}\r\n3. TopMetrics for Namenode\r\n\r\norg.apache.hadoop.hdfs.server.namenode.top.metrics.TopMetrics is a special metric. And I think It is essentially a Summary metric type. TopMetrics record name will according to different user and op ,  which means that these metric will always exist in PrometheusMetricsSink$metricLines and it may cause the risk of its memory leak. We e need to treat it special. \r\n{code:java}\r\n// invaild topmetric export\r\n# TYPE nn_top_user_op_counts_window_ms_1500000_op_safemode_get_user_hadoop_client_ip_test_com_count counter\r\nnn_top_user_op_counts_window_ms_1500000_op_safemode_get_user_hadoop_client_ip_test_com_count{context=\"dfs\",hostname=\"nn_host\",op=\"safemode_get\",user=\"hadoop/client-ip@TEST.COM\"} 10\r\n\r\n// it should be \r\n# TYPE nn_top_user_op_counts_window_ms_1500000_count counter\r\nnn_top_user_op_counts_window_ms_1500000_count{context=\"dfs\",hostname=\"nn_host\",op=\"safemode_get\",user=\"hadoop/client-ip@TEST.COM\"} 10{code}",
+    "commits": [
+      {
+        "sha": "3c964fa89b9f0c21ef019d227eefc8c2d23554f7",
+        "message": " parse  topmetrics",
+        "author": "Neilxzn",
+        "date": "2021-09-13T06:34:40Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/sink/PrometheusMetricsSink.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/sink/PrometheusMetricsSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 140,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/metrics2/sink/TestPrometheusMetricsSink.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/metrics2/sink/TestPrometheusMetricsSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 97,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 245,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "9f9cc37fa71ddd167e9874c44cf727dc49edfdb0",
+        "message": "1. change costomTags to extendMetricsTags  to make it more readable.",
+        "author": "Neilxzn",
+        "date": "2021-09-17T10:00:21Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/sink/PrometheusMetricsSink.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/sink/PrometheusMetricsSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 194,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/metrics2/sink/TestPrometheusMetricsSink.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/metrics2/sink/TestPrometheusMetricsSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 342,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "dfc535e426cf05342d371905709205ab08ea9ade",
+        "message": "1. remove some unused code",
+        "author": "Neilxzn",
+        "date": "2021-09-17T10:25:42Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/metrics2/sink/TestPrometheusMetricsSink.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/metrics2/sink/TestPrometheusMetricsSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 337,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e382775bab2f74f3fec73d127212bc7e5961dc6b",
+        "message": "fix wrong note",
+        "author": "Neilxzn",
+        "date": "2021-09-18T03:18:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/sink/PrometheusMetricsSink.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/sink/PrometheusMetricsSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 195,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "feee41aa00c3d33096013674aef4e8f26af4f364",
+    "sha_after": "ae2c5ccfcf75a89c60ec6e4a339b46131f9134be",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/sink/PrometheusMetricsSink.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/sink/PrometheusMetricsSink.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 58,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 140,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/metrics2/sink/TestPrometheusMetricsSink.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/metrics2/sink/TestPrometheusMetricsSink.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 89,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 245,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  },
+  "HADOOP-17905": {
+    "jira_id": "HADOOP-17905",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Modify Text.ensureCapacity() to efficiently max out the backing array size",
+    "description": "This is a continuation of HADOOP-17901.\r\n\r\nRight now we use a factor of 1.5x to increase the byte array if it's full. However, if the size reaches a certain point, the increment is only (current size + length). This can cause performance issues if the textual data which we intend to store is beyond this point.\r\n\r\nInstead, let's max out the array to the maximum. Based on different sources, a safe choice seems to be Integer.MAX_VALUE - 8 (see ArrayList, AbstractCollection, HashTable, etc).",
+    "commits": [
+      {
+        "sha": "ba11e4dcc69491d8afcb9d046147d740a6d2bda9",
+        "message": "HADOOP-17905. Modify Text.ensureCapacity() to efficiently max out the backing array size",
+        "author": "pbacsko",
+        "date": "2021-09-11T12:32:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/Text.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/Text.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 726,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d82e53f9626373492899ce413ed64cb2ad9bb1a8",
+        "message": "Addressing review comments",
+        "author": "pbacsko",
+        "date": "2021-09-15T13:21:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/Text.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/Text.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 739,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4a89581189e9b510823aaa1b3962221a3e3356f0",
+        "message": "HADOOP-17905. Addressing review comments",
+        "author": "pbacsko",
+        "date": "2021-09-29T10:00:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/Text.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/Text.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 736,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "2fda61fac6c9cbd43dfc58cd0ff069282b5835e0",
+    "sha_after": "7097e5b793de68880ace8413f3be3ccd9d6d7e3c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/Text.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/io/Text.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 726,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Extract Variable": 2
+    }
+  }
+}
