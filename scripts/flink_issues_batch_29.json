@@ -1,0 +1,2093 @@
+{
+  "FLINK-22472": {
+    "jira_id": "FLINK-22472",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "The real partition data produced time is behind meta(_SUCCESS) file produced",
+    "description": "I test write some data to csv file by flink filesystem connector, but after the success file produced, the data file is still un-committed, it's very weird to me.\r\n{code:java}\r\nbang@mac db1.db $ll /var/folders/55/cw682b314gn8jhfh565hp7q00000gp/T/junit8642959834366044048/junit484868942580135598/test-partition-time-commit/d\\=2020-05-03/e\\=12/\r\ntotal 8\r\ndrwxr-xr-x  4 bang  staff  128  4 25 19:57 ./\r\ndrwxr-xr-x  8 bang  staff  256  4 25 19:57 ../\r\n-rw-r--r--  1 bang  staff   12  4 25 19:57 .part-b703d4b9-067a-4dfe-935e-3afc723aed56-0-4.inprogress.b7d9cf09-0f72-4dce-8591-b61b1d23ae9b\r\n-rw-r--r--  1 bang  staff    0  4 25 19:57 _MY_SUCCESS\r\n{code}\r\n \r\n\r\nAfter some debug I found I have to set  {{sink.rolling-policy.file-size}} or {{sink.rolling-policy.rollover-interval parameters, the default value of the two parameters is pretty big(128M and 30min). It's not convenient for test/demo. I think we can improve this.}}\r\n\r\n \r\n\r\nAs the doc[1] described, for row formats (csv, json), you can set the parameter {{sink.rolling-policy.file-size}} or {{sink.rolling-policy.rollover-interval}} in the connector properties and parameter {{execution.checkpointing.interval}} in flink-conf.yaml together if you don’t want to wait a long period before observe the data exists in file system.\r\n\r\n[1] https://ci.apache.org/projects/flink/flink-docs-master/docs/connectors/table/filesystem/#rolling-policy",
+    "commits": [
+      {
+        "sha": "80bf6afe3eeb1d3acd51c6a96253e79079abf56c",
+        "message": "[FLINK-22472][filesystem] close file of partition when partition is committable to fix the issue that although partition has committed, the file in this partition is unready.",
+        "author": "luoyuxia",
+        "date": "2021-05-31T06:18:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSink.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 504,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/Bucket.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/Bucket.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 475,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/Buckets.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/Buckets.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 420,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/FileSystemTableSink.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/FileSystemTableSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 644,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/AbstractStreamingWriter.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/AbstractStreamingWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 168,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingFileWriter.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingFileWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 97,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingSink.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/filesystem/stream/StreamingFileWriterTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/filesystem/stream/StreamingFileWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 211,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 195,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "60e76bcac1cc18cd0e1ca7bad7a19c708bd3d285",
+        "message": "refactor PartitionCommitTrigger",
+        "author": "luoyuxia",
+        "date": "2021-06-03T12:40:01Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitPredicate.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitPredicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 64,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitTrigger.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitTrigger.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 71,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitPredicate.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitPredicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 80,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitTrigger.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitTrigger.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 47,
+            "PARENT_LOC": 172,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitPredicate.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitPredicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitTrigger.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitTrigger.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 107,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingFileWriter.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingFileWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 151,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/filesystem/stream/StreamingFileWriterTest.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/filesystem/stream/StreamingFileWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 22,
+            "PARENT_LOC": 405,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b57fbad68b84f27f37380dc9202d228f5bdca95f",
+        "message": "fix typo",
+        "author": "luoyuxia",
+        "date": "2021-06-08T02:05:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitTrigger.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitTrigger.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 132,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitTrigger.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitTrigger.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 103,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "743c6b928e0e97c8adc849b1e804477347a73eaf",
+        "message": "add PredicateContext for PartitionCommitPredicate",
+        "author": "luoyuxia",
+        "date": "2021-06-08T07:51:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitPredicate.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitPredicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 47,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitTrigger.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitTrigger.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 78,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitPredicate.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitPredicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 80,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitTrigger.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitTrigger.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 132,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitPredicate.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitPredicate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 44,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitTrigger.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitTrigger.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 103,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingFileWriter.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingFileWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "fcc4b89b7568cd955b139c8ebc5aa8f46e136a53",
+    "sha_after": "feedfb23cdfef3d56a8cfaedf7fbaba4c83bb7cd",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSink.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSink.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 504,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/Bucket.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/Bucket.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 475,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/Buckets.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/sink/filesystem/Buckets.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 420,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/FileSystemTableSink.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/FileSystemTableSink.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 644,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/AbstractStreamingWriter.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/AbstractStreamingWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 168,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitPredicate.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitPredicate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 101,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitTrigger.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionCommitTrigger.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 71,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitPredicate.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitPredicate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 83,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitTrigger.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/PartitionTimeCommitTrigger.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 44,
+        "PARENT_LOC": 172,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitPredicate.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitPredicate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 42,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitTrigger.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/ProcTimeCommitTrigger.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 35,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 107,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingFileWriter.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingFileWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 59,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 97,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingSink.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/filesystem/stream/StreamingSink.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 156,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/filesystem/stream/StreamingFileWriterTest.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/test/java/org/apache/flink/table/filesystem/stream/StreamingFileWriterTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 215,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 195,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 31,
+    "refactorings": {
+      "Add Parameter": 8,
+      "Move Attribute": 6,
+      "Remove Parameter": 3,
+      "Change Attribute Access Modifier": 2,
+      "Extract Method": 2,
+      "Extract Class": 2,
+      "Change Method Access Modifier": 1,
+      "Change Parameter Type": 1,
+      "Rename Parameter": 1,
+      "Rename Attribute": 1,
+      "Change Attribute Type": 1,
+      "Replace Anonymous With Lambda": 1,
+      "Move Method": 1,
+      "Extract And Move Method": 1
+    }
+  },
+  "FLINK-23029": {
+    "jira_id": "FLINK-23029",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Extend PluginLoader to allow closing of backing ClassLoader",
+    "description": "The PluginLoader is currently never closing the backing classloader, which means that plugins remain loaded until the application shuts down.\r\n\r\nThis for example makes it impossible to use the plugins in the mini cluster IT cases, because they would be loaded multiple times, eventually failing with an OOM.",
+    "commits": [
+      {
+        "sha": "ce0811d23c53c492e466a144fdd3de6fc1b1006e",
+        "message": "[FLINK-23029] Extend PluginLoader to allow closing ClassLoader",
+        "author": "zentol",
+        "date": "2021-06-18T06:50:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginLoader.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginLoader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 229,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/plugin/PluginLoaderTest.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/plugin/PluginLoaderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 83,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8349827a782e23ae82592e79362a8397c4e2dd61",
+        "message": "add autocloseable",
+        "author": "zentol",
+        "date": "2021-06-21T22:08:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginLoader.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginLoader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 246,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "3fdcb40c09cc1b8656d3b6059ef1a6def7c65d3c",
+    "sha_after": "616811853b1fa098c3ca3da478996945fb102a6e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginLoader.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/core/plugin/PluginLoader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 229,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/plugin/PluginLoaderTest.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/plugin/PluginLoaderTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 83,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Change Variable Type": 1,
+      "Change Attribute Type": 1,
+      "Change Return Type": 1,
+      "Change Parameter Type": 1,
+      "Add Parameter": 1
+    }
+  },
+  "FLINK-23033": {
+    "jira_id": "FLINK-23033",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Support object array in Python DataStream API",
+    "description": "",
+    "commits": [
+      {
+        "sha": "97f1f906bb8540982e27fd52a7eb701ffc92a28c",
+        "message": "[FLINK-23033][python] Add the missing ObjectArrayTypeInfo",
+        "author": "dianfu",
+        "date": "2021-06-21T12:50:02Z",
+        "files": []
+      },
+      {
+        "sha": "61bce45418be2ec156ec45ba4938a0adbaad8bce",
+        "message": "fix",
+        "author": "dianfu",
+        "date": "2021-06-22T07:55:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/streaming/api/utils/PythonTypeUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/streaming/api/utils/PythonTypeUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 256,
+            "LINES_DELETED": 238,
+            "PARENT_LOC": 507,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/streaming/api/utils/PythonTypeUtilsTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/streaming/api/utils/PythonTypeUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 207,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e4675ae3d1f72fd505213cd99d268e54815ab627",
+        "message": "fix",
+        "author": "dianfu",
+        "date": "2021-06-22T08:28:38Z",
+        "files": []
+      },
+      {
+        "sha": "ee3f8975908e9f243bb5510d0cb09a8ddf341f7f",
+        "message": "address review",
+        "author": "dianfu",
+        "date": "2021-06-22T11:56:37Z",
+        "files": []
+      },
+      {
+        "sha": "cf469ce915e4f73fbd67d24c96d6190b113ec525",
+        "message": "regenerate flink_fn_execution_pb2.py",
+        "author": "dianfu",
+        "date": "2021-06-23T01:50:52Z",
+        "files": []
+      },
+      {
+        "sha": "702e873d300360fe3c6a74a6c5aa9af01152cf9c",
+        "message": "fix",
+        "author": "dianfu",
+        "date": "2021-06-23T03:37:59Z",
+        "files": []
+      },
+      {
+        "sha": "463920ee3bdd4b7b4322fe3f5969e68bf5516266",
+        "message": "fix checkstyle",
+        "author": "dianfu",
+        "date": "2021-06-23T05:18:36Z",
+        "files": []
+      }
+    ],
+    "sha_before": "879465f1365dd6da0ee1d5015b47e4046490a6f0",
+    "sha_after": "a07450d8b8cfd664e23cdfb06ca41a87f5fb85b6",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/streaming/api/utils/PythonTypeUtils.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/streaming/api/utils/PythonTypeUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 256,
+        "LINES_DELETED": 238,
+        "PARENT_LOC": 507,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/streaming/api/utils/PythonTypeUtilsTest.java",
+        "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/streaming/api/utils/PythonTypeUtilsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 29,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 207,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 23,
+    "refactorings": {
+      "Change Parameter Type": 7,
+      "Change Variable Type": 6,
+      "Inline Variable": 5,
+      "Rename Method": 2,
+      "Rename Attribute": 1,
+      "Rename Variable": 1,
+      "Add Parameter": 1
+    }
+  },
+  "FLINK-23118": {
+    "jira_id": "FLINK-23118",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Drop Mesos support",
+    "description": "Following the discussion on the [ML|https://lists.apache.org/thread.html/rd7bf0dabe2d75adb9f97a1879638711d04cfce0774d31b033acae0b8%40%3Cdev.flink.apache.org%3E] , remove Mesos support.",
+    "commits": [
+      {
+        "sha": "9bfd922397c41a6f3c83efa2803e8e71afb2511d",
+        "message": "[FLINK-23118] Drop Mesos support",
+        "author": "zentol",
+        "date": "2021-06-15T18:55:10Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/ClusterDescriptor.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/ClusterDescriptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 101,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 83,
+            "PARENT_LOC": 1816,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 435,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/HighAvailabilityOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/HighAvailabilityOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 208,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ResourceManagerOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ResourceManagerOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 249,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/SecurityOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/SecurityOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 536,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/TaskManagerOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/TaskManagerOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 640,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-docs/src/main/java/org/apache/flink/docs/configuration/ConfigOptionsDocGenerator.java",
+            "CHILD_PATH": "flink-docs/src/main/java/org/apache/flink/docs/configuration/ConfigOptionsDocGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 675,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-fs-tests/src/test/java/org/apache/flink/hdfstests/DistributedCacheDfsTest.java",
+            "CHILD_PATH": "flink-fs-tests/src/test/java/org/apache/flink/hdfstests/DistributedCacheDfsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 203,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/Utils.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/Utils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 228,
+            "PARENT_LOC": 228,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/configuration/MesosOptions.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/configuration/MesosOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 161,
+            "PARENT_LOC": 161,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosJobClusterEntrypoint.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosJobClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 121,
+            "PARENT_LOC": 121,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosSessionClusterEntrypoint.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosSessionClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 116,
+            "PARENT_LOC": 116,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosTaskExecutorRunner.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosTaskExecutorRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 79,
+            "PARENT_LOC": 79,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/LaunchableMesosWorker.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/LaunchableMesosWorker.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 447,
+            "PARENT_LOC": 447,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosConfigKeys.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 47,
+            "PARENT_LOC": 47,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActions.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 64,
+            "PARENT_LOC": 64,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActorFactory.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 74,
+            "PARENT_LOC": 74,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActorFactoryImpl.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActorFactoryImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 138,
+            "PARENT_LOC": 138,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerDriver.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 794,
+            "PARENT_LOC": 794,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerFactory.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 87,
+            "PARENT_LOC": 87,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosTaskManagerParameters.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosTaskManagerParameters.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 647,
+            "PARENT_LOC": 647,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosWorkerResourceSpecFactory.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosWorkerResourceSpecFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 50,
+            "PARENT_LOC": 50,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/RegisteredMesosWorkerNode.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/RegisteredMesosWorkerNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 60,
+            "PARENT_LOC": 60,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/AbstractMesosServices.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/AbstractMesosServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 102,
+            "PARENT_LOC": 102,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/MesosServices.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/MesosServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 85,
+            "PARENT_LOC": 85,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/MesosServicesUtils.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/MesosServicesUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 93,
+            "PARENT_LOC": 93,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/StandaloneMesosServices.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/StandaloneMesosServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 50,
+            "PARENT_LOC": 50,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/ZooKeeperMesosServices.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/ZooKeeperMesosServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 96,
+            "PARENT_LOC": 96,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/MesosWorkerStore.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/MesosWorkerStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 206,
+            "PARENT_LOC": 206,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/StandaloneMesosWorkerStore.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/StandaloneMesosWorkerStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 87,
+            "PARENT_LOC": 87,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/ZooKeeperMesosWorkerStore.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/ZooKeeperMesosWorkerStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 267,
+            "PARENT_LOC": 267,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/LaunchableTask.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/LaunchableTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 40,
+            "PARENT_LOC": 40,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/Offer.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/Offer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 235,
+            "PARENT_LOC": 235,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/SchedulerProxy.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/SchedulerProxy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 114,
+            "PARENT_LOC": 114,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/TaskSchedulerBuilder.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/TaskSchedulerBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 44,
+            "PARENT_LOC": 44,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/AcceptOffers.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/AcceptOffers.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 87,
+            "PARENT_LOC": 87,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Connected.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Connected.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 29,
+            "PARENT_LOC": 29,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Disconnected.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Disconnected.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 35,
+            "PARENT_LOC": 35,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Error.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Error.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 45,
+            "PARENT_LOC": 45,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ExecutorLost.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ExecutorLost.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 68,
+            "PARENT_LOC": 68,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/FrameworkMessage.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/FrameworkMessage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 69,
+            "PARENT_LOC": 69,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/OfferRescinded.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/OfferRescinded.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 47,
+            "PARENT_LOC": 47,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ReRegistered.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ReRegistered.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 49,
+            "PARENT_LOC": 49,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Registered.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Registered.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 56,
+            "PARENT_LOC": 56,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ResourceOffers.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ResourceOffers.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 51,
+            "PARENT_LOC": 51,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/SlaveLost.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/SlaveLost.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 47,
+            "PARENT_LOC": 47,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/StatusUpdate.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/StatusUpdate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 48,
+            "PARENT_LOC": 48,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactResolver.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactResolver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 36,
+            "PARENT_LOC": 36,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactServer.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 55,
+            "PARENT_LOC": 55,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactServerImpl.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactServerImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 332,
+            "PARENT_LOC": 332,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosConfiguration.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 140,
+            "PARENT_LOC": 140,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosResourceAllocation.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosResourceAllocation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 238,
+            "PARENT_LOC": 238,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosUtils.java",
+            "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 200,
+            "PARENT_LOC": 200,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/LaunchableMesosWorkerTest.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/LaunchableMesosWorkerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 110,
+            "PARENT_LOC": 110,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerDriverTest.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerDriverTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 466,
+            "PARENT_LOC": 466,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/MesosTaskManagerParametersTest.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/MesosTaskManagerParametersTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 343,
+            "PARENT_LOC": 343,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/services/TestingMesosServices.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/services/TestingMesosServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 150,
+            "PARENT_LOC": 150,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/store/MesosWorkerStoreTest.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/store/MesosWorkerStoreTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 45,
+            "PARENT_LOC": 45,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/store/TestingMesosWorkerStore.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/store/TestingMesosWorkerStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 172,
+            "PARENT_LOC": 172,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/scheduler/OfferTest.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/scheduler/OfferTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 193,
+            "PARENT_LOC": 193,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/scheduler/TestingSchedulerDriver.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/scheduler/TestingSchedulerDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 226,
+            "PARENT_LOC": 226,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/util/MesosResourceAllocationTest.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/util/MesosResourceAllocationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 248,
+            "PARENT_LOC": 248,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/util/TestingMesosArtifactServer.java",
+            "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/util/TestingMesosArtifactServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 91,
+            "PARENT_LOC": 91,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/clusterframework/package-info.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/clusterframework/package-info.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 27,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/highavailability/zookeeper/ZooKeeperHaServices.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/highavailability/zookeeper/ZooKeeperHaServices.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 256,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/resourcemanager/StandaloneResourceManager.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/resourcemanager/StandaloneResourceManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 123,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/TaskManagerLocation.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/TaskManagerLocation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 418,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "66120f98066c690d10bcca46c9e78767be5bec1b",
+    "sha_after": "e8b7f3dc73ff8acfc3f4a3a7757798bcc8b80f63",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/ClusterDescriptor.java",
+        "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/deployment/ClusterDescriptor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 101,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 83,
+        "PARENT_LOC": 1816,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 435,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/HighAvailabilityOptions.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/HighAvailabilityOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 17,
+        "PARENT_LOC": 208,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ResourceManagerOptions.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ResourceManagerOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 249,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/SecurityOptions.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/SecurityOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 536,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/TaskManagerOptions.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/TaskManagerOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 640,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-docs/src/main/java/org/apache/flink/docs/configuration/ConfigOptionsDocGenerator.java",
+        "CHILD_PATH": "flink-docs/src/main/java/org/apache/flink/docs/configuration/ConfigOptionsDocGenerator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 675,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-fs-tests/src/test/java/org/apache/flink/hdfstests/DistributedCacheDfsTest.java",
+        "CHILD_PATH": "flink-fs-tests/src/test/java/org/apache/flink/hdfstests/DistributedCacheDfsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 203,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/Utils.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/Utils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 228,
+        "PARENT_LOC": 228,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/configuration/MesosOptions.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/configuration/MesosOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 161,
+        "PARENT_LOC": 161,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosJobClusterEntrypoint.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosJobClusterEntrypoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 121,
+        "PARENT_LOC": 121,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosSessionClusterEntrypoint.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosSessionClusterEntrypoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 116,
+        "PARENT_LOC": 116,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosTaskExecutorRunner.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/entrypoint/MesosTaskExecutorRunner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 79,
+        "PARENT_LOC": 79,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/LaunchableMesosWorker.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/LaunchableMesosWorker.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 447,
+        "PARENT_LOC": 447,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosConfigKeys.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosConfigKeys.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 47,
+        "PARENT_LOC": 47,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActions.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 64,
+        "PARENT_LOC": 64,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActorFactory.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActorFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 74,
+        "PARENT_LOC": 74,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActorFactoryImpl.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerActorFactoryImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 138,
+        "PARENT_LOC": 138,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerDriver.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerDriver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 794,
+        "PARENT_LOC": 794,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerFactory.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 87,
+        "PARENT_LOC": 87,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosTaskManagerParameters.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosTaskManagerParameters.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 647,
+        "PARENT_LOC": 647,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosWorkerResourceSpecFactory.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/MesosWorkerResourceSpecFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 50,
+        "PARENT_LOC": 50,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/RegisteredMesosWorkerNode.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/RegisteredMesosWorkerNode.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 60,
+        "PARENT_LOC": 60,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/AbstractMesosServices.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/AbstractMesosServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 102,
+        "PARENT_LOC": 102,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/MesosServices.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/MesosServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 85,
+        "PARENT_LOC": 85,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/MesosServicesUtils.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/MesosServicesUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 93,
+        "PARENT_LOC": 93,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/StandaloneMesosServices.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/StandaloneMesosServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 50,
+        "PARENT_LOC": 50,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/ZooKeeperMesosServices.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/services/ZooKeeperMesosServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 96,
+        "PARENT_LOC": 96,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/MesosWorkerStore.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/MesosWorkerStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 206,
+        "PARENT_LOC": 206,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/StandaloneMesosWorkerStore.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/StandaloneMesosWorkerStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 87,
+        "PARENT_LOC": 87,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/ZooKeeperMesosWorkerStore.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/runtime/clusterframework/store/ZooKeeperMesosWorkerStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 267,
+        "PARENT_LOC": 267,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/LaunchableTask.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/LaunchableTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 40,
+        "PARENT_LOC": 40,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/Offer.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/Offer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 235,
+        "PARENT_LOC": 235,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/SchedulerProxy.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/SchedulerProxy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 114,
+        "PARENT_LOC": 114,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/TaskSchedulerBuilder.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/TaskSchedulerBuilder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 44,
+        "PARENT_LOC": 44,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/AcceptOffers.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/AcceptOffers.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 87,
+        "PARENT_LOC": 87,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Connected.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Connected.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 29,
+        "PARENT_LOC": 29,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Disconnected.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Disconnected.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 35,
+        "PARENT_LOC": 35,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Error.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Error.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 45,
+        "PARENT_LOC": 45,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ExecutorLost.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ExecutorLost.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 68,
+        "PARENT_LOC": 68,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/FrameworkMessage.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/FrameworkMessage.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 69,
+        "PARENT_LOC": 69,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/OfferRescinded.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/OfferRescinded.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 47,
+        "PARENT_LOC": 47,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ReRegistered.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ReRegistered.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 49,
+        "PARENT_LOC": 49,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Registered.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/Registered.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 56,
+        "PARENT_LOC": 56,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ResourceOffers.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/ResourceOffers.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 51,
+        "PARENT_LOC": 51,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/SlaveLost.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/SlaveLost.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 47,
+        "PARENT_LOC": 47,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/StatusUpdate.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/scheduler/messages/StatusUpdate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 48,
+        "PARENT_LOC": 48,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactResolver.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactResolver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 36,
+        "PARENT_LOC": 36,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactServer.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 55,
+        "PARENT_LOC": 55,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactServerImpl.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosArtifactServerImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 332,
+        "PARENT_LOC": 332,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosConfiguration.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 140,
+        "PARENT_LOC": 140,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosResourceAllocation.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosResourceAllocation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 238,
+        "PARENT_LOC": 238,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosUtils.java",
+        "CHILD_PATH": "flink-mesos/src/main/java/org/apache/flink/mesos/util/MesosUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 200,
+        "PARENT_LOC": 200,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/LaunchableMesosWorkerTest.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/LaunchableMesosWorkerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 110,
+        "PARENT_LOC": 110,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerDriverTest.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/MesosResourceManagerDriverTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 466,
+        "PARENT_LOC": 466,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/MesosTaskManagerParametersTest.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/MesosTaskManagerParametersTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 343,
+        "PARENT_LOC": 343,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/services/TestingMesosServices.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/services/TestingMesosServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 150,
+        "PARENT_LOC": 150,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/store/MesosWorkerStoreTest.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/store/MesosWorkerStoreTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 45,
+        "PARENT_LOC": 45,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/store/TestingMesosWorkerStore.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/runtime/clusterframework/store/TestingMesosWorkerStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 172,
+        "PARENT_LOC": 172,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/scheduler/OfferTest.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/scheduler/OfferTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 193,
+        "PARENT_LOC": 193,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/scheduler/TestingSchedulerDriver.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/scheduler/TestingSchedulerDriver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 226,
+        "PARENT_LOC": 226,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/util/MesosResourceAllocationTest.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/util/MesosResourceAllocationTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 248,
+        "PARENT_LOC": 248,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/util/TestingMesosArtifactServer.java",
+        "CHILD_PATH": "flink-mesos/src/test/java/org/apache/flink/mesos/util/TestingMesosArtifactServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 91,
+        "PARENT_LOC": 91,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/clusterframework/package-info.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/clusterframework/package-info.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 27,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/highavailability/zookeeper/ZooKeeperHaServices.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/highavailability/zookeeper/ZooKeeperHaServices.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 256,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/resourcemanager/StandaloneResourceManager.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/resourcemanager/StandaloneResourceManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 123,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/TaskManagerLocation.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/TaskManagerLocation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 418,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Modify Attribute Annotation": 1
+    }
+  },
+  "FLINK-23220": {
+    "jira_id": "FLINK-23220",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "MailboxProcessor should wait for default action available even if there are no mails",
+    "description": "See the discussion: https://github.com/apache/flink/pull/15055#issuecomment-872827247",
+    "commits": [
+      {
+        "sha": "90e8e0f44962a333a42b03a6014dccc29822e64d",
+        "message": "[FLINK-23220] MailboxProcessor should wait for default action available even if there are no mails",
+        "author": "dawidwys",
+        "date": "2021-07-02T12:03:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/mailbox/MailboxProcessor.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/mailbox/MailboxProcessor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 495,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "8e65421f4f7a9c3a32f82bcbc5d6790c69ca5010",
+    "sha_after": "872ad3b4cd0ea475c0e6a59ac21d3c5b73a22512",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/mailbox/MailboxProcessor.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/mailbox/MailboxProcessor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 503,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Invert Condition": 1,
+      "Extract Variable": 1
+    }
+  },
+  "FLINK-23455": {
+    "jira_id": "FLINK-23455",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove the usage of the yaml file in SQLJobSubmission",
+    "description": "",
+    "commits": [
+      {
+        "sha": "e0de15e9e8987fe696c4270c77d105899dbeff51",
+        "message": "[FLINK-23455][e2e] Remove the usage of the yaml file in SQLJobSubmission",
+        "author": "fsk119",
+        "date": "2021-07-21T12:23:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkContainer.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkContainer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 338,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 344,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/SQLJobSubmission.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/SQLJobSubmission.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 31,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "67095737989e5196ca713fedf416f81545235d29",
+    "sha_after": "073f9f3fe66c85b26339982e48ecebbfd938a195",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkContainer.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkContainer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 338,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 12,
+        "PARENT_LOC": 344,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/SQLJobSubmission.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/SQLJobSubmission.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 31,
+        "PARENT_LOC": 105,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Remove Parameter": 2
+    }
+  },
+  "FLINK-23352": {
+    "jira_id": "FLINK-23352",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Collect Sink Operator Factory does not support to configure max bytes per batch",
+    "description": "Current {{CollectSinkOperatorFactory}} only supports max bytes per batch as 2MB. However, this configuration might not be enough for production users and we should provide ability to make this configurable. ",
+    "commits": [
+      {
+        "sha": "c62bd002239c4f23db7575f91fa67846eb8d8c65",
+        "message": "[FLINK-23352][streaming-java] Add configuration for batch size and socket timeout of collect sink",
+        "author": "tsreaper",
+        "date": "2021-07-20T06:53:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/collect/CollectSinkOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/collect/CollectSinkOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 82,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/connectors/CollectDynamicSink.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/connectors/CollectDynamicSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 124,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/connectors/DynamicSinkUtils.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/connectors/DynamicSinkUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 641,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7fdf8aaa82c6a79881cb21ce395c76d7006da71c",
+        "message": "[fix] Fix scalastyle",
+        "author": "tsreaper",
+        "date": "2021-07-20T07:22:11Z",
+        "files": []
+      },
+      {
+        "sha": "8c6ca945edb328b03d1d9eb61fb6e3c89c6c2ea4",
+        "message": "[fix] Fix comments",
+        "author": "tsreaper",
+        "date": "2021-07-21T08:52:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/collect/CollectSinkFunction.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/collect/CollectSinkFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 529,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "5d33fd276fc75141483293035f963b766a837199",
+    "sha_after": "56bbd6fd92013aab8d813fb53f7a93c5fa846e02",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/collect/CollectSinkFunction.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/collect/CollectSinkFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 529,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/collect/CollectSinkOperatorFactory.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/collect/CollectSinkOperatorFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 82,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/connectors/CollectDynamicSink.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/connectors/CollectDynamicSink.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 124,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/connectors/DynamicSinkUtils.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/connectors/DynamicSinkUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 641,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Add Parameter": 4,
+      "Rename Parameter": 1,
+      "Change Parameter Type": 1,
+      "Remove Parameter": 1
+    }
+  }
+}

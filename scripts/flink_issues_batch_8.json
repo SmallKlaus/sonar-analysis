@@ -1,0 +1,3026 @@
+{
+  "FLINK-11321": {
+    "jira_id": "FLINK-11321",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Clarify the NPE on fetching an nonexistent Kafka topic",
+    "description": "Following exception isn't that descriptive:\r\n\r\njava.lang.NullPointerException\r\n\tat org.apache.flink.streaming.connectors.kafka.internal.Kafka09PartitionDiscoverer.getAllPartitionsForTopics(Kafka09PartitionDiscoverer.java:77)\r\n\tat org.apache.flink.streaming.connectors.kafka.internals.AbstractPartitionDiscoverer.discoverPartitions(AbstractPartitionDiscoverer.java:131)\r\n\tat org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumerBase.open(FlinkKafkaConsumerBase.java:473)\r\n\tat org.apache.flink.api.common.functions.util.FunctionUtils.openFunction(FunctionUtils.java:36)\r\n\tat org.apache.flink.streaming.api.operators.AbstractUdfStreamOperator.open(AbstractUdfStreamOperator.java:102)\r\n\tat org.apache.flink.streaming.runtime.tasks.StreamTask.openAllOperators(StreamTask.java:424)\r\n\tat org.apache.flink.streaming.runtime.tasks.StreamTask.invoke(StreamTask.java:290)\r\n\tat org.apache.flink.runtime.taskmanager.Task.run(Task.java:711)\r\n\tat java.lang.Thread.run(Thread.java:748)\r\n\r\n",
+    "commits": [
+      {
+        "sha": "e005effe282a18eb330cacdf26205b67ece25de5",
+        "message": "[FLINK-11321] Clarify NPE on fetching nonexistent topic",
+        "author": "Fokko Driesprong",
+        "date": "2019-01-14T23:32:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.9/src/main/java/org/apache/flink/streaming/connectors/kafka/internal/Kafka09PartitionDiscoverer.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.9/src/main/java/org/apache/flink/streaming/connectors/kafka/internal/Kafka09PartitionDiscoverer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "be567080699e278af084886da36fb8369fa3fc13",
+        "message": "Update KafkaPartitionDiscoverer as well",
+        "author": "Fokko",
+        "date": "2019-07-12T18:45:02Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/streaming/connectors/kafka/internal/KafkaPartitionDiscoverer.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/streaming/connectors/kafka/internal/KafkaPartitionDiscoverer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 106,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "09f96b339f4890d7a44ae92c915ea8c0f6f244cb",
+    "sha_after": "ce5de6be563ffe6e36b8f917a7f500ffc2b49c08",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.9/src/main/java/org/apache/flink/streaming/connectors/kafka/internal/Kafka09PartitionDiscoverer.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.9/src/main/java/org/apache/flink/streaming/connectors/kafka/internal/Kafka09PartitionDiscoverer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 105,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/streaming/connectors/kafka/internal/KafkaPartitionDiscoverer.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/main/java/org/apache/flink/streaming/connectors/kafka/internal/KafkaPartitionDiscoverer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 106,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Extract Variable": 2,
+      "Add Thrown Exception Type": 1,
+      "Add Variable Modifier": 1,
+      "Change Thrown Exception Type": 1
+    }
+  },
+  "FLINK-13630": {
+    "jira_id": "FLINK-13630",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "StreamTableEnvironment#toAppendStream without QueryConfig overrides values set on TableConfig",
+    "description": "In a sequence like this:\r\n{code}\r\ntEnv.getConfig().setIdleStateRetentionTime(minRetention, maxRetention);\r\nTable table = tEnv.fromDataStream(elements);\r\ntEnv.toAppendStream(table, Row.class);\r\n{code}\r\nthe call to {{toAppendStream}} will override the value set in {{tEnv.getConfig.setIdleStateRetentionTime}}. I think we should change that behavior, as we want to drop the version with explicit {{QueryConfig}} and recommend the described setup.\r\n\r\nThanks [~hequn8128] for pointing it out.",
+    "commits": [
+      {
+        "sha": "f444918f6b96c7970f869cbf20e919a70990ed02",
+        "message": "[FLINK-13630][table-api-bridge] Use values retention configuration from TableConfig if not specified explicitly",
+        "author": "dawidwys",
+        "date": "2019-08-07T10:15:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/api/java/internal/StreamTableEnvironmentImpl.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/api/java/internal/StreamTableEnvironmentImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 393,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/test/java/org/apache/flink/table/api/java/internal/StreamTableEnvironmentImplTest.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/test/java/org/apache/flink/table/api/java/internal/StreamTableEnvironmentImplTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 145,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ae56cd7ab4d2f4811bddd1f4c7a40e5e97e01848",
+    "sha_after": "ff2c2c494aca56c94364c36f4db1a0836fad962e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/api/java/internal/StreamTableEnvironmentImpl.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/api/java/internal/StreamTableEnvironmentImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 24,
+        "LINES_DELETED": 18,
+        "PARENT_LOC": 393,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/test/java/org/apache/flink/table/api/java/internal/StreamTableEnvironmentImplTest.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/test/java/org/apache/flink/table/api/java/internal/StreamTableEnvironmentImplTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 145,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Variable": 2,
+      "Merge Variable": 2
+    }
+  },
+  "FLINK-12364": {
+    "jira_id": "FLINK-12364",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Introduce a CheckpointFailureManager to centralized manage checkpoint failure",
+    "description": "This issue tracks the work of T2 section about in design document : [https://docs.google.com/document/d/1ce7RtecuTxcVUJlnU44hzcO2Dwq9g4Oyd8_biy94hJc/edit?usp=sharing]",
+    "commits": [
+      {
+        "sha": "c201fe196b7c7968aca6fa7fea207c225bc1d18e",
+        "message": "[FLINK-12364] Introduce a CheckpointFailureManager to centralized manage checkpoint failure",
+        "author": "yanghua",
+        "date": "2019-04-30T13:00:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/runtime/jobmanager/JMXJobManagerMetricTest.java",
+            "CHILD_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/runtime/jobmanager/JMXJobManagerMetricTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 24,
+            "PARENT_LOC": 1387,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 115,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureReason.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureReason.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 74,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointIDCounter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointIDCounter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 57,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StandaloneCheckpointIDCounter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StandaloneCheckpointIDCounter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 59,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/ZooKeeperCheckpointIDCounter.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/ZooKeeperCheckpointIDCounter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 171,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 1815,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraphBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraphBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 342,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobgraph/tasks/CheckpointCoordinatorConfiguration.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobgraph/tasks/CheckpointCoordinatorConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 151,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorFailureTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorFailureTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorMasterHooksTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorMasterHooksTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 499,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 323,
+            "LINES_DELETED": 95,
+            "PARENT_LOC": 3869,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManagerTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManagerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 102,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointIDCounterTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointIDCounterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 242,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointSettingsSerializableTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointSettingsSerializableTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 195,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointStateRestoreTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointStateRestoreTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 34,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 352,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointStatsTrackerTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointStatsTrackerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 479,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/ExecutionGraphCheckpointCoordinatorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/ExecutionGraphCheckpointCoordinatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 255,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ArchivedExecutionGraphTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ArchivedExecutionGraphTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 351,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ConcurrentFailoverStrategyExecutionGraphTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ConcurrentFailoverStrategyExecutionGraphTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 542,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphDeploymentTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphDeploymentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 860,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/FailoverRegionTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/FailoverRegionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 708,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobgraph/JobGraphTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobgraph/JobGraphTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 359,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobgraph/tasks/JobCheckpointingSettingsTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobgraph/tasks/JobCheckpointingSettingsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1955,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 368,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 710,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterStopWithSavepointIT.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterStopWithSavepointIT.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 387,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterTriggerSavepointITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterTriggerSavepointITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 256,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "98a39353494332fc5eb40c8a4fb6a8ea506de054",
+        "message": "ignore more decline exception for compatibility purposes",
+        "author": "yanghua",
+        "date": "2019-05-26T11:07:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1418,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 115,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureReason.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureReason.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 72,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManagerTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManagerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 102,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IterateITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IterateITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 701,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "66bbb3346a0eec3d58ef6f74601c476fe5d49982",
+        "message": "refactor code to remove CheckpointDeclineException specific classes",
+        "author": "yanghua",
+        "date": "2019-05-27T00:58:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 23,
+            "PARENT_LOC": 1437,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/AlignmentLimitExceededException.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/AlignmentLimitExceededException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 33,
+            "PARENT_LOC": 33,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineException.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 35,
+            "PARENT_LOC": 35,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineOnCancellationBarrierException.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineOnCancellationBarrierException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 32,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineSubsumedException.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineSubsumedException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 32,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineTaskNotCheckpointingException.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineTaskNotCheckpointingException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 32,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineTaskNotReadyException.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineTaskNotReadyException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 32,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/InputEndOfStreamException.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/InputEndOfStreamException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 32,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/messages/checkpoint/DeclineCheckpoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/messages/checkpoint/DeclineCheckpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 84,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskExecutor.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1678,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/exceptions/CheckpointException.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/exceptions/CheckpointException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 41,
+            "PARENT_LOC": 41,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/Task.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/Task.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1555,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/BarrierBuffer.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/BarrierBuffer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 608,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/BarrierTracker.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/BarrierTracker.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 340,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/BarrierBufferAlignmentLimitTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/BarrierBufferAlignmentLimitTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 350,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/BarrierBufferTestBase.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/BarrierBufferTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 48,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 1332,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskCancellationBarrierTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskCancellationBarrierTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 229,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "13ee0f071459c0093be45cb0c10fb7a936b06084",
+        "message": "Fix some issues",
+        "author": "yanghua",
+        "date": "2019-05-28T12:14:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureReason.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureReason.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 82,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1805,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 4097,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "dab80e47fdf747a8ba3a623bd03dc893e4be93cd",
+        "message": "Fixed few issues and make sure count once for one checkpoint",
+        "author": "yanghua",
+        "date": "2019-06-13T00:52:44Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 23,
+            "PARENT_LOC": 1437,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 121,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/messages/checkpoint/DeclineCheckpoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/messages/checkpoint/DeclineCheckpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 88,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManagerTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManagerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 98,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "541a75604e620bf1b612252ff0e1a162f4c50713",
+        "message": "Fix race condition issue",
+        "author": "yanghua",
+        "date": "2019-06-13T16:03:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 133,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "6890448551b463f624c4ee0ae67f060cf143ce0b",
+        "message": "Fix some little issues",
+        "author": "yanghua",
+        "date": "2019-06-14T01:04:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 1415,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 131,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/PendingCheckpoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/PendingCheckpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 504,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 4095,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "72fd15c784ad6f5e29e73eb06c565694d52c2c4c",
+    "sha_after": "8c57e5aed871b42d51e6218620ce7bd7991338c0",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/runtime/jobmanager/JMXJobManagerMetricTest.java",
+        "CHILD_PATH": "flink-metrics/flink-metrics-jmx/src/test/java/org/apache/flink/runtime/jobmanager/JMXJobManagerMetricTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 150,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 48,
+        "LINES_DELETED": 26,
+        "PARENT_LOC": 1387,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 135,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureReason.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointFailureReason.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 74,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointIDCounter.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointIDCounter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 57,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/PendingCheckpoint.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/PendingCheckpoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 504,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StandaloneCheckpointIDCounter.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StandaloneCheckpointIDCounter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 59,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/ZooKeeperCheckpointIDCounter.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/ZooKeeperCheckpointIDCounter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 171,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/AlignmentLimitExceededException.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/AlignmentLimitExceededException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 33,
+        "PARENT_LOC": 33,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineException.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 35,
+        "PARENT_LOC": 35,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineOnCancellationBarrierException.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineOnCancellationBarrierException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 32,
+        "PARENT_LOC": 32,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineSubsumedException.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineSubsumedException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 32,
+        "PARENT_LOC": 32,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineTaskNotCheckpointingException.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineTaskNotCheckpointingException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 32,
+        "PARENT_LOC": 32,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineTaskNotReadyException.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/CheckpointDeclineTaskNotReadyException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 32,
+        "PARENT_LOC": 32,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/InputEndOfStreamException.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/decline/InputEndOfStreamException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 32,
+        "PARENT_LOC": 32,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 1819,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraphBuilder.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraphBuilder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 342,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobgraph/tasks/CheckpointCoordinatorConfiguration.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobgraph/tasks/CheckpointCoordinatorConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 151,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/messages/checkpoint/DeclineCheckpoint.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/messages/checkpoint/DeclineCheckpoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 84,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskExecutor.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1743,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/exceptions/CheckpointException.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/exceptions/CheckpointException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 41,
+        "PARENT_LOC": 41,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/Task.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/Task.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1555,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorFailureTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorFailureTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 175,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorMasterHooksTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorMasterHooksTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 499,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 323,
+        "LINES_DELETED": 95,
+        "PARENT_LOC": 3869,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManagerTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointFailureManagerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 117,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointIDCounterTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointIDCounterTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 242,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointSettingsSerializableTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointSettingsSerializableTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 195,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointStateRestoreTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointStateRestoreTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 34,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 352,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointStatsTrackerTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointStatsTrackerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 479,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/ExecutionGraphCheckpointCoordinatorTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/ExecutionGraphCheckpointCoordinatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 255,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ArchivedExecutionGraphTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ArchivedExecutionGraphTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 351,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ConcurrentFailoverStrategyExecutionGraphTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ConcurrentFailoverStrategyExecutionGraphTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 542,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphDeploymentTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphDeploymentTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 860,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/FailoverRegionTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/FailoverRegionTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 708,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobgraph/JobGraphTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobgraph/JobGraphTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 359,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobgraph/tasks/JobCheckpointingSettingsTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobgraph/tasks/JobCheckpointingSettingsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 64,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1904,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 368,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 733,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/BarrierBuffer.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/BarrierBuffer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 608,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/BarrierTracker.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/BarrierTracker.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 340,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/BarrierBufferAlignmentLimitTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/BarrierBufferAlignmentLimitTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 350,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/BarrierBufferTestBase.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/BarrierBufferTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 48,
+        "LINES_DELETED": 15,
+        "PARENT_LOC": 1332,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskCancellationBarrierTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskCancellationBarrierTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 229,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterStopWithSavepointIT.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterStopWithSavepointIT.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 387,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterTriggerSavepointITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterTriggerSavepointITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 256,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IterateITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/IterateITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 701,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 63,
+    "refactorings": {
+      "Extract Variable": 38,
+      "Remove Parameter": 6,
+      "Extract Method": 4,
+      "Add Parameter": 3,
+      "Parameterize Variable": 3,
+      "Add Parameter Modifier": 2,
+      "Localize Parameter": 2,
+      "Add Parameter Annotation": 1,
+      "Change Variable Type": 1,
+      "Merge Parameter": 1,
+      "Rename Method": 1,
+      "Change Parameter Type": 1
+    }
+  },
+  "FLINK-12529": {
+    "jira_id": "FLINK-12529",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Release record-deserializer buffers timely to improve the efficiency of heap usage on taskmanager",
+    "description": "In input processors (`StreamInputProcessor` and `StreamTwoInputProcessor`), each input channel has a corresponding record deserializer. Currently, these record deserializers are cleaned up at the end of the task (look at `StreamInputProcessor#cleanup()` and `StreamTwoInputProcessor#cleanup()`). This is not a problem for unbounded streams, but it may reduce the efficiency of heap memory usage on taskmanger when input is bounded stream.\r\n\r\nFor example, in case that all inputs are bounded streams, some of them end very early because of the small amount of data, and the other end very late because of the large amount of data, then the buffers of the record deserializers corresponding to the input channels finished early is idle for a long time and no longer used.\r\n\r\nIn another case, when both unbounded and bounded streams exist in the inputs, the buffers of the record deserializers corresponding to the bounded stream are idle for ever (no longer used) after the bounded streams are finished. Especially when the record and the parallelism of upstream are large, the total size of `SpanningWrapper#buffer` are very large. The size of `SpanningWrapper#buffer` is allowed to reach up to 5 MB, and if the parallelism of upstream is 100, the maximum total size will reach 500 MB (in our production, there are jobs with the record size up to hundreds of KB and the parallelism of upstream up to 1000).\r\n\r\nOverall, after receiving `EndOfPartitionEvent` from the input channel, the corresponding record deserializer should be cleared immediately to improve the efficiency of heap memory usage on taskmanager.",
+    "commits": [
+      {
+        "sha": "273affb19a0b757622ebd838fc9d9dffb97ccb4b",
+        "message": "[FLINK-12529][runtime] Release record-deserializer buffers timely to improve the usage efficiency of heap on taskmanager",
+        "author": "sunhaibotb",
+        "date": "2019-06-20T01:04:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/StreamTaskNetworkInput.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/StreamTaskNetworkInput.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 38,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 170,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/StreamTwoInputProcessor.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/StreamTwoInputProcessor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 453,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/StreamTaskNetworkInputTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/StreamTaskNetworkInputTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 58,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 101,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "3e0e030b41ba7dfcc4d85b7c776ae9627a51f838",
+    "sha_after": "7ed0df01d1d7d20babb1bb56fab2d2b650c77e15",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/StreamTaskNetworkInput.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/StreamTaskNetworkInput.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 38,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 170,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/StreamTwoInputProcessor.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/io/StreamTwoInputProcessor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 464,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/StreamTaskNetworkInputTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/io/StreamTaskNetworkInputTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 58,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 101,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Extract Method": 2,
+      "Extract Variable": 1
+    }
+  },
+  "FLINK-13317": {
+    "jira_id": "FLINK-13317",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Merge NetUtils and ClientUtils",
+    "description": "Both NetUtils (flink-core) and ClientUtils (flink-clients) support validating the \"host:port\" string. To reduce the duplicate code, it's better to move ClientUtils.parseHostPortAddress() to NetUtils class, modify its references and then drop ClientUtils.",
+    "commits": [
+      {
+        "sha": "f118d7404b3e0a0904b4024abb578444fc98ef49",
+        "message": "[FLINK-13317] Merge NetUtils and ClientUtils",
+        "author": "xuchao0903",
+        "date": "2019-08-04T14:33:31Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 51,
+            "PARENT_LOC": 51,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/RemoteExecutor.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/RemoteExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 226,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/AbstractCustomCommandLine.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/AbstractCustomCommandLine.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 94,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/util/NetUtils.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/util/NetUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 412,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/util/NetUtilsTest.java",
+            "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/util/NetUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 244,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "21e2e6515e0c93d7cdbee80e00f39178eb2bcb71",
+    "sha_after": "f118d7404b3e0a0904b4024abb578444fc98ef49",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+        "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/ClientUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 51,
+        "PARENT_LOC": 51,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/RemoteExecutor.java",
+        "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/RemoteExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 226,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/AbstractCustomCommandLine.java",
+        "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/AbstractCustomCommandLine.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 94,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/util/NetUtils.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/util/NetUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 24,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 412,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/util/NetUtilsTest.java",
+        "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/util/NetUtilsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 244,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Inline Variable": 2,
+      "Extract Method": 1,
+      "Rename Parameter": 1,
+      "Move Method": 1
+    }
+  },
+  "FLINK-13442": {
+    "jira_id": "FLINK-13442",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove unnecessary notifySubpartitionConsumed method from view reader ",
+    "description": "Currently the methods of `NetworkSequenceViewReader#notifySubpartitionConsumed` and ` NetworkSequenceViewReader#releaseAllResources` would be called meanwhile in netty stack during releasing resources.\r\n\r\nAs confirmed in FLINK-13245, in order to make this release logic simple and clean, we could remove the redundant `notifySubpartitionConsumed` from `NetworkSequenceViewReader` side, and also remove it from `ResultSubpartitionView` side. In the implementation of `ResultSubpartitionView#releaseAllResources` it would further notify the parent subpartition of consumed state via `ResultSubpartition#notifySubpartitionConsumed` which further feedback to parent `ResultPartition` layer via `onConsumedSubpartition`. Finally `ResultPartition` could decide whether to release itself or not.\r\n\r\nE.g. for the case of `ReleaseOnConsumptionResultPartition` which is mainly used for pipelined partition, it would release partition after reference counter decreased to 0. For the case of `ResultPartition` which would be generated for blocking partition by default, it would never be released after notifying consumed. And the JM/scheduler would decide when to release partition properly.\r\n\r\nIn addition, `InputChannel#notifySubpartitionConsumed` could also be removed as a result of above.",
+    "commits": [
+      {
+        "sha": "a42027d32f9c1c27822b2cd479bd25cfccf86851",
+        "message": "[FLINK-13442][network] Remove unnecessary notifySubpartitionConsumed method from view reader",
+        "author": "zhijiangW",
+        "date": "2019-07-26T16:45:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/NetworkSequenceViewReader.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/NetworkSequenceViewReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 75,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/CreditBasedSequenceNumberingViewReader.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/CreditBasedSequenceNumberingViewReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 210,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/PartitionRequestQueue.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/PartitionRequestQueue.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 329,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/SequenceNumberingViewReader.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/SequenceNumberingViewReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 154,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/BoundedBlockingSubpartition.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/BoundedBlockingSubpartition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 296,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/BoundedBlockingSubpartitionReader.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/BoundedBlockingSubpartitionReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 180,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/NoOpResultSubpartitionView.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/NoOpResultSubpartitionView.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 69,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/PipelinedSubpartitionView.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/PipelinedSubpartitionView.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 104,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/ResultSubpartitionView.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/ResultSubpartitionView.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 65,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/InputChannel.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/InputChannel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 290,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/LocalInputChannel.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/LocalInputChannel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 278,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/RemoteInputChannel.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/RemoteInputChannel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 676,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGate.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 670,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/UnknownInputChannel.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/UnknownInputChannel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 136,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/netty/CancelPartitionRequestTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/netty/CancelPartitionRequestTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 237,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/ResultPartitionTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/ResultPartitionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 344,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/InputChannelTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/InputChannelTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/TestInputChannel.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/TestInputChannel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 199,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/util/TestSubpartitionConsumer.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/util/TestSubpartitionConsumer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 136,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "d3f6f8ee79aa322b20c9435cdc5ac70995e4a9b3",
+    "sha_after": "482462f2855ea68667146491b61c347d11c52298",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/NetworkSequenceViewReader.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/NetworkSequenceViewReader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 75,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/CreditBasedSequenceNumberingViewReader.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/CreditBasedSequenceNumberingViewReader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 210,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/PartitionRequestQueue.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/PartitionRequestQueue.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 329,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/SequenceNumberingViewReader.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/netty/SequenceNumberingViewReader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 154,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/BoundedBlockingSubpartition.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/BoundedBlockingSubpartition.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 296,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/BoundedBlockingSubpartitionReader.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/BoundedBlockingSubpartitionReader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 180,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/NoOpResultSubpartitionView.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/NoOpResultSubpartitionView.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 69,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/PipelinedSubpartitionView.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/PipelinedSubpartitionView.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 104,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/ResultSubpartitionView.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/ResultSubpartitionView.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 65,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/InputChannel.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/InputChannel.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 290,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/LocalInputChannel.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/LocalInputChannel.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 278,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/RemoteInputChannel.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/RemoteInputChannel.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 676,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGate.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 670,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/UnknownInputChannel.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/UnknownInputChannel.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 136,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/netty/CancelPartitionRequestTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/netty/CancelPartitionRequestTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 237,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/ResultPartitionTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/ResultPartitionTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 344,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/InputChannelTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/InputChannelTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 156,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/TestInputChannel.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/TestInputChannel.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 199,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/util/TestSubpartitionConsumer.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/util/TestSubpartitionConsumer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 136,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Move And Inline Method": 2
+    }
+  },
+  "FLINK-13794": {
+    "jira_id": "FLINK-13794",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove unused field printStatusDuringExecution in ClusterClient",
+    "description": "{{printStatusDuringExecution}} in {{ClusterClient}} is only set but never used. It is itself a legacy field. Remove it as cleanup.",
+    "commits": [
+      {
+        "sha": "8b6dfdb96fe5195ba3aeb7d675109bfb24845be1",
+        "message": "[FLINK-13794][client] Remove unused logic of printStatusDuringExecution",
+        "author": "tisonkun",
+        "date": "2019-08-21T08:38:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/RemoteExecutor.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/RemoteExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 227,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/CliFrontend.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/CliFrontend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1201,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/ProgramOptions.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/ProgramOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 224,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/ClusterClient.java",
+            "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/ClusterClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 498,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/test/java/org/apache/flink/client/cli/CliFrontendRunTest.java",
+            "CHILD_PATH": "flink-clients/src/test/java/org/apache/flink/client/cli/CliFrontendRunTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 185,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/ExecutionPlanAfterExecutionTest.java",
+            "CHILD_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/ExecutionPlanAfterExecutionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.10/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka010ITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.10/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka010ITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 343,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.11/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka011ITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.11/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka011ITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 352,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.8/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka08ITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.8/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka08ITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 257,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.9/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka09ITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.9/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka09ITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 284,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaConsumerTestBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaConsumerTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 35,
+            "PARENT_LOC": 2290,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaProducerTestBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaProducerTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 542,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaShortRetentionTestBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaShortRetentionTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 290,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/testutils/DataGenerators.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/testutils/DataGenerators.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 357,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 1099,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/PlanExecutor.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/PlanExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 27,
+            "PARENT_LOC": 210,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/api/common/ExecutionConfigTest.java",
+            "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/api/common/ExecutionConfigTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 162,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-confluent-schema-registry/src/main/java/org/apache/flink/schema/registry/test/TestAvroConsumerConfluent.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-confluent-schema-registry/src/main/java/org/apache/flink/schema/registry/test/TestAvroConsumerConfluent.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 82,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-elasticsearch2-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch2SinkExample.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-elasticsearch2-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch2SinkExample.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 112,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-elasticsearch5-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch5SinkExample.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-elasticsearch5-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch5SinkExample.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 112,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-elasticsearch6-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch6SinkExample.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-elasticsearch6-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch6SinkExample.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-high-parallelism-iterations-test/src/main/java/org/apache/flink/batch/HighParallelismIterationsTestProgram.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-high-parallelism-iterations-test/src/main/java/org/apache/flink/batch/HighParallelismIterationsTestProgram.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 75,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-quickstart-test/src/main/java/org/apache/flink/quickstarts/test/Elasticsearch5SinkExample.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-quickstart-test/src/main/java/org/apache/flink/quickstarts/test/Elasticsearch5SinkExample.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 94,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-streaming-kafka-test-base/src/main/java/org/apache/flink/streaming/kafka/test/base/KafkaExampleUtil.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-streaming-kafka-test-base/src/main/java/org/apache/flink/streaming/kafka/test/base/KafkaExampleUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 54,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-java/src/main/java/org/apache/flink/api/java/LocalEnvironment.java",
+            "CHILD_PATH": "flink-java/src/main/java/org/apache/flink/api/java/LocalEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 221,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-java/src/main/java/org/apache/flink/api/java/RemoteEnvironment.java",
+            "CHILD_PATH": "flink-java/src/main/java/org/apache/flink/api/java/RemoteEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 257,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/DegreesWithExceptionITCase.java",
+            "CHILD_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/DegreesWithExceptionITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 154,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/ReduceOnEdgesWithExceptionITCase.java",
+            "CHILD_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/ReduceOnEdgesWithExceptionITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 115,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/ReduceOnNeighborsWithExceptionITCase.java",
+            "CHILD_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/ReduceOnNeighborsWithExceptionITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-scala-shell/src/main/java/org/apache/flink/api/java/ScalaShellRemoteEnvironment.java",
+            "CHILD_PATH": "flink-scala-shell/src/main/java/org/apache/flink/api/java/ScalaShellRemoteEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 101,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/RemoteStreamEnvironment.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/RemoteStreamEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 362,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/accumulators/AccumulatorErrorITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/accumulators/AccumulatorErrorITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 212,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/EventTimeAllWindowCheckpointingITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/EventTimeAllWindowCheckpointingITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 406,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/EventTimeWindowCheckpointingITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/EventTimeWindowCheckpointingITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 744,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/KeyedStateCheckpointingITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/KeyedStateCheckpointingITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 396,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/RegionFailoverITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/RegionFailoverITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 407,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/SavepointITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/SavepointITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 876,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/StreamFaultToleranceTestBase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/StreamFaultToleranceTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 182,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/WindowCheckpointingITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/WindowCheckpointingITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 356,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CheckpointedStreamingProgram.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CheckpointedStreamingProgram.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 136,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CheckpointingCustomKvStateProgram.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CheckpointingCustomKvStateProgram.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 249,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CustomInputSplitProgram.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CustomInputSplitProgram.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 164,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CustomKvStateProgram.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CustomKvStateProgram.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 109,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/KMeansForTest.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/KMeansForTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 313,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/StreamingCustomInputSplitProgram.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/StreamingCustomInputSplitProgram.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 170,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/StreamingProgram.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/StreamingProgram.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 98,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/UserCodeType.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/UserCodeType.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 73,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/example/client/LocalExecutorITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/example/client/LocalExecutorITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 81,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/manual/OverwriteObjects.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/manual/OverwriteObjects.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 522,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/CustomSerializationITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/CustomSerializationITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 265,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/MiscellaneousIssuesITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/MiscellaneousIssuesITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/SuccessAfterNetworkBuffersFailureITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/SuccessAfterNetworkBuffersFailureITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 163,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/ExecutionEnvironmentITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/ExecutionEnvironmentITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 93,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/RemoteEnvironmentITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/RemoteEnvironmentITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 116,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/TypeHintITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/TypeHintITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 295,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/FastFailuresITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/FastFailuresITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/JobManagerHAProcessFailureRecoveryITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/JobManagerHAProcessFailureRecoveryITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 406,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/ProcessFailureCancelingITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/ProcessFailureCancelingITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 315,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/SimpleRecoveryITCaseBase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/SimpleRecoveryITCaseBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 252,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/TaskManagerProcessFailureBatchRecoveryITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/TaskManagerProcessFailureBatchRecoveryITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 118,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/TaskManagerProcessFailureStreamingRecoveryITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/TaskManagerProcessFailureStreamingRecoveryITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 242,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/IPv6HostnamesITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/IPv6HostnamesITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 166,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/NettyEpollITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/NettyEpollITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 94,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/NetworkStackThroughputITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/NetworkStackThroughputITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 341,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/TimestampITCase.java",
+            "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/TimestampITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 858,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/CliFrontendRunWithYarnTest.java",
+            "CHILD_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/CliFrontendRunWithYarnTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 143,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c51b19c1984c2e6c1f0807bc51c8ab8f11d9136d",
+    "sha_after": "c30e84fb8df9cb6ab6a38cde40b9c3b83c4e8954",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/RemoteExecutor.java",
+        "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/RemoteExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 227,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/CliFrontend.java",
+        "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/CliFrontend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1201,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/ProgramOptions.java",
+        "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/cli/ProgramOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 224,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/ClusterClient.java",
+        "CHILD_PATH": "flink-clients/src/main/java/org/apache/flink/client/program/ClusterClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 498,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-clients/src/test/java/org/apache/flink/client/cli/CliFrontendRunTest.java",
+        "CHILD_PATH": "flink-clients/src/test/java/org/apache/flink/client/cli/CliFrontendRunTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 16,
+        "PARENT_LOC": 185,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/ExecutionPlanAfterExecutionTest.java",
+        "CHILD_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/ExecutionPlanAfterExecutionTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.10/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka010ITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.10/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka010ITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 343,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.11/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka011ITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.11/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka011ITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 352,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.8/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka08ITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.8/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka08ITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 257,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.9/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka09ITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.9/src/test/java/org/apache/flink/streaming/connectors/kafka/Kafka09ITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 284,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaConsumerTestBase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaConsumerTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 35,
+        "PARENT_LOC": 2290,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaProducerTestBase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaProducerTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 542,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaShortRetentionTestBase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaShortRetentionTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 290,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/testutils/DataGenerators.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/testutils/DataGenerators.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 223,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/KafkaITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 357,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/ExecutionConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 17,
+        "PARENT_LOC": 1099,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/PlanExecutor.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/PlanExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 27,
+        "PARENT_LOC": 210,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/api/common/ExecutionConfigTest.java",
+        "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/api/common/ExecutionConfigTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 162,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-confluent-schema-registry/src/main/java/org/apache/flink/schema/registry/test/TestAvroConsumerConfluent.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-confluent-schema-registry/src/main/java/org/apache/flink/schema/registry/test/TestAvroConsumerConfluent.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 82,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-elasticsearch2-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch2SinkExample.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-elasticsearch2-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch2SinkExample.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 112,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-elasticsearch5-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch5SinkExample.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-elasticsearch5-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch5SinkExample.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 112,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-elasticsearch6-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch6SinkExample.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-elasticsearch6-test/src/main/java/org/apache/flink/streaming/tests/Elasticsearch6SinkExample.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 156,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-high-parallelism-iterations-test/src/main/java/org/apache/flink/batch/HighParallelismIterationsTestProgram.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-high-parallelism-iterations-test/src/main/java/org/apache/flink/batch/HighParallelismIterationsTestProgram.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 75,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-quickstart-test/src/main/java/org/apache/flink/quickstarts/test/Elasticsearch5SinkExample.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-quickstart-test/src/main/java/org/apache/flink/quickstarts/test/Elasticsearch5SinkExample.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 94,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-streaming-kafka-test-base/src/main/java/org/apache/flink/streaming/kafka/test/base/KafkaExampleUtil.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-streaming-kafka-test-base/src/main/java/org/apache/flink/streaming/kafka/test/base/KafkaExampleUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 54,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-java/src/main/java/org/apache/flink/api/java/LocalEnvironment.java",
+        "CHILD_PATH": "flink-java/src/main/java/org/apache/flink/api/java/LocalEnvironment.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 221,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-java/src/main/java/org/apache/flink/api/java/RemoteEnvironment.java",
+        "CHILD_PATH": "flink-java/src/main/java/org/apache/flink/api/java/RemoteEnvironment.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 257,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/DegreesWithExceptionITCase.java",
+        "CHILD_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/DegreesWithExceptionITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 154,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/ReduceOnEdgesWithExceptionITCase.java",
+        "CHILD_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/ReduceOnEdgesWithExceptionITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 115,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/ReduceOnNeighborsWithExceptionITCase.java",
+        "CHILD_PATH": "flink-libraries/flink-gelly/src/test/java/org/apache/flink/graph/test/operations/ReduceOnNeighborsWithExceptionITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 175,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-scala-shell/src/main/java/org/apache/flink/api/java/ScalaShellRemoteEnvironment.java",
+        "CHILD_PATH": "flink-scala-shell/src/main/java/org/apache/flink/api/java/ScalaShellRemoteEnvironment.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 101,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/RemoteStreamEnvironment.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/RemoteStreamEnvironment.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 362,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/accumulators/AccumulatorErrorITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/accumulators/AccumulatorErrorITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 212,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/EventTimeAllWindowCheckpointingITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/EventTimeAllWindowCheckpointingITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 406,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/EventTimeWindowCheckpointingITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/EventTimeWindowCheckpointingITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 744,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/KeyedStateCheckpointingITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/KeyedStateCheckpointingITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 396,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/RegionFailoverITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/RegionFailoverITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 407,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/SavepointITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/SavepointITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 876,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/StreamFaultToleranceTestBase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/StreamFaultToleranceTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 182,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/WindowCheckpointingITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/checkpointing/WindowCheckpointingITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 356,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CheckpointedStreamingProgram.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CheckpointedStreamingProgram.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 136,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CheckpointingCustomKvStateProgram.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CheckpointingCustomKvStateProgram.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 249,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CustomInputSplitProgram.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CustomInputSplitProgram.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 164,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CustomKvStateProgram.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/CustomKvStateProgram.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 109,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/KMeansForTest.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/KMeansForTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 313,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/StreamingCustomInputSplitProgram.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/StreamingCustomInputSplitProgram.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 170,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/StreamingProgram.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/StreamingProgram.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 98,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/UserCodeType.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/classloading/jar/UserCodeType.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 73,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/example/client/LocalExecutorITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/example/client/LocalExecutorITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 81,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/manual/OverwriteObjects.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/manual/OverwriteObjects.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 522,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/CustomSerializationITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/CustomSerializationITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 265,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/MiscellaneousIssuesITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/MiscellaneousIssuesITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 150,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/SuccessAfterNetworkBuffersFailureITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/misc/SuccessAfterNetworkBuffersFailureITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 163,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/ExecutionEnvironmentITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/ExecutionEnvironmentITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 93,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/RemoteEnvironmentITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/RemoteEnvironmentITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 116,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/TypeHintITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/operators/TypeHintITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 295,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/FastFailuresITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/FastFailuresITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 95,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/JobManagerHAProcessFailureRecoveryITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/JobManagerHAProcessFailureRecoveryITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 406,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/ProcessFailureCancelingITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/ProcessFailureCancelingITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 315,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/SimpleRecoveryITCaseBase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/SimpleRecoveryITCaseBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 252,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/TaskManagerProcessFailureBatchRecoveryITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/TaskManagerProcessFailureBatchRecoveryITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 118,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/TaskManagerProcessFailureStreamingRecoveryITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/recovery/TaskManagerProcessFailureStreamingRecoveryITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 242,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/IPv6HostnamesITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/IPv6HostnamesITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 166,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/NettyEpollITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/NettyEpollITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 94,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/NetworkStackThroughputITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/runtime/NetworkStackThroughputITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 341,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/TimestampITCase.java",
+        "CHILD_PATH": "flink-tests/src/test/java/org/apache/flink/test/streaming/runtime/TimestampITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 15,
+        "PARENT_LOC": 858,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/CliFrontendRunWithYarnTest.java",
+        "CHILD_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/CliFrontendRunWithYarnTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 143,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 6,
+    "refactorings": {
+      "Add Method Annotation": 3,
+      "Remove Parameter": 2,
+      "Remove Thrown Exception Type": 1
+    }
+  }
+}

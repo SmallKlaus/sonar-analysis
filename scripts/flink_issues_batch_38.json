@@ -1,0 +1,996 @@
+{
+  "FLINK-28636": {
+    "jira_id": "FLINK-28636",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add utility to test POJO compliance",
+    "description": "Users should be encouraged to eagerly verify that their POJOs satisfy all the requirements that Flink imposes, however we provide no convenient way to test that.\r\n\r\nThey currently have to resort to something like below, which isn't obvious at all:\r\n{code:java}\r\nTypeSerializer<Event> eventSerializer =\r\n            TypeInformation.of(Event.class).createSerializer(new ExecutionConfig());\r\nassertThat(eventSerializer).isInstanceOf(PojoSerializer.class);{code}",
+    "commits": [
+      {
+        "sha": "c3710882e5b28e3303be0ea1af903d7b9db3f624",
+        "message": "[FLINK-28636][tests] Add utility for checking POJO compliance",
+        "author": "zentol",
+        "date": "2022-07-21T15:14:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kinesis/src/test/java/org/apache/flink/streaming/connectors/kinesis/FlinkKinesisConsumerTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kinesis/src/test/java/org/apache/flink/streaming/connectors/kinesis/FlinkKinesisConsumerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 1255,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-test-utils-parent/flink-test-utils/src/main/java/org/apache/flink/types/PojoTestUtils.java",
+            "CHILD_PATH": "flink-test-utils-parent/flink-test-utils/src/main/java/org/apache/flink/types/PojoTestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-test-utils-parent/flink-test-utils/src/test/java/org/apache/flink/types/PojoTestUtilsTest.java",
+            "CHILD_PATH": "flink-test-utils-parent/flink-test-utils/src/test/java/org/apache/flink/types/PojoTestUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "1165c28f43d2e6aeedb527cbabd945a1e42e01a5",
+        "message": "Update PojoTestUtilsTest.java",
+        "author": "zentol",
+        "date": "2022-07-25T15:15:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-test-utils-parent/flink-test-utils/src/test/java/org/apache/flink/types/PojoTestUtilsTest.java",
+            "CHILD_PATH": "flink-test-utils-parent/flink-test-utils/src/test/java/org/apache/flink/types/PojoTestUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 42,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "9192446847b6fb29beb8d36d49d6900de1e61685",
+    "sha_after": "94c3daac4a96a68009a22825fb1fd4ac0bb92195",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kinesis/src/test/java/org/apache/flink/streaming/connectors/kinesis/FlinkKinesisConsumerTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kinesis/src/test/java/org/apache/flink/streaming/connectors/kinesis/FlinkKinesisConsumerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 1255,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-test-utils-parent/flink-test-utils/src/main/java/org/apache/flink/types/PojoTestUtils.java",
+        "CHILD_PATH": "flink-test-utils-parent/flink-test-utils/src/main/java/org/apache/flink/types/PojoTestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 55,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-test-utils-parent/flink-test-utils/src/test/java/org/apache/flink/types/PojoTestUtilsTest.java",
+        "CHILD_PATH": "flink-test-utils-parent/flink-test-utils/src/test/java/org/apache/flink/types/PojoTestUtilsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 42,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract And Move Method": 1,
+      "Extract Variable": 1,
+      "Change Variable Type": 1,
+      "Add Variable Modifier": 1
+    }
+  },
+  "FLINK-28624": {
+    "jira_id": "FLINK-28624",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "CsvReaderFormat should accept CsvMapper factory",
+    "description": "The CsvReaderFormat allows the user to pass a {{CsvMapper}} via the factory methods.\r\n\r\nThis is a flawed approach because we generally cannot assume that the mapper is actually serializable.\r\n\r\nFor example adding the JavaTimeModule breaks serialization because it internally uses the DateTimeFormatter.",
+    "commits": [
+      {
+        "sha": "69db908ec2b2143dfa565d4f2b8641f8d6040a58",
+        "message": "[FLINK-28624][csv] Accept mapper/schema factories",
+        "author": "zentol",
+        "date": "2022-07-21T11:10:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvFileFormatFactory.java",
+            "CHILD_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvFileFormatFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 268,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvReaderFormat.java",
+            "CHILD_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvReaderFormat.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 23,
+            "PARENT_LOC": 212,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/DataStreamCsvITCase.java",
+            "CHILD_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/DataStreamCsvITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 407,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "38667cbacdbba6d7680410a4e2de5d5d17e25fa0",
+        "message": "docs",
+        "author": "zentol",
+        "date": "2022-07-21T11:36:33Z",
+        "files": []
+      },
+      {
+        "sha": "b7f9600b7589bb8a2d458fb6ff14c08231c8f0d4",
+        "message": "fix python issue",
+        "author": "zentol",
+        "date": "2022-07-22T07:51:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/formats/csv/CsvReaderFormatFactory.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/formats/csv/CsvReaderFormatFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 45,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "f6def0dc40809e397384bf18f86490a097939398",
+        "message": "use serializable supplier/function",
+        "author": "zentol",
+        "date": "2022-07-22T07:52:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvReaderFormat.java",
+            "CHILD_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvReaderFormat.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 239,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e95f93ca917006ee936759c75ddfc9e07382a724",
+        "message": "+python",
+        "author": "zentol",
+        "date": "2022-07-22T09:03:22Z",
+        "files": []
+      },
+      {
+        "sha": "62cf3b4145f769a7b06a068d50f848bec1cdee16",
+        "message": "++python",
+        "author": "zentol",
+        "date": "2022-07-22T10:20:41Z",
+        "files": []
+      },
+      {
+        "sha": "94cea4822ddfa8ac12c4a1f57e37dd59aaa6ba77",
+        "message": "add tests",
+        "author": "zentol",
+        "date": "2022-07-25T16:12:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/CsvReaderFormatTest.java",
+            "CHILD_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/CsvReaderFormatTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 114,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "e6d9bb10587f79de7599b4a4dfc503993da1d9e2",
+        "message": "fix jdk compat",
+        "author": "zentol",
+        "date": "2022-07-25T19:54:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/CsvReaderFormatTest.java",
+            "CHILD_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/CsvReaderFormatTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a87808108614ef7b1d40d0e994c2683b272e41d5",
+    "sha_after": "1dee35a9966065593aa5dfc618f5fec17fb80890",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvFileFormatFactory.java",
+        "CHILD_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvFileFormatFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 268,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvReaderFormat.java",
+        "CHILD_PATH": "flink-formats/flink-csv/src/main/java/org/apache/flink/formats/csv/CsvReaderFormat.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 52,
+        "LINES_DELETED": 23,
+        "PARENT_LOC": 212,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/CsvReaderFormatTest.java",
+        "CHILD_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/CsvReaderFormatTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 115,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/DataStreamCsvITCase.java",
+        "CHILD_PATH": "flink-formats/flink-csv/src/test/java/org/apache/flink/formats/csv/DataStreamCsvITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 407,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/formats/csv/CsvReaderFormatFactory.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/formats/csv/CsvReaderFormatFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 45,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 10,
+    "refactorings": {
+      "Change Parameter Type": 2,
+      "Rename Parameter": 2,
+      "Rename Attribute": 2,
+      "Change Attribute Type": 2,
+      "Add Method Annotation": 1,
+      "Inline Variable": 1
+    }
+  },
+  "FLINK-28822": {
+    "jira_id": "FLINK-28822",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Avoid create VectorizedColumnBatch for each read in ArrowReader",
+    "description": "When checking the ArrowReader's logic, I found that it's not necessary to {{new VectorizedColumnBatch}} during each read. ",
+    "commits": [
+      {
+        "sha": "082cbab798e935d828c3fa6dfb983f27b0db5887",
+        "message": "[FLINK-28822] Avoid create to VectorizedColumnBatch for each read in ArrowReader",
+        "author": "Aitozi",
+        "date": "2022-08-05T06:22:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowReader.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 56,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "782982fc99b076d1b6317bd6ece420961e3e391a",
+    "sha_after": "e47cb6eeb4ceac13db4b8b357a0885b77651826c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowReader.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/table/runtime/arrow/ArrowReader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 56,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Attribute Modifier": 1,
+      "Move Code": 1
+    }
+  },
+  "FLINK-28827": {
+    "jira_id": "FLINK-28827",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Complete DataType support in DataStream API for PyFlink",
+    "description": "DataTypes are used for some FileSource formats originated from Table API, e.g. ParquetColumnarRowInput, but some types doesn't work in current PyFlink implementations, e.g. TIMESTAMP_LTZ.",
+    "commits": [
+      {
+        "sha": "6da9118b1fc25cefeb8d5bdc450351ba68cac5c9",
+        "message": "[FLINK-28827][python] Complete DataType support in DataStream API",
+        "author": "vancior98",
+        "date": "2022-08-05T07:21:02Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/streaming/api/utils/PythonTypeUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/streaming/api/utils/PythonTypeUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 173,
+            "LINES_DELETED": 46,
+            "PARENT_LOC": 1675,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "90b76308d2c88392b62293de905c60b1b8900a72",
+        "message": "update according to review",
+        "author": "vancior98",
+        "date": "2022-08-08T09:09:15Z",
+        "files": []
+      }
+    ],
+    "sha_before": "4cf0b81d4f492b49d12aa317f3dfbc6e50d72ec8",
+    "sha_after": "1c40dc15fbc29e8e5e514565109a3fb05b47a83f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/streaming/api/utils/PythonTypeUtils.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/streaming/api/utils/PythonTypeUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 173,
+        "LINES_DELETED": 46,
+        "PARENT_LOC": 1675,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Variable": 1,
+      "Rename Method": 1,
+      "Extract Method": 1,
+      "Add Thrown Exception Type": 1
+    }
+  },
+  "FLINK-28873": {
+    "jira_id": "FLINK-28873",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Make \"jobmanager.scheduler\" visible in documentation",
+    "description": "Currently, the option {{jobmanager.scheduler}} is still excluded from documentation. But in fact, this option is already used as a public interface (this option needs to be configured by users when using AdaptiveScheduler and AdaptiveBatchScheduler).\r\n\r\nWe should remove the {{ExcludeFromDocumentation}} to make it visible in the documentation.",
+    "commits": [
+      {
+        "sha": "a9d5eb36bc99f362ba8bc1e71421bceef14ba356",
+        "message": "[FLINK-28873][configuration] Make jobmanager.scheduler visible in documentation",
+        "author": "wanglijie95",
+        "date": "2022-08-08T13:41:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/JobManagerOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/JobManagerOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 646,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/api/common/ExecutionConfigTest.java",
+            "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/api/common/ExecutionConfigTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 389,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/DefaultSlotPoolServiceSchedulerFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/DefaultSlotPoolServiceSchedulerFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 253,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultSchedulerFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultSchedulerFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 160,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/DefaultSlotPoolServiceSchedulerFactoryTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/DefaultSlotPoolServiceSchedulerFactoryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterSchedulerTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterSchedulerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 138,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/TestingSchedulerNGFactory.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/TestingSchedulerNGFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 83,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "7be6783cb222fc7fd0efe1d40d67dc5c74dbaae8",
+    "sha_after": "15f87d4a470e9bf29fd18874c26c4506ea57c09f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/JobManagerOptions.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/JobManagerOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 646,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/test/java/org/apache/flink/api/common/ExecutionConfigTest.java",
+        "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/api/common/ExecutionConfigTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 389,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/DefaultSlotPoolServiceSchedulerFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/DefaultSlotPoolServiceSchedulerFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 253,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultSchedulerFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultSchedulerFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 160,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/DefaultSlotPoolServiceSchedulerFactoryTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/DefaultSlotPoolServiceSchedulerFactoryTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 99,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterSchedulerTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/jobmaster/JobMasterSchedulerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 138,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/TestingSchedulerNGFactory.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/TestingSchedulerNGFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 83,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Add Attribute Annotation": 2,
+      "Remove Attribute Annotation": 1
+    }
+  },
+  "FLINK-28487": {
+    "jira_id": "FLINK-28487",
+    "issue_type": "New Feature",
+    "resolution": "Done",
+    "title": "Introduce configurable RateLimitingStrategy for Async Sink",
+    "description": "Introduce a configurable RateLimitingStrategy to the AsyncSinkWriter.\r\n\r\nThis change will allow sink implementers using AsyncSinkWriter to configure their own RateLimitingStrategy instead of using the default AIMDRateLimitingStrategy.\r\n\r\nSee [FLIP-242: Introduce configurable RateLimitingStrategy for Async Sink|https://cwiki.apache.org/confluence/display/FLINK/FLIP-242%3A+Introduce+configurable+RateLimitingStrategy+for+Async+Sink].\r\n\r\n ",
+    "commits": [
+      {
+        "sha": "2cf8182de1664960fa7603e6c5e706e4b906d24c",
+        "message": "[FLINK-28487][connectors] Introduce configurable RateLimitingStrategy for AsyncSinkWriter",
+        "author": "hlteoh37",
+        "date": "2022-07-11T16:34:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-aws-kinesis-firehose/src/main/java/org/apache/flink/connector/firehose/sink/KinesisFirehoseSinkWriter.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-aws-kinesis-firehose/src/main/java/org/apache/flink/connector/firehose/sink/KinesisFirehoseSinkWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 268,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-aws-kinesis-streams/src/main/java/org/apache/flink/connector/kinesis/sink/KinesisStreamsSinkWriter.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-aws-kinesis-streams/src/main/java/org/apache/flink/connector/kinesis/sink/KinesisStreamsSinkWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 259,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AIMDRateLimitingStrategy.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AIMDRateLimitingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 72,
+            "PARENT_LOC": 72,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriter.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 74,
+            "LINES_DELETED": 90,
+            "PARENT_LOC": 549,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfiguration.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 210,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/AIMDScalingStrategy.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/AIMDScalingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 85,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/BasicRequestInfo.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/BasicRequestInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 34,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/BasicResultInfo.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/BasicResultInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/CongestionControlRateLimitingStrategy.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/CongestionControlRateLimitingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 124,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/NoOpScalingStrategy.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/NoOpScalingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/RateLimitingStrategy.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/RateLimitingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 60,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/RequestInfo.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/RequestInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/ResultInfo.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/ResultInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/ScalingStrategy.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/ScalingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/ArrayListAsyncSink.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/ArrayListAsyncSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 116,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AIMDRateLimitingStrategyTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AIMDRateLimitingStrategyTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 113,
+            "PARENT_LOC": 113,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 1264,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/AIMDScalingStrategyTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/AIMDScalingStrategyTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 132,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/CongestionControlRateLimitingStrategyTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/CongestionControlRateLimitingStrategyTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 184,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/NoOpScalingStrategyTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/NoOpScalingStrategyTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "3c8402a97a26cf9c9d42c2842818d6dfadf432fa",
+    "sha_after": "f53dd03fd5fe87a366de0da1fdef4ad88d5b20af",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-aws-kinesis-firehose/src/main/java/org/apache/flink/connector/firehose/sink/KinesisFirehoseSinkWriter.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-aws-kinesis-firehose/src/main/java/org/apache/flink/connector/firehose/sink/KinesisFirehoseSinkWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 268,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-aws-kinesis-streams/src/main/java/org/apache/flink/connector/kinesis/sink/KinesisStreamsSinkWriter.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-aws-kinesis-streams/src/main/java/org/apache/flink/connector/kinesis/sink/KinesisStreamsSinkWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 259,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AIMDRateLimitingStrategy.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AIMDRateLimitingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 72,
+        "PARENT_LOC": 72,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriter.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 74,
+        "LINES_DELETED": 90,
+        "PARENT_LOC": 549,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfiguration.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 210,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/AIMDScalingStrategy.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/AIMDScalingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 85,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/BasicRequestInfo.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/BasicRequestInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 34,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/BasicResultInfo.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/BasicResultInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 40,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/CongestionControlRateLimitingStrategy.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/CongestionControlRateLimitingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 124,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/NoOpScalingStrategy.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/NoOpScalingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 31,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/RateLimitingStrategy.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/RateLimitingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 60,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/RequestInfo.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/RequestInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/ResultInfo.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/ResultInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 30,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/ScalingStrategy.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/strategy/ScalingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 39,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/ArrayListAsyncSink.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/ArrayListAsyncSink.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 116,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AIMDRateLimitingStrategyTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AIMDRateLimitingStrategyTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 113,
+        "PARENT_LOC": 113,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 1264,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/AIMDScalingStrategyTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/AIMDScalingStrategyTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 132,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/CongestionControlRateLimitingStrategyTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/CongestionControlRateLimitingStrategyTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 184,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/NoOpScalingStrategyTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/strategy/NoOpScalingStrategyTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 43,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 11,
+    "refactorings": {
+      "Add Method Annotation": 2,
+      "Change Attribute Type": 1,
+      "Extract Method": 1,
+      "Rename Variable": 1,
+      "Change Variable Type": 1,
+      "Add Parameter": 1,
+      "Move Attribute": 1,
+      "Extract Class": 1,
+      "Change Method Access Modifier": 1,
+      "Move And Rename Method": 1
+    }
+  },
+  "FLINK-28735": {
+    "jira_id": "FLINK-28735",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Deprecate host/web-ui-port parameter of jobmanager.sh",
+    "description": "If we fix FLINK-28733 we could while we're at it deprecate these 2 parameters, since you can then also control them via dynamic properties.\r\n\r\nThis would also subsume FLINK-21038.",
+    "commits": [
+      {
+        "sha": "693b9d55ee9426e21a17519a9cd88b4da866d384",
+        "message": "[FLINK-28735][scripts] Deprecate jobmanager.sh host/port parameters",
+        "author": "zentol",
+        "date": "2022-08-23T07:41:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 765,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/parser/CommandLineOptions.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/parser/CommandLineOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 76,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "254b276c79a5adce21269fae6722e3bf3ac15b78",
+    "sha_after": "cb5076513685ba7b84b9738d51644b6071fc8585",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/ClusterEntrypoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 765,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/parser/CommandLineOptions.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/entrypoint/parser/CommandLineOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 76,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Attribute Annotation": 2
+    }
+  }
+}

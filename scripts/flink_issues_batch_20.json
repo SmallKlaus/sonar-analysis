@@ -1,0 +1,668 @@
+{
+  "FLINK-19522": {
+    "jira_id": "FLINK-19522",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add ability to set auto commit on jdbc driver from Table/SQL API",
+    "description": "When I tried to stream data from postgres via the JDBC source connector in the SQL api, it was loading the entirety of the table into memory before starting streaming. This is due to the postgres JDBC driver requiring the autoCommit flag to be set to false for streaming to take place.\r\n\r\nFLINK-12198 provided the means to do this with the JDBCInputSource, but this did not extend to the SQL description. This option should be added.\r\n\r\nTo reproduce, create a very large table and try to read it in with the SQL api. You will see a large spike of memory usage and no data streaming, and then it will start all at once. I will attach a couple of graphs before and after I made a patch to the code myself to set auto-commit.",
+    "commits": [
+      {
+        "sha": "a55035fb0a9a2aecec9e1469f30a6f991e9e9504",
+        "message": "[FLINK-19522][Table SQL / Ecosystem] Add auto-commit option for Table/SQL API",
+        "author": "dforciea",
+        "date": "2020-10-07T16:37:44Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/internal/options/JdbcReadOptions.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/internal/options/JdbcReadOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 163,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactory.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 316,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableSource.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 168,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/test/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactoryTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/test/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactoryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 310,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "38017c0f4f0ec3235e8b1db79c8efa258916287c",
+        "message": "[FLINK-19522][Table SQL / Ecosystem] Add auto-commit option for Table/SQL API",
+        "author": "dforciea",
+        "date": "2020-10-12T15:18:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/internal/options/JdbcReadOptions.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/internal/options/JdbcReadOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 180,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactory.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 323,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableSource.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 169,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcRowDataInputFormat.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcRowDataInputFormat.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 403,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "fa4542f3bfcf6776e5461b553b49853e88900d92",
+    "sha_after": "84a602547ffd80cdba99fb7fec5fc7640f3962ee",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/internal/options/JdbcReadOptions.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/internal/options/JdbcReadOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 163,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactory.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 316,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableSource.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableSource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 168,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcRowDataInputFormat.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/main/java/org/apache/flink/connector/jdbc/table/JdbcRowDataInputFormat.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 403,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-jdbc/src/test/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactoryTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-jdbc/src/test/java/org/apache/flink/connector/jdbc/table/JdbcDynamicTableFactoryTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 310,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Change Parameter Type": 1,
+      "Add Parameter": 1
+    }
+  },
+  "FLINK-19368": {
+    "jira_id": "FLINK-19368",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "TableEnvHiveConnectorITCase fails with Hive-3.x",
+    "description": "Failed test cases are {{testBatchTransactionalTable}} and {{testStreamTransactionalTable}}. It fails to create the ACID table.",
+    "commits": [
+      {
+        "sha": "8e22bf8beafb8d11704d84c7a30b46eb79025014",
+        "message": "[FLINK-19368][hive] TableEnvHiveConnectorITCase fails with Hive-3.x",
+        "author": "lirui-apache",
+        "date": "2020-10-14T03:03:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/FlinkStandaloneHiveRunner.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/FlinkStandaloneHiveRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 463,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/FlinkStandaloneHiveServerContext.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/FlinkStandaloneHiveServerContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 243,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/TableEnvHiveConnectorITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/TableEnvHiveConnectorITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 769,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "f4e4046aed11c3f16a38f5f0202d7592cdbb5f2e",
+    "sha_after": "eb6d6f3981c9913a4520dca3f870223fcef03350",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/FlinkStandaloneHiveRunner.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/FlinkStandaloneHiveRunner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 463,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/FlinkStandaloneHiveServerContext.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/FlinkStandaloneHiveServerContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 243,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/TableEnvHiveConnectorITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/TableEnvHiveConnectorITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 769,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Parameter": 1,
+      "Remove Method Modifier": 1
+    }
+  },
+  "FLINK-19767": {
+    "jira_id": "FLINK-19767",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add AbstractSlotPoolFactory",
+    "description": "FLINK-19314 introduces another slot pool implementation, with the factory for it being a carbon copy of the factory for the existing slot pool factory.\r\n\r\nWe can introduce an abstract factory class to reduce code duplication.",
+    "commits": [
+      {
+        "sha": "c6f0ef39c65468a7f613e31bac530b148d36a9d4",
+        "message": "[FLINK-19767] Add AbstractSlotPoolFactory",
+        "author": "tillrohrmann",
+        "date": "2020-10-21T14:25:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/AbstractSlotPoolFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/AbstractSlotPoolFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 53,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/DefaultSlotPoolFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/DefaultSlotPoolFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 65,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "3b9e20aafc7a6680a5abf82b1161ad1c89151a85",
+    "sha_after": "78b3f2e7d5d0a5a4d341587951b2dc54a5ef427b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/AbstractSlotPoolFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/AbstractSlotPoolFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 53,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/DefaultSlotPoolFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/jobmaster/slotpool/DefaultSlotPoolFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 17,
+        "PARENT_LOC": 65,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 9,
+    "refactorings": {
+      "Pull Up Attribute": 4,
+      "Change Attribute Access Modifier": 4,
+      "Extract Superclass": 1
+    }
+  },
+  "FLINK-19765": {
+    "jira_id": "FLINK-19765",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "flink SqlUseCatalog.getCatalogName is not unified with SqlCreateCatalog and SqlDropCatalog",
+    "description": "when i develop flink ranger plugin at operation level, i find this method not unified.\r\n\r\nAnd SqlToOperationConverter.convert needs has the good order for user to find code.",
+    "commits": [
+      {
+        "sha": "b85f48049fd05f5c6da1cb91c6dfb4c6d201100c",
+        "message": "[FLINK-19765][flink-table-planner] refactor SqlToOperationConverter and unified the SqlUseCatalog.getCatalogName() with SqlCreateCatalog and SqlDropCatalog.",
+        "author": "liuyongvs",
+        "date": "2020-10-22T08:36:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/flink/sql/parser/ddl/SqlUseCatalog.java",
+            "CHILD_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/flink/sql/parser/ddl/SqlUseCatalog.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 68,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/operations/SqlToOperationConverter.java",
+            "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/operations/SqlToOperationConverter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 31,
+            "PARENT_LOC": 826,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/sqlexec/SqlToOperationConverter.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/sqlexec/SqlToOperationConverter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 29,
+            "PARENT_LOC": 672,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "8e6b04a103771f4f50654933af05e47bb937f5b5",
+    "sha_after": "2e60d04b170ad9900d486b1e88fae750fc9995fc",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/flink/sql/parser/ddl/SqlUseCatalog.java",
+        "CHILD_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/flink/sql/parser/ddl/SqlUseCatalog.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 68,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/operations/SqlToOperationConverter.java",
+        "CHILD_PATH": "flink-table/flink-table-planner-blink/src/main/java/org/apache/flink/table/planner/operations/SqlToOperationConverter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 31,
+        "LINES_DELETED": 31,
+        "PARENT_LOC": 826,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/sqlexec/SqlToOperationConverter.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/sqlexec/SqlToOperationConverter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 29,
+        "LINES_DELETED": 29,
+        "PARENT_LOC": 672,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Rename Method": 1,
+      "Encapsulate Attribute": 1
+    }
+  },
+  "FLINK-19252": {
+    "jira_id": "FLINK-19252",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Jaas file created under io.tmp.dirs - folder not created if not exists",
+    "description": "https://issues.apache.org/jira/browse/FLINK-14433\r\n\r\n \r\n\r\nThe security module installation happens before the tmp directory check: [https://github.com/apache/flink/blob/master/flink-runtime/src/main/java/org/apache/flink/runtime/taskexecutor/TaskManagerServices.java#L390]",
+    "commits": [
+      {
+        "sha": "5f74f9b7478ce656580e16ed504e1812e81cad16",
+        "message": "[FLINK-19252] Create the working dir for Jaas conf proactively.",
+        "author": "KarmaGYZ",
+        "date": "2020-10-26T03:36:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/security/modules/JaasModule.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/security/modules/JaasModule.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 174,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/security/modules/JaasModuleTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/security/modules/JaasModuleTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 87,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "4b3150d7209f8efe97ff1c44f71cac13079cbcf2",
+    "sha_after": "59f5ea6f1ad5c5aede83e1ece2fdf40cb15f9f2c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/security/modules/JaasModule.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/security/modules/JaasModule.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 174,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/security/modules/JaasModuleTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/security/modules/JaasModuleTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 87,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Rename Method": 1,
+      "Extract Method": 1,
+      "Parameterize Variable": 1
+    }
+  },
+  "FLINK-19641": {
+    "jira_id": "FLINK-19641",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Optimize parallelism calculating of HiveTableSource by checking file number",
+    "description": "The current implementation of {{HiveTableSource#createBatchSource}} for calculating parallelism directly uses {{inputFormat.createInputSplits(0).length}} as the number of splits. However {{createInputSplits}} may be costly as it will read some data from all source files, especially when the table is not partitioned and the number of files are large.\r\n\r\nMany Hive tables maintain the number of files in that table, and it's obvious that the number of splits is at least the number of files. So we can try to fetch the number of files (almost without cost) first and if the number of files already exceeds maximum parallelism we can directly use the maximum parallelism without calling {{createInputSplits}}.\r\n\r\nThis is a significant optimization on the current Flink TPCDS benchmark, which will create some table with 15000 files without partitioning. This optimization will improve the performance of the whole benchmark by 300s and more.",
+    "commits": [
+      {
+        "sha": "7c890e0cd38e99cc0f7decdb5d0835c5c0396f90",
+        "message": "[FLINK-19641][hive] Optimize parallelism calculating of HiveTableSource by checking file number",
+        "author": "tsreaper",
+        "date": "2020-10-14T12:18:10Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 561,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/read/HiveTableInputFormat.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/read/HiveTableInputFormat.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 370,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/HiveTableSourceITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/HiveTableSourceITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 34,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 689,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d2f035bb2422d0b409164c9953efaa857f4393db",
+        "message": "[fix] Fix comments",
+        "author": "tsreaper",
+        "date": "2020-10-27T05:20:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveParallelismInference.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveParallelismInference.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 122,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 43,
+            "PARENT_LOC": 577,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "c5da742f0e0ec1d9c79832051472749466a847c1",
+        "message": "Comments from Jingsong",
+        "author": "JingsongLi",
+        "date": "2020-10-27T07:52:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveParallelismInference.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveParallelismInference.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 57,
+            "PARENT_LOC": 122,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 538,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "dfa2662f2b4b5a2c40d4751edb6ab92e0fc8f7ec",
+        "message": "[fix] Fix comments",
+        "author": "tsreaper",
+        "date": "2020-10-27T13:02:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveParallelismInference.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveParallelismInference.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 25,
+            "PARENT_LOC": 106,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 540,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6ddd2c9afa404746a76fd423aa1da771955b4a96",
+    "sha_after": "09e0e655a7c7ada3313a1840364658f8111c0200",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveParallelismInference.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveParallelismInference.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 110,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 27,
+        "PARENT_LOC": 527,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/read/HiveTableInputFormat.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/read/HiveTableInputFormat.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 370,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/HiveTableSourceITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/HiveTableSourceITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 34,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 686,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Extract Method": 1,
+      "Extract And Move Method": 1
+    }
+  },
+  "FLINK-18811": {
+    "jira_id": "FLINK-18811",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "if a disk is damaged, taskmanager should choose another disk for temp dir , rather than throw an IOException, which causes flink job restart over and over again",
+    "description": "I met this Exception when a hard disk was damaged:\r\n\r\n!flink_disk_error.png!\r\n\r\nI checked the code and found that flink will create a temp file  when Record length > 5 MB:\r\n\r\n \r\n{code:java}\r\n// SpillingAdaptiveSpanningRecordDeserializer.java\r\nif (nextRecordLength > THRESHOLD_FOR_SPILLING) {\r\n   // create a spilling channel and put the data there\r\n   this.spillingChannel = createSpillingChannel();\r\n\r\n   ByteBuffer toWrite = partial.segment.wrap(partial.position, numBytesChunk);\r\n   FileUtils.writeCompletely(this.spillingChannel, toWrite);\r\n}\r\n{code}\r\nThe tempDir is random picked from all `tempDirs`. Well on yarn mode, one `tempDir`  usually represents one hard disk.\r\n\r\n \r\n\r\nIn may opinion, if a hard disk is damaged, taskmanager should pick another disk(tmpDir) for Spilling Channel, rather than throw an IOException, which causes flink job restart over and over again.\r\n\r\nIf we could just change “SpillingAdaptiveSpanningRecordDeserializer\" like this:\r\n{code:java}\r\n// SpillingAdaptiveSpanningRecordDeserializer.java\r\nprivate FileChannel createSpillingChannel() throws IOException {\r\n   if (spillFile != null) {\r\n      throw new IllegalStateException(\"Spilling file already exists.\");\r\n   }\r\n\r\n   // try to find a unique file name for the spilling channel\r\n   int maxAttempts = 10;\r\n   String[] tempDirs = this.tempDirs;\r\n   for (int attempt = 0; attempt < maxAttempts; attempt++) {\r\n      int dirIndex = rnd.nextInt(tempDirs.length);\r\n      String directory = tempDirs[dirIndex];\r\n      spillFile = new File(directory, randomString(rnd) + \".inputchannel\");\r\n      try {\r\n         if (spillFile.createNewFile()) {\r\n            return new RandomAccessFile(spillFile, \"rw\").getChannel();\r\n         }\r\n      } catch (IOException e) {\r\n         // if there is no tempDir left to try\r\n         if(tempDirs.length <= 1) {\r\n            throw e;\r\n         }\r\n         LOG.warn(\"Caught an IOException when creating spill file: \" + directory + \". Attempt \" + attempt, e);\r\n         tempDirs = (String[])ArrayUtils.remove(tempDirs,dirIndex);\r\n      }\r\n   }\r\n{code}",
+    "commits": [
+      {
+        "sha": "2c4d8bab8fac4ca8dea20c7cb326f62ca3dd7817",
+        "message": "[FLINK-18811][network] Pick another tmpDir if an IOException occurs when creating spill file",
+        "author": "yuchuanchen",
+        "date": "2020-09-10T06:19:44Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/serialization/SpanningWrapper.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/serialization/SpanningWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 324,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/serialization/SpanningWrapperTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/serialization/SpanningWrapperTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 115,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a3f161e9a89ac3b56b9825376cc46fcee8e79db5",
+    "sha_after": "e38716f8bb7640503b0f4a1863fd2726a5beb451",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/serialization/SpanningWrapper.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/api/serialization/SpanningWrapper.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 324,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/serialization/SpanningWrapperTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/api/serialization/SpanningWrapperTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 115,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Variable": 3,
+      "Remove Attribute Modifier": 1
+    }
+  }
+}

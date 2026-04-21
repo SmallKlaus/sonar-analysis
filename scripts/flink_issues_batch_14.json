@@ -1,0 +1,828 @@
+{
+  "FLINK-16189": {
+    "jira_id": "FLINK-16189",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove testing logic from FlinkDistribution",
+    "description": "Currently, the {{FlinkDistribution}} is responsible for locating and copying the distribution for usage in tests, and contains hooks for backing up log files.\r\n This makes the class a bit inflexible to use, as for example a {{FlinkResource}} could not create 2 distributions in separate places.\r\n\r\nI suggest to move these responsibilities into the {{FlinkResource}} implementations, and \"demote\" the distribution to a simple wrapper, only providing programmatic access for mutating/interacting with the distribution.",
+    "commits": [
+      {
+        "sha": "275e0876a79f4016bccd0f2c8c3c5dc76bc4b85f",
+        "message": "[FLINK-16189][e2e] Remove test logic from FlinkDistribution",
+        "author": "zentol",
+        "date": "2020-02-20T14:45:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 68,
+            "PARENT_LOC": 334,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 45,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 171,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResourceFactory.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResourceFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 37,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "22ee00c4ac414fc6546ce4bd5158a1fb745b2947",
+        "message": "address comments",
+        "author": "zentol",
+        "date": "2020-03-04T12:36:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 211,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResourceFactory.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResourceFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 53,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a762e76c0fa270367a6cf6cebca807ba80e124ae",
+    "sha_after": "1924f82512e17a43f874b8c86492d9ce6c8d7dd1",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/FlinkDistribution.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 68,
+        "PARENT_LOC": 334,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 48,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 171,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResourceFactory.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-end-to-end-tests-common/src/main/java/org/apache/flink/tests/util/flink/LocalStandaloneFlinkResourceFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 37,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 15,
+    "refactorings": {
+      "Add Attribute Modifier": 6,
+      "Add Parameter": 2,
+      "Move And Inline Method": 2,
+      "Remove Attribute Modifier": 1,
+      "Remove Variable Modifier": 1,
+      "Rename Variable": 1,
+      "Move Attribute": 1,
+      "Move And Rename Attribute": 1
+    }
+  },
+  "FLINK-14041": {
+    "jira_id": "FLINK-14041",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Refactor LeaderRetrievalServiceHostnameResolutionTest and remove StandaloneUtils",
+    "description": "{{StandaloneUtils}} is a poor utility that only used in {{LeaderRetrievalServiceHostnameResolutionTest}}.\r\n\r\nHowever, {{LeaderRetrievalServiceHostnameResolutionTest}} tests only {{HighAvailabilityServicesUtils.AddressResolution}} which doesn't have to use {{StandaloneUtils}}.\r\n\r\nPropose to refactor {{LeaderRetrievalServiceHostnameResolutionTest}} and remove {{StandaloneUtils}}.\r\n\r\ncc [~chesnay]",
+    "commits": [
+      {
+        "sha": "844b1b1581de5073d55bf311bc110f3f82d01633",
+        "message": "[FLINK-14041][tests] Refactor LeaderRetrievalServiceHostnameResolutionTest to AddressResolutionTest",
+        "author": "tisonkun",
+        "date": "2020-03-10T08:55:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/LeaderRetrievalServiceHostnameResolutionTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/util/AddressResolutionTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 37,
+            "LINES_DELETED": 51,
+            "PARENT_LOC": 104,
+            "STATUS": "R"
+          }
+        ]
+      },
+      {
+        "sha": "f3f017e0ab41a19e473892e1d0c0a0578f8c039c",
+        "message": "[FLINK-14041][runtime] Remove unused StandaloneUtils",
+        "author": "tisonkun",
+        "date": "2020-03-10T08:56:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/util/StandaloneUtils.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/util/StandaloneUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 90,
+            "PARENT_LOC": 90,
+            "STATUS": "D"
+          }
+        ]
+      }
+    ],
+    "sha_before": "610c9fb405615cf3eae4b082cbbc6c81f06d0028",
+    "sha_after": "2a4a2e22c65756d95d3c378d42be11bb583bc01d",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/util/StandaloneUtils.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/util/StandaloneUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 90,
+        "PARENT_LOC": 90,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-clients/src/test/java/org/apache/flink/client/program/LeaderRetrievalServiceHostnameResolutionTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/util/AddressResolutionTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 37,
+        "LINES_DELETED": 51,
+        "PARENT_LOC": 104,
+        "STATUS": "R"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Rename Attribute": 1,
+      "Move And Rename Class": 1
+    }
+  },
+  "FLINK-16516": {
+    "jira_id": "FLINK-16516",
+    "issue_type": "Improvement",
+    "resolution": "Resolved",
+    "title": "Avoid codegen user-defined function for Python UDF",
+    "description": "Currently we make use of codegen to generate PythonScalarFunction and PythonTableFunction, but it is unnecessary. We can directly create a static PythonScalarFunction and PythonTableFunction.",
+    "commits": [
+      {
+        "sha": "beba9d15aaf629de9e09aa8885cdcc844a96ad30",
+        "message": "[FLINK-16516][python] Remove Python UDF Codegen Code",
+        "author": "HuangXingBo",
+        "date": "2020-03-10T03:08:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonScalarFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonScalarFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 95,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonTableFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonTableFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 95,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "c1abec74f79480d9f2715f074d02d2481eb5d411",
+        "message": "Address comments - remove SimplePythonFunction",
+        "author": "HuangXingBo",
+        "date": "2020-03-11T09:57:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonScalarFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonScalarFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonTableFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonTableFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/SimplePythonFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/SimplePythonFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 67,
+            "PARENT_LOC": 67,
+            "STATUS": "D"
+          }
+        ]
+      }
+    ],
+    "sha_before": "5fa42593b79b57874237a784e8bce1d3ad632b60",
+    "sha_after": "b2c20e9cf5a58096d033bfe14cce277c938a53c6",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonScalarFunction.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonScalarFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 97,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonTableFunction.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/PythonTableFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 97,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/SimplePythonFunction.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/python/SimplePythonFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 67,
+        "PARENT_LOC": 67,
+        "STATUS": "D"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Rename Class": 1,
+      "Remove Class Modifier": 1
+    }
+  },
+  "FLINK-16493": {
+    "jira_id": "FLINK-16493",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Use enum type instead of string type for KubernetesConfigOptions.REST_SERVICE_EXPOSED_TYPE",
+    "description": "At the moment the value of {{KubernetesConfigOptions.REST_SERVICE_EXPOSED_TYPE}} option could only be one of _{color:#172b4d}ClusterIP, NodePort, and LoadBalancer{color}_{color:#172b4d}, {color}{color:#172b4d}this ticket proposes to use enum type for the option instead of string type.{color}_{color:#172b4d}\r\n{color}_",
+    "commits": [
+      {
+        "sha": "f48f981af0a4984aaa4159080505f925744e6c29",
+        "message": "[FLINK-16493][k8s] Use enum type instead of string type for KubernetesConfigOptions.REST_SERVICE_EXPOSED_TYPE",
+        "author": "zhengcanbin",
+        "date": "2020-03-09T02:16:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/configuration/KubernetesConfigOptions.java",
+            "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/configuration/KubernetesConfigOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 161,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/Fabric8FlinkKubeClient.java",
+            "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/Fabric8FlinkKubeClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 289,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/AbstractServiceDecorator.java",
+            "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/AbstractServiceDecorator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 91,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/ExternalServiceDecorator.java",
+            "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/ExternalServiceDecorator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 59,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/InternalServiceDecorator.java",
+            "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/InternalServiceDecorator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 80,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/parameters/KubernetesJobManagerParameters.java",
+            "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/parameters/KubernetesJobManagerParameters.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 107,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-kubernetes/src/test/java/org/apache/flink/kubernetes/kubeclient/decorators/ExternalServiceDecoratorTest.java",
+            "CHILD_PATH": "flink-kubernetes/src/test/java/org/apache/flink/kubernetes/kubeclient/decorators/ExternalServiceDecoratorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 90,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-kubernetes/src/test/java/org/apache/flink/kubernetes/kubeclient/parameters/KubernetesJobManagerParametersTest.java",
+            "CHILD_PATH": "flink-kubernetes/src/test/java/org/apache/flink/kubernetes/kubeclient/parameters/KubernetesJobManagerParametersTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "d723d0012c6b5e41e9d56784bc424e3942747225",
+    "sha_after": "663af45c7f403eb6724852915bf2078241927258",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/configuration/KubernetesConfigOptions.java",
+        "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/configuration/KubernetesConfigOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 161,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/Fabric8FlinkKubeClient.java",
+        "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/Fabric8FlinkKubeClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 289,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/AbstractServiceDecorator.java",
+        "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/AbstractServiceDecorator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 91,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/ExternalServiceDecorator.java",
+        "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/ExternalServiceDecorator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 59,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/InternalServiceDecorator.java",
+        "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/decorators/InternalServiceDecorator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 80,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/parameters/KubernetesJobManagerParameters.java",
+        "CHILD_PATH": "flink-kubernetes/src/main/java/org/apache/flink/kubernetes/kubeclient/parameters/KubernetesJobManagerParameters.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 107,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-kubernetes/src/test/java/org/apache/flink/kubernetes/kubeclient/decorators/ExternalServiceDecoratorTest.java",
+        "CHILD_PATH": "flink-kubernetes/src/test/java/org/apache/flink/kubernetes/kubeclient/decorators/ExternalServiceDecoratorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 90,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-kubernetes/src/test/java/org/apache/flink/kubernetes/kubeclient/parameters/KubernetesJobManagerParametersTest.java",
+        "CHILD_PATH": "flink-kubernetes/src/test/java/org/apache/flink/kubernetes/kubeclient/parameters/KubernetesJobManagerParametersTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 153,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Change Return Type": 4,
+      "Change Attribute Type": 1,
+      "Change Variable Type": 1,
+      "Add Variable Modifier": 1
+    }
+  },
+  "FLINK-16304": {
+    "jira_id": "FLINK-16304",
+    "issue_type": "Improvement",
+    "resolution": "Resolved",
+    "title": "Remove python packages bundled in the flink-python jar",
+    "description": "As the Python Dependency Management API is sufficient to control the python environment, and current design that bundles python packages to the flink-python jar and extracts when running Python UDF has been a blocker of the Python UDF performance optimization. The python packages bundled in the flink-python jar need to be removed now.\r\n\r\nIt means that users need to ensure that the PyFlink and its dependencies are pre-installed in the client and cluster environment when submitting jobs. Of course the cluster environment can be configured via Python Dependency Management API.",
+    "commits": [
+      {
+        "sha": "adf9599ad65c36a99e8c0fa9130fc30baf00ebb6",
+        "message": "[FLINK-16304][python] Remove python packages bundled in the flink-python jar.",
+        "author": "WeiZhong94",
+        "date": "2020-02-27T11:05:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/client/python/PythonDriverEnvUtils.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/client/python/PythonDriverEnvUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 38,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 233,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/client/python/PythonResourceExtractor.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/client/python/PythonResourceExtractor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 48,
+            "PARENT_LOC": 48,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/python/AbstractPythonFunctionRunner.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/python/AbstractPythonFunctionRunner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 229,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/python/env/ProcessPythonEnvironmentManager.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/python/env/ProcessPythonEnvironmentManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 343,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/python/util/ResourceUtil.java",
+            "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/python/util/ResourceUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 47,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/python/env/ProcessPythonEnvironmentManagerTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/python/env/ProcessPythonEnvironmentManagerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 399,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/python/util/ResourceUtilTest.java",
+            "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/python/util/ResourceUtilTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 25,
+            "PARENT_LOC": 79,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4b84fb01719d2f614e7484d2d29de7bfc685329c",
+        "message": "Let the collect_license_files.sh also collect license files that are not bundled in any jar.",
+        "author": "WeiZhong94",
+        "date": "2020-03-10T11:31:29Z",
+        "files": []
+      },
+      {
+        "sha": "ee983bedfb58e59b0fa7452667c2b1e5c3910ef1",
+        "message": "change to search the binary distribution directory.",
+        "author": "WeiZhong94",
+        "date": "2020-03-11T11:49:22Z",
+        "files": []
+      },
+      {
+        "sha": "1e1f9de29552097bc7a7973c6532f678dfc1dabe",
+        "message": "Change the target directory of the find command to $SRC. Exclude $DST/licenses and $TMP/licenses.",
+        "author": "WeiZhong94",
+        "date": "2020-03-11T13:47:33Z",
+        "files": []
+      },
+      {
+        "sha": "3ede7b0ecef98c97bd511c9929928ceb1668582b",
+        "message": "add cloudpickle to the NOTICE-binary-PREAMBLE.txt.",
+        "author": "WeiZhong94",
+        "date": "2020-03-11T14:00:39Z",
+        "files": []
+      },
+      {
+        "sha": "4d180da9a55cbbf11f1c1b6b6dc3a0cbe6a101f4",
+        "message": "Add BSD license description to NOTICE-binary_PREAMBLE.txt.",
+        "author": "WeiZhong94",
+        "date": "2020-03-12T01:37:27Z",
+        "files": []
+      }
+    ],
+    "sha_before": "bb8e3876ba37405cf0e703b51956fa0792649b5a",
+    "sha_after": "42f49482a3217287abba5e8903cf50791acf287a",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/client/python/PythonDriverEnvUtils.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/client/python/PythonDriverEnvUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 38,
+        "LINES_DELETED": 12,
+        "PARENT_LOC": 233,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/client/python/PythonResourceExtractor.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/client/python/PythonResourceExtractor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 48,
+        "PARENT_LOC": 48,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/python/AbstractPythonFunctionRunner.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/python/AbstractPythonFunctionRunner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 18,
+        "PARENT_LOC": 229,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/python/env/ProcessPythonEnvironmentManager.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/python/env/ProcessPythonEnvironmentManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 15,
+        "PARENT_LOC": 343,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-python/src/main/java/org/apache/flink/python/util/ResourceUtil.java",
+        "CHILD_PATH": "flink-python/src/main/java/org/apache/flink/python/util/ResourceUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 47,
+        "PARENT_LOC": 96,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/python/env/ProcessPythonEnvironmentManagerTest.java",
+        "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/python/env/ProcessPythonEnvironmentManagerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 399,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-python/src/test/java/org/apache/flink/python/util/ResourceUtilTest.java",
+        "CHILD_PATH": "flink-python/src/test/java/org/apache/flink/python/util/ResourceUtilTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 25,
+        "PARENT_LOC": 79,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 9,
+    "refactorings": {
+      "Change Variable Type": 2,
+      "Rename Variable": 2,
+      "Rename Method": 2,
+      "Remove Parameter": 2,
+      "Change Return Type": 1
+    }
+  },
+  "FLINK-15727": {
+    "jira_id": "FLINK-15727",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Let BashJavaUtils return dynamic configs and JVM parameters in one call",
+    "description": "In order to avoid logging diagnostic statements from the {{BashJavaUtils}} util twice as we do it right now, I would suggest to not call the util twice, once for the JVM args and once for the dynamic properties in {{taskmanager.sh}}. Instead I propose that {{BashJavaUtils}} returns both values as the two last lines with different prefixes so that the bash script can easily filter it out.\r\n\r\ncc [~azagrebin] [~xintongsong]",
+    "commits": [
+      {
+        "sha": "1ffc375e2b14f76c86e56d6d7aa888094a45d475",
+        "message": "[FLINK-15727] Let BashJavaUtils return dynamic configs and JVM parameters in one call",
+        "author": "KarmaGYZ",
+        "date": "2020-03-10T07:22:01Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-dist/src/test/java/org/apache/flink/dist/BashJavaUtilsITCase.java",
+            "CHILD_PATH": "flink-dist/src/test/java/org/apache/flink/dist/BashJavaUtilsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 27,
+            "PARENT_LOC": 67,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/util/BashJavaUtils.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/util/BashJavaUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 19,
+            "PARENT_LOC": 86,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "42f49482a3217287abba5e8903cf50791acf287a",
+    "sha_after": "ab37867c474a9e5754e79045fa06c9ac145a3787",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-dist/src/test/java/org/apache/flink/dist/BashJavaUtilsITCase.java",
+        "CHILD_PATH": "flink-dist/src/test/java/org/apache/flink/dist/BashJavaUtilsITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 27,
+        "PARENT_LOC": 67,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/util/BashJavaUtils.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/util/BashJavaUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 19,
+        "PARENT_LOC": 86,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Rename Method": 1,
+      "Rename Attribute": 1
+    }
+  },
+  "FLINK-16554": {
+    "jira_id": "FLINK-16554",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Extract static classes from StreamTask",
+    "description": "StreamTask is currently 1400+ LOC.\r\n\r\nWe can cut it to 1100+ by simply extracting these static classes into separate files:\r\n * `CheckpointingOperation`\r\n * `AsyncCheckpointRunnable`",
+    "commits": [
+      {
+        "sha": "3b898115d9c7e949cc6751b911098e9b2ee0f295",
+        "message": "[FLINK-16554][task][refactoring] split StreamTask",
+        "author": "rkhachatryan",
+        "date": "2020-03-11T16:55:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/AsyncCheckpointRunnable.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/AsyncCheckpointRunnable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 256,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointingOperation.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointingOperation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 136,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 347,
+            "PARENT_LOC": 1483,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/LocalStateForwardingTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/LocalStateForwardingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 236,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6126600b3717368e7428a4543b524b413c58501e",
+    "sha_after": "3b99f7e4d769f6e2b6e9fd8e36a542e063d6c369",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/AsyncCheckpointRunnable.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/AsyncCheckpointRunnable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 256,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointingOperation.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointingOperation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 136,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 347,
+        "PARENT_LOC": 1483,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/LocalStateForwardingTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/LocalStateForwardingTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 236,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 38,
+    "refactorings": {
+      "Add Parameter": 14,
+      "Move Class": 3,
+      "Change Variable Type": 2,
+      "Change Class Access Modifier": 2,
+      "Remove Class Modifier": 2,
+      "Inline Variable": 2,
+      "Replace Attribute With Variable": 2,
+      "Remove Class Annotation": 1,
+      "Change Attribute Type": 1,
+      "Remove Parameter": 1,
+      "Split Attribute": 1,
+      "Extract Variable": 1,
+      "Change Method Access Modifier": 1,
+      "Add Method Modifier": 1,
+      "Rename Method": 1,
+      "Inline Method": 1,
+      "Localize Parameter": 1,
+      "Move Code": 1
+    }
+  }
+}

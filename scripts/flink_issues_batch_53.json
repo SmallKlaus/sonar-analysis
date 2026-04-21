@@ -1,0 +1,1186 @@
+{
+  "FLINK-32706": {
+    "jira_id": "FLINK-32706",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Add SPLIT(STRING) support in SQL & Table API",
+    "description": "SPLIT Function\r\n\r\nDescription\r\nSplits a string into an array of substrings, based on a delimiter.\r\n\r\nSyntax\r\nThe syntax for the SPLIT function is:\r\n{code:java}\r\nSPLIT(col1, delimiter){code}\r\nSplits a string into an array of substrings based on a delimiter. If the delimiter is not found, then the original string is returned as the only element in the array. If the delimiter is empty, then all characters in the string are split. If either, string or delimiter, are NULL, then a NULL value is returned.\r\n\r\nIf the delimiter is found at the beginning or end of the string, or there are contiguous delimiters, then an empty space is added to the array.\r\n\r\nExample\r\nLet's look at some  function examples and explore how to use the SPLIT function.\r\n\r\nFor example:\r\n\r\n \r\n{code:java}\r\nSELECT SPLIT('abcdefg', 'c');\r\nResult: ['ab', 'defg']\r\n\r\n{code}\r\nsee also:\r\n\r\n1. ksqlDB Split function\r\n\r\nksqlDB provides a scalar function named {{SPLIT}} which splits a string into an array of substrings based on a delimiter.\r\n\r\nSyntax: {{SPLIT(string, delimiter)}}\r\n\r\nFor example: {{SPLIT('a,b,c', ',')}} will return {{{}['a', 'b', 'c']{}}}.\r\n\r\n[https://docs.ksqldb.io/en/0.8.1-ksqldb/developer-guide/ksqldb-reference/scalar-functions/#split]\r\n\r\n2. Apache Hive Split function\r\n\r\nHive offers a function named {{split}} which splits a string around a specified delimiter and returns an array of strings.\r\n\r\nSyntax: {{array<string> split(string str, string pat)}}\r\n\r\nFor example: {{split('a,b,c', ',')}} will return {{{}[\"a\", \"b\", \"c\"]{}}}.\r\n\r\nhttps://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF\r\n\r\n3. Spark SQL Split function\r\n\r\nSpark SQL also offers a function named {{{}split{}}}, similar to the one in Hive.\r\n\r\nSyntax: {{split(str, pattern[, limit])}}\r\n\r\nHere, {{limit}} is an optional parameter to specify the maximum length of the returned array.\r\n\r\nFor example: {{split('oneAtwoBthreeC', '[ABC]', 2)}} will return {{{}[\"one\", \"twoBthreeC\"]{}}}.\r\n\r\n[https://spark.apache.org/docs/latest/api/sql/index.html#split]\r\n\r\n4. Presto Split function\r\n\r\nPresto offers a function named {{split}} which splits a string around a regular expression and returns an array of strings.\r\n\r\nSyntax: {{array<varchar> split(string str, string regex)}}\r\n\r\nFor example: {{split('a.b.c', '\\.')}} will return {{{}[\"a\", \"b\", \"c\"]{}}}.\r\n\r\n[https://prestodb.io/docs/current/functions/string.html]",
+    "commits": [
+      {
+        "sha": "ae7f660492c86ff77cb4bfa8decc8cd3df834586",
+        "message": "update",
+        "author": "hanyuzheng7",
+        "date": "2024-02-22T03:52:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2090,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2555,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 81,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1724,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 54,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "c5203e26d1723277678b3a86311b9f3d56c44896",
+        "message": "update",
+        "author": "hanyuzheng7",
+        "date": "2024-05-20T04:25:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1804,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 54,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3cbee60fec4e5d19c0b0d94708e2f2f9e0f694af",
+        "message": "update",
+        "author": "hanyuzheng7",
+        "date": "2024-05-21T15:30:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "cf9ea468d4a128a6c19e35bbd957f9828fb5bb62",
+        "message": "update",
+        "author": "hanyuzheng7",
+        "date": "2024-05-21T15:52:51Z",
+        "files": []
+      },
+      {
+        "sha": "6a2701523499b40ed80e5eb4e7d62c2da134cc80",
+        "message": "Update SplitFunction.java",
+        "author": "hanyuzheng7",
+        "date": "2024-05-21T16:32:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "e502d2371ffea52ebfa6b8a1b9d2b4a23bc9bbaa",
+    "sha_after": "4c6571d075b1d1ff5e7b9d7ec3bf625329155fbf",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 15,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2090,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2555,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 81,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1724,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/SplitFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 65,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Method": 1
+    }
+  },
+  "FLINK-35216": {
+    "jira_id": "FLINK-35216",
+    "issue_type": "New Feature",
+    "resolution": "Implemented",
+    "title": "Support for RETURNING clause of JSON_QUERY",
+    "description": "SQL standard says JSON_QUERY should support RETURNING clause similar to JSON_VALUE. Calcite supports the clause for JSON_VALUE already, but not for the JSON_QUERY.\r\n\r\n{code}\r\n<JSON query> ::=\r\n  JSON_QUERY <left paren>\r\n      <JSON API common syntax>\r\n      [ <JSON output clause> ]\r\n      [ <JSON query wrapper behavior> WRAPPER ]\r\n      [ <JSON query quotes behavior> QUOTES [ ON SCALAR STRING ] ]\r\n      [ <JSON query empty behavior> ON EMPTY ]\r\n      [ <JSON query error behavior> ON ERROR ]\r\n      <right paren>\r\n\r\n<JSON output clause> ::=\r\n  RETURNING <data type>\r\n      [ FORMAT <JSON representation> ]\r\n{code}",
+    "commits": [
+      {
+        "sha": "cd4a294e7a02d90b4ccbaeb48f363d2326f22dd3",
+        "message": "[FLINK-35216] Extend Calcite parser to support RETURNING clause of JSON_QUERY",
+        "author": "dawidwys",
+        "date": "2024-04-23T11:32:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/calcite/sql/fun/SqlJsonQueryFunction.java",
+            "CHILD_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/calcite/sql/fun/SqlJsonQueryFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 192,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/calcite/sql2rel/StandardConvertletTable.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/calcite/sql2rel/StandardConvertletTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1885,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/functions/sql/SqlJsonQueryFunctionWrapper.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/functions/sql/SqlJsonQueryFunctionWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 52,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f991aa94be8b484d536cdf9abf98d877bf1c3559",
+        "message": "[FLINK-35216] Support for RETURNING clause of JSON_QUERY",
+        "author": "dawidwys",
+        "date": "2024-04-23T11:36:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/expressions/ExpressionSerializationTest.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/expressions/ExpressionSerializationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 364,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/calcite/sql2rel/StandardConvertletTable.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/calcite/sql2rel/StandardConvertletTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 1885,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/functions/sql/SqlJsonQueryFunctionWrapper.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/functions/sql/SqlJsonQueryFunctionWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 77,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/JsonFunctionsITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/JsonFunctionsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 881,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/SqlJsonUtils.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/SqlJsonUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 88,
+            "LINES_DELETED": 49,
+            "PARENT_LOC": 595,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "dffc6df875c7c7ed729501467cc8360c5a40a1fe",
+        "message": "[FLINK-35216] Support for RETURNING clause of JSON_QUERY in Table API",
+        "author": "dawidwys",
+        "date": "2024-04-23T14:40:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 101,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2090,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2555,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/JsonFunctionsCallSyntax.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/JsonFunctionsCallSyntax.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 185,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/expressions/converter/converters/JsonQueryConverter.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/expressions/converter/converters/JsonQueryConverter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 81,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/JsonFunctionsITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/JsonFunctionsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 924,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "fa2a7dcf2760156be791d637cb37c1a42fab7f0c",
+        "message": "[FLINK-35216] Update docs with JSON_QUERY RETURNING",
+        "author": "dawidwys",
+        "date": "2024-04-23T15:25:24Z",
+        "files": []
+      },
+      {
+        "sha": "9ef6ffd26a85d18cbb441e0cf84b5b34d43f0b77",
+        "message": "address comments",
+        "author": "dawidwys",
+        "date": "2024-05-22T11:14:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/calcite/sql/fun/SqlJsonQueryFunction.java",
+            "CHILD_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/calcite/sql/fun/SqlJsonQueryFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 192,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/calcite/sql2rel/StandardConvertletTable.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/calcite/sql2rel/StandardConvertletTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1866,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "42b4678a2dbd9cb4ca1575022c046df28e7fe271",
+        "message": "comments addressed",
+        "author": "dawidwys",
+        "date": "2024-05-22T13:32:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 2556,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/JsonQueryOnErrorEmptyArgumentTypeStrategy.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/JsonQueryOnErrorEmptyArgumentTypeStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/SpecificInputTypeStrategies.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/SpecificInputTypeStrategies.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/functions/sql/SqlJsonQueryFunctionWrapper.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/functions/sql/SqlJsonQueryFunctionWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/JsonFunctionsITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/JsonFunctionsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 950,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/SqlJsonUtils.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/SqlJsonUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 634,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7aee586b5de5d5aeeee58cd92891775ef82d7d31",
+        "message": "comments addressed",
+        "author": "dawidwys",
+        "date": "2024-05-22T14:25:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/calcite/sql/fun/SqlJsonQueryFunction.java",
+            "CHILD_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/calcite/sql/fun/SqlJsonQueryFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 193,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 51,
+            "PARENT_LOC": 2191,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/SqlJsonUtils.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/SqlJsonUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 638,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "72ff94bcb58ce2bfc6a2a9d5c48979b47995fe6f",
+        "message": "fix checkstyle",
+        "author": "dawidwys",
+        "date": "2024-05-23T07:51:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/JsonQueryOnErrorEmptyArgumentTypeStrategy.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/JsonQueryOnErrorEmptyArgumentTypeStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 57,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "eead4681e0eda0496fa105adf28478263bdbfd30",
+        "message": "fix arch rule",
+        "author": "dawidwys",
+        "date": "2024-05-23T09:58:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/JsonQueryOnErrorEmptyArgumentTypeStrategy.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/JsonQueryOnErrorEmptyArgumentTypeStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 75,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "4f1427cabffe0a2609b54b3349db300636977811",
+    "sha_after": "0737220959fe52ee22535e7db55b015a46a6294e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/calcite/sql/fun/SqlJsonQueryFunction.java",
+        "CHILD_PATH": "flink-table/flink-sql-parser/src/main/java/org/apache/calcite/sql/fun/SqlJsonQueryFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 192,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 72,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2105,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/expressions/ExpressionSerializationTest.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/expressions/ExpressionSerializationTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 364,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 2567,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/JsonFunctionsCallSyntax.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/JsonFunctionsCallSyntax.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 185,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/JsonQueryOnErrorEmptyArgumentTypeStrategy.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/JsonQueryOnErrorEmptyArgumentTypeStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 77,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/SpecificInputTypeStrategies.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/types/inference/strategies/SpecificInputTypeStrategies.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 150,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/calcite/sql2rel/StandardConvertletTable.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/calcite/sql2rel/StandardConvertletTable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1865,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/expressions/converter/converters/JsonQueryConverter.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/expressions/converter/converters/JsonQueryConverter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 15,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 81,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/functions/sql/SqlJsonQueryFunctionWrapper.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/main/java/org/apache/flink/table/planner/functions/sql/SqlJsonQueryFunctionWrapper.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 97,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 52,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/JsonFunctionsITCase.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/JsonFunctionsITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 100,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 881,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/SqlJsonUtils.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/SqlJsonUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 92,
+        "LINES_DELETED": 49,
+        "PARENT_LOC": 595,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 13,
+    "refactorings": {
+      "Add Parameter": 4,
+      "Extract Method": 3,
+      "Rename Method": 2,
+      "Change Return Type": 2,
+      "Inline Method": 1,
+      "Rename Parameter": 1
+    }
+  },
+  "FLINK-35437": {
+    "jira_id": "FLINK-35437",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "BlockStatementGrouper uses lots of memory",
+    "description": "For deeply nested {{if else}} statements {{BlockStatementGrouper}} uses loads of memory and fails with OOM quickly.\r\n\r\nWhen running JMs with around 400mb a query like:\r\n{code}\r\nselect case when orderid = 0 then 1 when orderid = 1 then 2 when orderid\r\n    = 2 then 3 when orderid = 3 then 4 when orderid = 4 then 5 when orderid = 5 then\r\n    6 when orderid = 6 then 7 when orderid = 7 then 8 when orderid = 8 then 9 when\r\n    orderid = 9 then 10 when orderid = 10 then 11 when orderid = 11 then 12 when orderid\r\n    = 12 then 13 when orderid = 13 then 14 when orderid = 14 then 15 when orderid\r\n    = 15 then 16 when orderid = 16 then 17 when orderid = 17 then 18 when orderid\r\n    = 18 then 19 when orderid = 19 then 20 when orderid = 20 then 21 when orderid\r\n    = 21 then 22 when orderid = 22 then 23 when orderid = 23 then 24 when orderid\r\n    = 24 then 25 when orderid = 25 then 26 when orderid = 26 then 27 when orderid\r\n    = 27 then 28 when orderid = 28 then 29 when orderid = 29 then 30 when orderid\r\n    = 30 then 31 when orderid = 31 then 32 when orderid = 32 then 33 when orderid\r\n    = 33 then 34 when orderid = 34 then 35 when orderid = 35 then 36 when orderid\r\n    = 36 then 37 when orderid = 37 then 38 when orderid = 38 then 39 when orderid\r\n    = 39 then 40 when orderid = 40 then 41 when orderid = 41 then 42 when orderid\r\n    = 42 then 43 when orderid = 43 then 44 when orderid = 44 then 45 when orderid\r\n    = 45 then 46 when orderid = 46 then 47 when orderid = 47 then 48 when orderid\r\n    = 48 then 49 when orderid = 49 then 50 when orderid = 50 then 51 when orderid\r\n    = 51 then 52 when orderid = 52 then 53 when orderid = 53 then 54 when orderid\r\n    = 54 then 55 when orderid = 55 then 56 when orderid = 56 then 57 when orderid\r\n    = 57 then 58 when orderid = 58 then 59 when orderid = 59 then 60 when orderid\r\n    = 60 then 61 when orderid = 61 then 62 when orderid = 62 then 63 when orderid\r\n    = 63 then 64 when orderid = 64 then 65 when orderid = 65 then 66 when orderid\r\n    = 66 then 67 when orderid = 67 then 68 when orderid = 68 then 69 when orderid\r\n    = 69 then 70 when orderid = 70 then 71 when orderid = 71 then 72 when orderid\r\n    = 72 then 73 when orderid = 73 then 74 when orderid = 74 then 75 when orderid\r\n    = 75 then 76 when orderid = 76 then 77 when orderid = 77 then 78 when orderid\r\n    = 78 then 79 when orderid = 79 then 80 when orderid = 80 then 81 when orderid\r\n    = 81 then 82 when orderid = 82 then 83 when orderid = 83 then 84 when orderid\r\n    = 84 then 85 when orderid = 85 then 86 when orderid = 86 then 87 when orderid\r\n    = 87 then 88 when orderid = 88 then 89 when orderid = 89 then 90 when orderid\r\n    = 90 then 91 when orderid = 91 then 92 when orderid = 92 then 93 when orderid\r\n    = 93 then 94 when orderid = 94 then 95 when orderid = 95 then 96 when orderid\r\n    = 96 then 97 when orderid = 97 then 98 when orderid = 98 then 99 when orderid\r\n    = 99 then 100 when orderid = 100 then 101 when orderid = 101 then 102 when orderid\r\n    = 102 then 103 when orderid = 103 then 104 when orderid = 104 then 105 when orderid\r\n    = 105 then 106 when orderid = 106 then 107 when orderid = 107 then 108 when orderid\r\n    = 108 then 109 when orderid = 109 then 110 when orderid = 110 then 111 when orderid\r\n    = 111 then 112 when orderid = 112 then 113 when orderid = 113 then 114 when orderid\r\n    = 114 then 115 when orderid = 115 then 116 when orderid = 116 then 117 when orderid\r\n    = 117 then 118 when orderid = 118 then 119 when orderid = 119 then 120 when orderid\r\n    = 120 then 121 when orderid = 121 then 122 when orderid = 122 then 123 when orderid\r\n    = 123 then 124 when orderid = 124 then 125 when orderid = 125 then 126 when orderid\r\n    = 126 then 127 when orderid = 127 then 128 when orderid = 128 then 129 when orderid\r\n    = 129 then 130 when orderid = 130 then 131 when orderid = 131 then 132 when orderid\r\n    = 132 then 133 when orderid = 133 then 134 when orderid = 134 then 135 when orderid\r\n    = 135 then 136 when orderid = 136 then 137 when orderid = 137 then 138 when orderid\r\n    = 138 then 139 when orderid = 139 then 140 when orderid = 140 then 141 when orderid\r\n    = 141 then 142 when orderid = 142 then 143 when orderid = 143 then 144 when orderid\r\n    = 144 then 145 when orderid = 145 then 146 when orderid = 146 then 147 when orderid\r\n    = 147 then 148 when orderid = 148 then 149 when orderid = 149 then 150 when orderid\r\n    = 150 then 151 when orderid = 151 then 152 when orderid = 152 then 153 when orderid\r\n    = 153 then 154 when orderid = 154 then 155 when orderid = 155 then 156 when orderid\r\n    = 156 then 157 when orderid = 157 then 158 when orderid = 158 then 159 when orderid\r\n    = 159 then 160 when orderid = 160 then 161 when orderid = 161 then 162 when orderid\r\n    = 162 then 163 when orderid = 163 then 164 when orderid = 164 then 165 when orderid\r\n    = 165 then 166 when orderid = 166 then 167 when orderid = 167 then 168 when orderid\r\n    = 168 then 169 when orderid = 169 then 170 when orderid = 170 then 171 when orderid\r\n    = 171 then 172 when orderid = 172 then 173 when orderid = 173 then 174 when orderid\r\n    = 174 then 175 when orderid = 175 then 176 when orderid = 176 then 177 when orderid\r\n    = 177 then 178 when orderid = 178 then 179 when orderid = 179 then 180 when orderid\r\n    = 180 then 181 when orderid = 181 then 182 when orderid = 182 then 183 when orderid\r\n    = 183 then 184 when orderid = 184 then 185 when orderid = 185 then 186 when orderid\r\n    = 186 then 187 when orderid = 187 then 188 when orderid = 188 then 189 when orderid\r\n    = 189 then 190 when orderid = 190 then 191 when orderid = 191 then 192 when orderid\r\n    = 192 then 193 when orderid = 193 then 194 when orderid = 194 then 195 when orderid\r\n    = 195 then 196 when orderid = 196 then 197 when orderid = 197 then 198 when orderid\r\n    = 198 then 199 when orderid = 199 then 200 when orderid = 200 then 201 when orderid\r\n    = 201 then 202 when orderid = 202 then 203 when orderid = 203 then 204 when orderid\r\n    = 204 then 205 when orderid = 205 then 206 when orderid = 206 then 207 when orderid\r\n    = 207 then 208 when orderid = 208 then 209 when orderid = 209 then 210 when orderid\r\n    = 210 then 211 when orderid = 211 then 212 when orderid = 212 then 213 when orderid\r\n    = 213 then 214 when orderid = 214 then 215 when orderid = 215 then 216 when orderid\r\n    = 216 then 217 when orderid = 217 then 218 when orderid = 218 then 219 when orderid\r\n    = 219 then 220 when orderid = 220 then 221 when orderid = 221 then 222 when orderid\r\n    = 222 then 223 when orderid = 223 then 224 when orderid = 224 then 225 when orderid\r\n    = 225 then 226 when orderid = 226 then 227 when orderid = 227 then 228 when orderid\r\n    = 228 then 229 when orderid = 229 then 230 when orderid = 230 then 231 when orderid\r\n    = 231 then 232 when orderid = 232 then 233 when orderid = 233 then 234 when orderid\r\n    = 234 then 235 when orderid = 235 then 236 when orderid = 236 then 237 when orderid\r\n    = 237 then 238 when orderid = 238 then 239 when orderid = 239 then 240 when orderid\r\n    = 240 then 241 when orderid = 241 then 242 when orderid = 242 then 243 when orderid\r\n    = 243 then 244 when orderid = 244 then 245 when orderid = 245 then 246 when orderid\r\n    = 246 then 247 when orderid = 247 then 248 when orderid = 248 then 249 when orderid\r\n    = 249 then 250 else 9999 end case_when_col from sample_data_1;\r\n{code}\r\n\r\nfails with an OOM. (Yes, I know the query can be simplified, but it shows the case).",
+    "commits": [
+      {
+        "sha": "923553863ff5861ec893ec75cb95a0118bc2a0e5",
+        "message": "[FLINK-35437] Rewrite BlockStatementGrouper so that it uses less memory",
+        "author": "dawidwys",
+        "date": "2024-05-23T12:39:31Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-code-splitter/src/main/java/org/apache/flink/table/codesplit/BlockStatementGrouper.java",
+            "CHILD_PATH": "flink-table/flink-table-code-splitter/src/main/java/org/apache/flink/table/codesplit/BlockStatementGrouper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 68,
+            "PARENT_LOC": 479,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CaseFunctionsITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CaseFunctionsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "54f037f9b2f08bd958d02eac2ffd018919b3f43e",
+    "sha_after": "3d40bd7dd197b12b7b156bd758b4129148e885d1",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-table-code-splitter/src/main/java/org/apache/flink/table/codesplit/BlockStatementGrouper.java",
+        "CHILD_PATH": "flink-table/flink-table-code-splitter/src/main/java/org/apache/flink/table/codesplit/BlockStatementGrouper.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 68,
+        "PARENT_LOC": 479,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CaseFunctionsITCase.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CaseFunctionsITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 14,
+    "refactorings": {
+      "Remove Parameter": 4,
+      "Move Code": 1,
+      "Replace Variable With Attribute": 1,
+      "Extract Attribute": 1,
+      "Add Variable Modifier": 1,
+      "Change Attribute Type": 1,
+      "Change Variable Type": 1,
+      "Parameterize Variable": 1,
+      "Change Return Type": 1,
+      "Move Attribute": 1,
+      "Add Parameter": 1
+    }
+  },
+  "FLINK-33759": {
+    "jira_id": "FLINK-33759",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "flink parquet writer support write nested array or map type",
+    "description": "When we use flink-parquet format wirte Map<String, String>[] type (which will be read by spark job), we encounter an exception:\r\n{code:java}\r\n// code placeholder\r\nCaused by: org.apache.parquet.io.ParquetEncodingException: empty fields are illegal, the field should be ommited completely instead\r\n    at org.apache.parquet.io.MessageColumnIO$MessageColumnIORecordConsumer.endField(MessageColumnIO.java:329)\r\n    at org.apache.flink.formats.parquet.row.ParquetRowDataWriter$ArrayWriter.writeArrayData(ParquetRowDataWriter.java:438)\r\n    at org.apache.flink.formats.parquet.row.ParquetRowDataWriter$ArrayWriter.write(ParquetRowDataWriter.java:419)\r\n    at org.apache.flink.formats.parquet.row.ParquetRowDataWriter$RowWriter.write(ParquetRowDataWriter.java:471)\r\n    at org.apache.flink.formats.parquet.row.ParquetRowDataWriter.write(ParquetRowDataWriter.java:81)\r\n    at org.apache.flink.formats.parquet.row.ParquetRowDataBuilder$ParquetWriteSupport.write(ParquetRowDataBuilder.java:89){code}\r\nafter review the code, we found flink-parquet doesn't support write nested array or map, because [[ArrayWriter|https://github.com/apache/flink/blob/master/flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriter.java#L437]|#L437] and [MapWriter|https://github.com/apache/flink/blob/master/flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriter.java#L391] doesn't impl `public void write(ArrayData arrayData, int ordinal) {}` function.",
+    "commits": [
+      {
+        "sha": "2cdec63ad44a568b9d48ab90b3924501c1eed78c",
+        "message": "FLINK-33759: add support for nested array with row/map type",
+        "author": "ukby1234",
+        "date": "2024-01-05T06:23:18Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriter.java",
+            "CHILD_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 659,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-formats/flink-parquet/src/test/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriterTest.java",
+            "CHILD_PATH": "flink-formats/flink-parquet/src/test/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 188,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 267,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "87b7193846090897b2feabf716ee5378bcd7585b",
+    "sha_after": "57b20051a5aa6426d0a6ded71f5e0d550572428c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriter.java",
+        "CHILD_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 24,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 659,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-formats/flink-parquet/src/test/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriterTest.java",
+        "CHILD_PATH": "flink-formats/flink-parquet/src/test/java/org/apache/flink/formats/parquet/row/ParquetRowDataWriterTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 188,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 267,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Method": 2,
+      "Parameterize Variable": 2
+    }
+  },
+  "FLINK-31664": {
+    "jira_id": "FLINK-31664",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add ARRAY_INTERSECT supported in SQL & Table API",
+    "description": "",
+    "commits": [
+      {
+        "sha": "79886b2f06cb7e48d6ff7bd58fbb04d34eed3f78",
+        "message": "[FLINK-31664] Implement ARRAY_INTERSECT function",
+        "author": "liuyongvs",
+        "date": "2024-05-24T01:53:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2177,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+            "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2568,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 78,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1804,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/ArrayIntersectFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/ArrayIntersectFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 101,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "07d3f0727c68780467cb707c6bdffc37507062b6",
+        "message": "[FLINK-31664] fix review.",
+        "author": "liuyongvs",
+        "date": "2024-06-05T02:03:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+            "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1882,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/ArrayIntersectFunction.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/ArrayIntersectFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 101,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/util/ObjectContainer.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/util/ObjectContainer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 65,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "09673354bf6b23ef6e80ba580dbc904d541efa84",
+    "sha_after": "4b0a39590b9159e5904290a06684c7b677e489ba",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/BaseExpressions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2177,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+        "CHILD_PATH": "flink-table/flink-table-common/src/main/java/org/apache/flink/table/functions/BuiltInFunctionDefinitions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2568,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+        "CHILD_PATH": "flink-table/flink-table-planner/src/test/java/org/apache/flink/table/planner/functions/CollectionFunctionsITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 78,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1804,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/ArrayIntersectFunction.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/functions/scalar/ArrayIntersectFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 105,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/util/ObjectContainer.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime/src/main/java/org/apache/flink/table/runtime/util/ObjectContainer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 65,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Method": 1,
+      "Rename Parameter": 1,
+      "Rename Attribute": 1,
+      "Encapsulate Attribute": 1
+    }
+  },
+  "FLINK-35435": {
+    "jira_id": "FLINK-35435",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "[FLIP-451] Introduce timeout configuration to AsyncSink",
+    "description": "Implementation Ticket for:\r\nhttps://cwiki.apache.org/confluence/display/FLINK/FLIP-451%3A+Introduce+timeout+configuration+to+AsyncSink+API ",
+    "commits": [
+      {
+        "sha": "f44ed5d33c1c0a4f252866aaf107fe94503a7ba3",
+        "message": "[FLINK-35435] Add timeout Configuration to Async Sink",
+        "author": "vahmed-hamdy",
+        "date": "2024-05-23T18:10:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/AsyncSinkBase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/AsyncSinkBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 37,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriter.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 161,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 536,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/ResultHandler.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/ResultHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfiguration.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 210,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 1354,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTimeoutTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTimeoutTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 205,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/TestSinkInitContext.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/TestSinkInitContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 184,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfigurationBuilderTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfigurationBuilderTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 61,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "74b100bcba33ce18b21a44b26db7e162507f7830",
+    "sha_after": "c9def98128f0b948d98a11d57da9ea69d326c227",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/AsyncSinkBase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/AsyncSinkBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 37,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 105,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriter.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 161,
+        "LINES_DELETED": 13,
+        "PARENT_LOC": 536,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/ResultHandler.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/ResultHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 41,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfiguration.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/main/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 210,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 1354,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTimeoutTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/AsyncSinkWriterTimeoutTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 205,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/TestSinkInitContext.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/TestSinkInitContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 184,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfigurationBuilderTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-base/src/test/java/org/apache/flink/connector/base/sink/writer/config/AsyncSinkWriterConfigurationBuilderTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 61,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 11,
+    "refactorings": {
+      "Add Parameter": 2,
+      "Rename Parameter": 2,
+      "Change Parameter Type": 2,
+      "Extract And Move Method": 2,
+      "Extract Method": 1,
+      "Add Method Annotation": 1,
+      "Remove Method Modifier": 1
+    }
+  },
+  "FLINK-35371": {
+    "jira_id": "FLINK-35371",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Allow the keystore and truststore type to configured for SSL",
+    "description": "Flink always creates a keystore and trustore using the [default type|https://github.com/apache/flink/blob/b87ead743dca161cdae8a1fef761954d206b81fb/flink-runtime/src/main/java/org/apache/flink/runtime/net/SSLUtils.java#L236] defined in the JDK, which in most cases is JKS.\r\n\r\n{code}\r\n\r\nKeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());\r\n\r\n{code}\r\n\r\nWe should add other configuration options to set the type explicitly to support other custom formats, and match the options provided by other applications by [Spark|https://spark.apache.org/docs/latest/security.html#:~:text=the%20key%20store.-,%24%7Bns%7D.keyStoreType,-JKS] and [Kafka|https://kafka.apache.org/documentation/#:~:text=per%2Dbroker-,ssl.keystore.type,-The%20file%20format] already. The default would continue to be specified by the JDK.\r\n\r\n \r\n\r\nThe SSLContext for the REST API can read the configuration option directly, and we need to add extra logic to the [CustomSSLEngineProvider|https://github.com/apache/flink/blob/master/flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/CustomSSLEngineProvider.java] for Pekko.",
+    "commits": [
+      {
+        "sha": "ae76ec86cfe54434b680e675da141d7d98fda6ed",
+        "message": "[FLINK-35371][runtime][rpc] Add configuration for SSL keystore and truststore type",
+        "author": "ammar-master",
+        "date": "2024-06-10T05:21:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/SecurityOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/SecurityOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 651,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/CustomSSLEngineProvider.java",
+            "CHILD_PATH": "flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/CustomSSLEngineProvider.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 33,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 71,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/PekkoUtils.java",
+            "CHILD_PATH": "flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/PekkoUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 619,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-rpc/flink-rpc-akka/src/test/java/org/apache/flink/runtime/rpc/pekko/PekkoUtilsTest.java",
+            "CHILD_PATH": "flink-rpc/flink-rpc-akka/src/test/java/org/apache/flink/runtime/rpc/pekko/PekkoUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 266,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/net/SSLUtils.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/net/SSLUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 509,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/net/SSLUtilsTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/net/SSLUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 49,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 531,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "4044b9ea42aa6cf4a638b4ed46219fed94ce84bf",
+    "sha_after": "0919ff20b918736c86f6c3449b21b3f1528bb2c0",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/SecurityOptions.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/SecurityOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 44,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 651,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/CustomSSLEngineProvider.java",
+        "CHILD_PATH": "flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/CustomSSLEngineProvider.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 33,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 71,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/PekkoUtils.java",
+        "CHILD_PATH": "flink-rpc/flink-rpc-akka/src/main/java/org/apache/flink/runtime/rpc/pekko/PekkoUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 619,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-rpc/flink-rpc-akka/src/test/java/org/apache/flink/runtime/rpc/pekko/PekkoUtilsTest.java",
+        "CHILD_PATH": "flink-rpc/flink-rpc-akka/src/test/java/org/apache/flink/runtime/rpc/pekko/PekkoUtilsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 266,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/net/SSLUtils.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/net/SSLUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 15,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 509,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/net/SSLUtilsTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/net/SSLUtilsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 49,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 531,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Change Variable Type": 1
+    }
+  }
+}

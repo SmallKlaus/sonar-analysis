@@ -1,0 +1,1817 @@
+{
+  "FLINK-11154": {
+    "jira_id": "FLINK-11154",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Upgrade Netty to 4.1.32",
+    "description": "Notable changes since 4.1.24 (currently used in Flink 1.6-1.7):\r\n- big (performance, feature set) improvements for using openSSL based SSL engine (useful for FLINK-9816)\r\n- allow multiple shaded versions of the same netty artifact (as long as the shaded prefix is different)\r\n- Ensure ByteToMessageDecoder.Cumulator implementations always release.\r\n- Don't re-arm timerfd each epoll_wait\r\n- Use a non-volatile read for ensureAccessible() whenever possible to reduce overhead and allow better inlining.\r\n- Do not fail on runtime when an older version of Log4J2 is on the classpath\r\n- Fix leak and corruption bugs in CompositeByteBuf\r\n- Add support for TLSv1.3\r\n- Harden ref-counting concurrency semantics\r\n- bug fixes\r\n- Java 9-12 related fixes",
+    "commits": [
+      {
+        "sha": "c710e3a84b53956631e679288866b5f9439ab83e",
+        "message": "[FLINK-11154][network] Bump Netty to 4.1.32",
+        "author": "Nico Kruber",
+        "date": "2019-01-09T10:54:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/buffer/AbstractByteBufTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/buffer/AbstractByteBufTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 4875,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a9eb6d7ec7f9d0c4697ac0137346af86ac90f9d9",
+    "sha_after": "876f9919de987c78724f707f57b220654ca600a4",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/buffer/AbstractByteBufTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/buffer/AbstractByteBufTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 4875,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Change Variable Type": 2
+    }
+  },
+  "FLINK-11691": {
+    "jira_id": "FLINK-11691",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Introduce ClassLoader in the methods of StateBackendFactory and ConfigurableStateBackend",
+    "description": "Currently, interface {{ConfigurableStateBackend}} has method definition below:\r\n{code:java}\r\nStateBackend configure(Configuration config) throws IllegalConfigurationException;\r\n{code}\r\nActually, we need the class loader for anything needed to instantiate through reflection when calling {{StateBackend#configure}}. This is really helpful if we want something to be configurable. Take an example, by providing a class name via flink-conf.yaml, user could configure anything they want, such as the {{OptionsFactory}} in {{RocksDBStateBackend}} (FLINK-10912) or the compression decorator in {{StateBackend}} (FLINK-11313)\r\n\r\nOn the other hand, interface {{StateBackendFactory}} also has method definition below, which would then call {{StateBackend#configure}}.\r\n{code:java}\r\nT createFromConfig(Configuration config) throws IllegalConfigurationException, IOException;\r\n{code}\r\nThey were all called mainly in {{StateBackendLoader#loadStateBackendFromConfig}} and {{StateBackendLoader#fromApplicationOrConfigOrDefault}}. Those two methods already have {{ClassLoader}} in their parameters, and it would be easy to pass the class loader to the {{configure}} methods mentioned above.\r\n\r\n{{ConfigurableStateBackend}} has no annotation, and from its usage, it should be an annotation of {{'Internal'}}. On the other hand, {{StateBackendFactory}} has an annotation of '{{PublicEvolving'}}, which means we could change the interface if needed.",
+    "commits": [
+      {
+        "sha": "a8ac0c4f79c7972c262b8cdcb681852a1cc8c97e",
+        "message": "[FLINK-11691] Introduce ClassLoader in the methods of StateBackendFactory and ConfigurableStateBackend",
+        "author": "Myasuka",
+        "date": "2019-02-20T15:27:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ConfigurableStateBackend.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ConfigurableStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 45,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/StateBackendFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/StateBackendFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 51,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/StateBackendLoader.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/StateBackendLoader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 265,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackend.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 504,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackendFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackendFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 51,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackend.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 344,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackendFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackendFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 35,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/StateBackendLoadingTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/StateBackendLoadingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 440,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/testutils/BackendForTestStream.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/testutils/BackendForTestStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 126,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 827,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendFactory.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 49,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendConfigTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendConfigTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 549,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendMigrationTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendMigrationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 63,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 571,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/RocksDBTtlStateTestBase.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/RocksDBTtlStateTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 182,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1354,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/TaskCheckpointingBehaviourTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/TaskCheckpointingBehaviourTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 486,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f99a38d8650b9e43d4669e82e4e50ccef3276cf1",
+        "message": "[FLINK-11691] Add missing javadocs",
+        "author": "Myasuka",
+        "date": "2019-02-20T16:47:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackend.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 344,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 827,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "17ebd5fac8650c6a123d813a3c201ae1ac77f572",
+    "sha_after": "c763c353300953f22cad19afe0d987e016a8773d",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ConfigurableStateBackend.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ConfigurableStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 45,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/StateBackendFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/StateBackendFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 51,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/StateBackendLoader.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/StateBackendLoader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 265,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackend.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 504,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackendFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackendFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 51,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackend.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 344,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackendFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryStateBackendFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 35,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/StateBackendLoadingTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/StateBackendLoadingTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 440,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/testutils/BackendForTestStream.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/testutils/BackendForTestStream.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 126,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 827,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendFactory.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 49,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendConfigTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendConfigTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 549,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendMigrationTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendMigrationTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 63,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 571,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/RocksDBTtlStateTestBase.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/RocksDBTtlStateTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 182,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1354,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/TaskCheckpointingBehaviourTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/TaskCheckpointingBehaviourTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 486,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 17,
+    "refactorings": {
+      "Add Parameter": 16,
+      "Add Class Annotation": 1
+    }
+  },
+  "FLINK-10471": {
+    "jira_id": "FLINK-10471",
+    "issue_type": "New Feature",
+    "resolution": "Implemented",
+    "title": "State TTL cleanup using RocksDb compaction filter",
+    "description": "In case of rocksdb backend, we can piggy back compaction using [custom compaction filter|https://github.com/facebook/rocksdb/wiki/Compaction-Filter] which checks our last access timestamp and discards expired values. It requires contributing a C++ Flink TTL specific filter to Rocksdb, like for [cassandra|https://github.com/facebook/rocksdb/blob/master/utilities/cassandra/cassandra_compaction_filter.cc]. At the moment RocksDB does not support compaction filter plugins (see [PR discussion|https://github.com/facebook/rocksdb/pull/4463]), it is under development. \r\n\r\nMeanwhile, we can apply to strategies to enable this feature in Flink:\r\n * Release and maintain a temporary fork of RocksDB for Flink: [FRocksDB|https://github.com/dataArtisans/frocksdb] and merge [TTL filter|https://github.com/dataArtisans/frocksdb/pull/1] into this fork (used in Flink 1.8)\r\n * Build C++ TTL filter separately, pack this C++ lib into its JNI java client jar and load it in Flink additionally to vanila RocksDB (Flink RocksDB extensions, planned for Flink 1.9)\r\n\r\nThe second strategy is more flexible in the long run.",
+    "commits": [
+      {
+        "sha": "9d9c20d4627e43137dee61ac7e44abd17a1616ab",
+        "message": "[FLINK-10471][State TTL] State TTL cleanup using RocksDb compaction filter",
+        "author": "azagrebin",
+        "date": "2018-08-27T16:03:01Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/state/StateTtlConfig.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/state/StateTtlConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 76,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 350,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/DataStreamStateTTLTestProgram.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/DataStreamStateTTLTestProgram.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 90,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/MonotonicTTLTimeProvider.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/MonotonicTTLTimeProvider.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 73,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/TtlVerifyUpdateFunction.java",
+            "CHILD_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/TtlVerifyUpdateFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 177,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-queryable-state/flink-queryable-state-runtime/src/test/java/org/apache/flink/queryablestate/network/KVStateRequestSerializerRocksDBTest.java",
+            "CHILD_PATH": "flink-queryable-state/flink-queryable-state-runtime/src/test/java/org/apache/flink/queryablestate/network/KVStateRequestSerializerRocksDBTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 150,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/AbstractKeyedStateBackend.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/AbstractKeyedStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 355,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlListState.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlListState.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 212,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlStateFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlStateFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 334,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlUtils.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 49,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/MockTtlTimeProvider.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/MockTtlTimeProvider.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 28,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/StateBackendTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/StateBackendTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 129,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlAggregatingStateTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlAggregatingStateTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 103,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlFixedLenElemListStateTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlFixedLenElemListStateTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 49,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlFoldingStateTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlFoldingStateTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 67,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlListStateTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlListStateTestContextBase.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 27,
+            "PARENT_LOC": 87,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStateAllEntriesTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStateAllEntriesTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 69,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStatePerElementTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStatePerElementTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 56,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStateTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStateTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 35,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlNonFixedLenElemListStateTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlNonFixedLenElemListStateTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 49,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlReducingStateTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlReducingStateTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 84,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlStateTestBase.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlStateTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 67,
+            "LINES_DELETED": 43,
+            "PARENT_LOC": 509,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlStateTestContextBase.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlStateTestContextBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 52,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlValueStateTestContext.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlValueStateTestContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockKeyedStateBackend.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockKeyedStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 279,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockStateBackend.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 138,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBKeyedStateBackend.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBKeyedStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 160,
+            "LINES_DELETED": 100,
+            "PARENT_LOC": 1674,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBListState.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBListState.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 350,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBNativeMetricMonitor.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBNativeMetricMonitor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 169,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBOptions.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 56,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 803,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksIteratorWrapper.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksIteratorWrapper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 103,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksDBSnapshotStrategyBase.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksDBSnapshotStrategyBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 141,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksFullSnapshotStrategy.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksFullSnapshotStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 446,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksIncrementalSnapshotStrategy.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksIncrementalSnapshotStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 508,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/ttl/RocksDbTtlCompactFiltersManager.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/ttl/RocksDbTtlCompactFiltersManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 235,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBRocksStateKeysIteratorTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBRocksStateKeysIteratorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 151,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 564,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBTtlStateTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBTtlStateTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 62,
+            "PARENT_LOC": 62,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/FullSnapshotRocksDbTtlStateTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/FullSnapshotRocksDbTtlStateTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/IncSnapshotRocksDbTtlStateTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/IncSnapshotRocksDbTtlStateTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/RocksDBTtlStateTestBase.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/RocksDBTtlStateTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 182,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "adc5eef09975aa368a03502125ce5b8af07488e7",
+    "sha_after": "735b5141f14bc56a0c88d792b8413bcad42f0ce3",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/api/common/state/StateTtlConfig.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/common/state/StateTtlConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 76,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 350,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/DataStreamStateTTLTestProgram.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/DataStreamStateTTLTestProgram.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 90,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/MonotonicTTLTimeProvider.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/MonotonicTTLTimeProvider.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 73,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/TtlVerifyUpdateFunction.java",
+        "CHILD_PATH": "flink-end-to-end-tests/flink-stream-state-ttl-test/src/main/java/org/apache/flink/streaming/tests/TtlVerifyUpdateFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 177,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-queryable-state/flink-queryable-state-runtime/src/test/java/org/apache/flink/queryablestate/network/KVStateRequestSerializerRocksDBTest.java",
+        "CHILD_PATH": "flink-queryable-state/flink-queryable-state-runtime/src/test/java/org/apache/flink/queryablestate/network/KVStateRequestSerializerRocksDBTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 150,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/AbstractKeyedStateBackend.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/AbstractKeyedStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 355,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlListState.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlListState.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 212,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlStateFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlStateFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 334,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlUtils.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/ttl/TtlUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 49,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/MockTtlTimeProvider.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/MockTtlTimeProvider.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 28,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/StateBackendTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/StateBackendTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 42,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 129,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlAggregatingStateTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlAggregatingStateTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 103,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlFixedLenElemListStateTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlFixedLenElemListStateTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 49,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlFoldingStateTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlFoldingStateTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 67,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlListStateTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlListStateTestContextBase.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 27,
+        "PARENT_LOC": 87,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStateAllEntriesTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStateAllEntriesTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 69,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStatePerElementTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStatePerElementTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 56,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStateTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlMapStateTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 35,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlNonFixedLenElemListStateTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlNonFixedLenElemListStateTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 49,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlReducingStateTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlReducingStateTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 84,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlStateTestBase.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlStateTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 67,
+        "LINES_DELETED": 43,
+        "PARENT_LOC": 509,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlStateTestContextBase.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlStateTestContextBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 12,
+        "PARENT_LOC": 52,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlValueStateTestContext.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/TtlValueStateTestContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 64,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockKeyedStateBackend.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockKeyedStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 279,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockStateBackend.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 138,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBKeyedStateBackend.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBKeyedStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 160,
+        "LINES_DELETED": 100,
+        "PARENT_LOC": 1674,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBListState.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBListState.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 350,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBNativeMetricMonitor.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBNativeMetricMonitor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 169,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBOptions.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 56,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 803,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksIteratorWrapper.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksIteratorWrapper.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 103,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksDBSnapshotStrategyBase.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksDBSnapshotStrategyBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 141,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksFullSnapshotStrategy.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksFullSnapshotStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 21,
+        "PARENT_LOC": 446,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksIncrementalSnapshotStrategy.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/snapshot/RocksIncrementalSnapshotStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 508,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/ttl/RocksDbTtlCompactFiltersManager.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/ttl/RocksDbTtlCompactFiltersManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 235,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBRocksStateKeysIteratorTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBRocksStateKeysIteratorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 151,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBStateBackendTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 564,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBTtlStateTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksDBTtlStateTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 62,
+        "PARENT_LOC": 62,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/FullSnapshotRocksDbTtlStateTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/FullSnapshotRocksDbTtlStateTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 30,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/IncSnapshotRocksDbTtlStateTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/IncSnapshotRocksDbTtlStateTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 35,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/RocksDBTtlStateTestBase.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/ttl/RocksDBTtlStateTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 182,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 160,
+    "refactorings": {
+      "Change Method Access Modifier": 39,
+      "Change Variable Type": 15,
+      "Change Attribute Access Modifier": 13,
+      "Rename Variable": 10,
+      "Change Parameter Type": 10,
+      "Change Return Type": 7,
+      "Extract Attribute": 5,
+      "Add Parameter": 5,
+      "Change Class Access Modifier": 4,
+      "Remove Thrown Exception Type": 4,
+      "Change Attribute Type": 4,
+      "Pull Up Method": 4,
+      "Extract Variable": 3,
+      "Extract Method": 3,
+      "Move Method": 3,
+      "Extract And Move Method": 3,
+      "Inline Method": 2,
+      "Add Method Annotation": 2,
+      "Add Method Modifier": 2,
+      "Rename Parameter": 2,
+      "Rename Attribute": 2,
+      "Remove Parameter Annotation": 2,
+      "Move And Rename Class": 1,
+      "Rename Class": 1,
+      "Add Thrown Exception Type": 1,
+      "Remove Parameter": 1,
+      "Remove Method Annotation": 1,
+      "Add Attribute Annotation": 1,
+      "Parameterize Attribute": 1,
+      "Add Parameter Annotation": 1,
+      "Try With Resources": 1,
+      "Change Thrown Exception Type": 1,
+      "Merge Parameter": 1,
+      "Merge Attribute": 1,
+      "Add Class Modifier": 1,
+      "Extract Superclass": 1,
+      "Move Attribute": 1,
+      "Extract Class": 1
+    }
+  },
+  "FLINK-11656": {
+    "jira_id": "FLINK-11656",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove redundant test path in WordCountMapredITCase",
+    "description": "method : \r\n{code:java}\r\n@Override\r\nprotected void testProgram() throws Exception {\r\n   internalRun(true);\r\n   postSubmit();\r\n   resultPath = getTempDirPath(\"result2\");\r\n   internalRun(false);\r\n   postSubmit();\r\n}{code}\r\nPreviously, in order to test the deprecated API, the following code snippet existed:\r\n{code:java}\r\nif (isTestDeprecatedAPI) {\r\n   input = env.createInput(HadoopInputs.readHadoopFile(new TextInputFormat(),\r\n      LongWritable.class, Text.class, textPath));\r\n} else {\r\n   input = env.createInput(readHadoopFile(new TextInputFormat(),\r\n      LongWritable.class, Text.class, textPath));\r\n}\r\n{code}\r\nBut now, the related APIs have been removed from the DataSet, so the code needs to be refactored to make it clearer.\r\n\r\n ",
+    "commits": [
+      {
+        "sha": "ebd341f0f8e0f8f42a8191c9ad411540b1955010",
+        "message": "[FLINK-11656][tests] Fix deprecated API compatibility issue for WordCountMapredITCase.",
+        "author": "wenhuitang",
+        "date": "2019-02-20T10:00:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-hadoop-compatibility/src/test/java/org/apache/flink/test/hadoopcompatibility/mapred/WordCountMapredITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-hadoop-compatibility/src/test/java/org/apache/flink/test/hadoopcompatibility/mapred/WordCountMapredITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 136,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c54d9a64cb77cb7c862df6565eec209e5a3694eb",
+    "sha_after": "6f1e9142f85ac21b28410b8a429029549058db40",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-hadoop-compatibility/src/test/java/org/apache/flink/test/hadoopcompatibility/mapred/WordCountMapredITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-hadoop-compatibility/src/test/java/org/apache/flink/test/hadoopcompatibility/mapred/WordCountMapredITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 136,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Remove Parameter": 1
+    }
+  },
+  "FLINK-11657": {
+    "jira_id": "FLINK-11657",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove redundant test path in WordCountMapreduceITCase",
+    "description": "method:\r\n\r\n \r\n{code:java}\r\nprotected void testProgram() throws Exception {\r\n   internalRun(true);\r\n   postSubmit();\r\n   resultPath = getTempDirPath(\"result2\");\r\n   internalRun(false);\r\n   postSubmit();\r\n}\r\n{code}\r\nPreviously, in order to test deprecated API, the following code snippet existed:\r\n\r\n \r\n{code:java}\r\nif (isTestDeprecatedAPI) {\r\n   input = env.createInput(HadoopInputs.readHadoopFile(new TextInputFormat(),\r\n      LongWritable.class, Text.class, textPath));\r\n} else {\r\n   input = env.createInput(readHadoopFile(new TextInputFormat(),\r\n      LongWritable.class, Text.class, textPath));\r\n}\r\n{code}\r\nBut now, the related APIs have been removed from the DataSet, so the code needs to be refactored to make it clearer.\r\n\r\n \r\n\r\n ",
+    "commits": [
+      {
+        "sha": "ee0666761ef1d2deae6bb6491f48e7a6bf186062",
+        "message": "[FLINK-11657][tests] Fix deprecated API compatibility issue for WordCountMapreduceITCase.",
+        "author": "wenhuitang",
+        "date": "2019-02-20T12:43:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-hadoop-compatibility/src/test/java/org/apache/flink/test/hadoopcompatibility/mapreduce/WordCountMapreduceITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-hadoop-compatibility/src/test/java/org/apache/flink/test/hadoopcompatibility/mapreduce/WordCountMapreduceITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 136,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6f1e9142f85ac21b28410b8a429029549058db40",
+    "sha_after": "d049d3a3ecb300748bb8c668e4a8f13ca999034e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-hadoop-compatibility/src/test/java/org/apache/flink/test/hadoopcompatibility/mapreduce/WordCountMapreduceITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-hadoop-compatibility/src/test/java/org/apache/flink/test/hadoopcompatibility/mapreduce/WordCountMapreduceITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 136,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Remove Parameter": 1
+    }
+  },
+  "FLINK-11704": {
+    "jira_id": "FLINK-11704",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Improve AbstractCheckpointStateOutputStreamTestBase with Parameterized",
+    "description": "In the current version,  there locates an {{AbstractCheckpointStateOutputStreamTestBase}}  and two implementation class {{FileBasedStateOutputStreamTest}} and  {{FsCheckpointMetadataOutputStreamTest}}, the differences are return the different {{FSDataOutputStream}} and the specified {{FileStateHandle. we can improve this by using Junit's Parameterized.}}",
+    "commits": [
+      {
+        "sha": "2644013877055dc11ccc21499bbcecee22e033c4",
+        "message": "[FLINK-11704][tests] Improve AbstractCheckpointStateOutputStreamTestBase by using JUnit's Parameterized",
+        "author": "klion26",
+        "date": "2019-02-21T05:13:25Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/AbstractCheckpointStateOutputStreamTestBase.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/CheckpointStateOutputStreamTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 324,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FileBasedStateOutputStreamTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FileBasedStateOutputStreamTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 41,
+            "PARENT_LOC": 41,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsCheckpointMetadataOutputStreamTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsCheckpointMetadataOutputStreamTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 42,
+            "PARENT_LOC": 42,
+            "STATUS": "D"
+          }
+        ]
+      }
+    ],
+    "sha_before": "1e1d7b10f8f4f63c281f527bd0814145e1856db9",
+    "sha_after": "5db40c3b1e2ddc0791b7ffb730640b6ab343dffd",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/AbstractCheckpointStateOutputStreamTestBase.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/CheckpointStateOutputStreamTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 41,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 324,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FileBasedStateOutputStreamTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FileBasedStateOutputStreamTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 41,
+        "PARENT_LOC": 41,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsCheckpointMetadataOutputStreamTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsCheckpointMetadataOutputStreamTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 42,
+        "PARENT_LOC": 42,
+        "STATUS": "D"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Change Method Access Modifier": 2,
+      "Remove Method Modifier": 2,
+      "Rename Class": 1,
+      "Add Class Annotation": 1,
+      "Remove Class Modifier": 1
+    }
+  },
+  "FLINK-11618": {
+    "jira_id": "FLINK-11618",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Refactor operator state repartition mechanism",
+    "description": "Currently we have state assignment strategy of operator state below:\r\n * When parallelism not changed:\r\n ** If we only have even-split redistributed state, state assignment would try to keep as the same as previously (actually not always the same).\r\n ** If we have union redistributed state, all the operator state would be redistributed as the new state assignment.\r\n * When parallelism changed:\r\n ** all the operator state would be redistributed as the new state assignment.\r\n\r\nThere existed two problems *when parallelism not changed*:\r\n # If we only have even-split redistributed state, current implementation actually cannot ensure state assignment to keep as the same as previously. This is because current {{StateAssignmentOperation#collectPartitionableStates}} would repartition {{managedOperatorStates}} without subtask-index information. Take an example, if we have a operator-state with parallelism as 2, and subtask-0's managed-operatorstate is empty while subtask-1 not. Although new parallelism still keeps as 2, after {{StateAssignmentOperation#collectPartitionableStates}} and state assigned, subtask-0 would be assigned the managed-operatorstate while subtask-1 got none.\r\n # We should only redistribute union state and not touch the even-split state. Redistribute even-split state would cause unexpected behavior after {{RestartPipelinedRegionStrategy}} supported to restore state.\r\n\r\nWe should fix the above two problems and this issue is a prerequisite of FLINK-10712 and FLINK-10713 .",
+    "commits": [
+      {
+        "sha": "83a2662ee3e54ad62286703ed4f98a3a58ef5c52",
+        "message": "[FLINK-11618][state] Refactor operator state repartition mechanism",
+        "author": "Myasuka",
+        "date": "2019-02-15T04:24:31Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-filesystem/src/test/java/org/apache/flink/streaming/connectors/fs/RollingSinkITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-filesystem/src/test/java/org/apache/flink/streaming/connectors/fs/RollingSinkITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 964,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-filesystem/src/test/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSinkTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-filesystem/src/test/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSinkTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 1004,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.11/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaProducer011ITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.11/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaProducer011ITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 650,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaConsumerBaseTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaConsumerBaseTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1194,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaProducerITCase.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaProducerITCase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 649,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-cep/src/test/java/org/apache/flink/cep/operator/CEPRescalingTest.java",
+            "CHILD_PATH": "flink-libraries/flink-cep/src/test/java/org/apache/flink/cep/operator/CEPRescalingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 451,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/OperatorStateRepartitioner.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/OperatorStateRepartitioner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 41,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/RoundRobinOperatorStateRepartitioner.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/RoundRobinOperatorStateRepartitioner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 150,
+            "LINES_DELETED": 45,
+            "PARENT_LOC": 288,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperation.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 70,
+            "PARENT_LOC": 672,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 93,
+            "PARENT_LOC": 3700,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperationTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 157,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksIncrementalCheckpointRescalingTest.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksIncrementalCheckpointRescalingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 392,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/StatefulSequenceSourceTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/StatefulSequenceSourceTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 251,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/sink/filesystem/LocalStreamingFileSinkTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/sink/filesystem/LocalStreamingFileSinkTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 492,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/sink/filesystem/TestUtils.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/sink/filesystem/TestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 276,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/AbstractStreamOperatorTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/AbstractStreamOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 752,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/CoBroadcastWithKeyedOperatorTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/CoBroadcastWithKeyedOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 815,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/CoBroadcastWithNonKeyedOperatorTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/CoBroadcastWithNonKeyedOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 575,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/operators/ContinuousFileProcessingRescalingTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/operators/ContinuousFileProcessingRescalingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 319,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/operators/WriteAheadSinkTestBase.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/operators/WriteAheadSinkTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 305,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/AbstractStreamOperatorTestHarness.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/AbstractStreamOperatorTestHarness.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 73,
+            "LINES_DELETED": 48,
+            "PARENT_LOC": 598,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "228ab3fc6c94618724b3cfaaab7d704ad1a0fcac",
+        "message": "[FLINK-11618][state] Extend StateAssignmentOperationTest",
+        "author": "Myasuka",
+        "date": "2019-02-22T16:53:01Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperation.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 644,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperationTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 156,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 157,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "3bf06b9dd3dc66dcfdeccaaa591ace41ea51e343",
+    "sha_after": "bdb776035f7266916e9debc7a0d4e7cc5cb1dfd3",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-filesystem/src/test/java/org/apache/flink/streaming/connectors/fs/RollingSinkITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-filesystem/src/test/java/org/apache/flink/streaming/connectors/fs/RollingSinkITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 964,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-filesystem/src/test/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSinkTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-filesystem/src/test/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSinkTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 31,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 1004,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-0.11/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaProducer011ITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-0.11/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaProducer011ITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 18,
+        "PARENT_LOC": 650,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaConsumerBaseTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka-base/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaConsumerBaseTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1194,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaProducerITCase.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/FlinkKafkaProducerITCase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 21,
+        "PARENT_LOC": 649,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-libraries/flink-cep/src/test/java/org/apache/flink/cep/operator/CEPRescalingTest.java",
+        "CHILD_PATH": "flink-libraries/flink-cep/src/test/java/org/apache/flink/cep/operator/CEPRescalingTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 451,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/OperatorStateRepartitioner.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/OperatorStateRepartitioner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 41,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/RoundRobinOperatorStateRepartitioner.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/RoundRobinOperatorStateRepartitioner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 150,
+        "LINES_DELETED": 45,
+        "PARENT_LOC": 288,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperation.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 43,
+        "LINES_DELETED": 70,
+        "PARENT_LOC": 672,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 46,
+        "LINES_DELETED": 93,
+        "PARENT_LOC": 3700,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperationTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/StateAssignmentOperationTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 287,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksIncrementalCheckpointRescalingTest.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/test/java/org/apache/flink/contrib/streaming/state/RocksIncrementalCheckpointRescalingTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 40,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 392,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/StatefulSequenceSourceTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/StatefulSequenceSourceTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 251,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/sink/filesystem/LocalStreamingFileSinkTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/sink/filesystem/LocalStreamingFileSinkTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 492,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/sink/filesystem/TestUtils.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/functions/sink/filesystem/TestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 276,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/AbstractStreamOperatorTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/AbstractStreamOperatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 752,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/CoBroadcastWithKeyedOperatorTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/CoBroadcastWithKeyedOperatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 815,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/CoBroadcastWithNonKeyedOperatorTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/co/CoBroadcastWithNonKeyedOperatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 575,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/operators/ContinuousFileProcessingRescalingTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/operators/ContinuousFileProcessingRescalingTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 319,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/operators/WriteAheadSinkTestBase.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/operators/WriteAheadSinkTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 305,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/AbstractStreamOperatorTestHarness.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/util/AbstractStreamOperatorTestHarness.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 73,
+        "LINES_DELETED": 48,
+        "PARENT_LOC": 598,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 92,
+    "refactorings": {
+      "Extract Variable": 39,
+      "Change Variable Type": 9,
+      "Change Parameter Type": 9,
+      "Rename Variable": 7,
+      "Extract Attribute": 6,
+      "Add Parameter": 4,
+      "Extract Method": 3,
+      "Rename Parameter": 2,
+      "Change Return Type": 2,
+      "Add Class Annotation": 2,
+      "Rename Method": 2,
+      "Add Method Modifier": 2,
+      "Parameterize Variable": 1,
+      "Add Attribute Modifier": 1,
+      "Add Method Annotation": 1,
+      "Change Method Access Modifier": 1,
+      "Invert Condition": 1
+    }
+  }
+}

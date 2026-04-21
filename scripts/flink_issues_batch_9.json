@@ -1,0 +1,984 @@
+{
+  "FLINK-13819": {
+    "jira_id": "FLINK-13819",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "Introduce RpcEndpoint State",
+    "description": "To better reflect the lifecycle of RpcEndpoint, we suggest to introduce its state:\r\n * created\r\n * started\r\n * stopping\r\n\r\nWe can use the state e.g. to make decision about how to react on API calls if it is already known that the RpcEndpoint is terminating, as required e.g. for FLINK-13769.",
+    "commits": [
+      {
+        "sha": "aabde88e5280d9fef9c911265e270ebb101b58e4",
+        "message": "[FLINK-13819][coordination] Introduce isRunning state for RpcEndpoint",
+        "author": "azagrebin",
+        "date": "2019-08-21T09:19:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rpc/RpcEndpoint.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rpc/RpcEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 79,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 383,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rpc/akka/AkkaRpcActor.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rpc/akka/AkkaRpcActor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 621,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rpc/RpcEndpointTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rpc/RpcEndpointTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 72,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 189,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "e263856e37627361feec578ec67841de70f415b6",
+    "sha_after": "aabde88e5280d9fef9c911265e270ebb101b58e4",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rpc/RpcEndpoint.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rpc/RpcEndpoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 79,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 383,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rpc/akka/AkkaRpcActor.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rpc/akka/AkkaRpcActor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 621,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rpc/RpcEndpointTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rpc/RpcEndpointTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 72,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 189,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Change Method Access Modifier": 2,
+      "Extract And Move Method": 1
+    }
+  },
+  "FLINK-11696": {
+    "jira_id": "FLINK-11696",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Avoid to send mkdir requests to DFS from task side",
+    "description": "Currently, when we create checkpoint directory in the distributed file system. Not only {{CheckpointCoordinator}} but also {{FsCheckpointStorage}} in {{StreamTask}} would create the {{checkpointsDirectory}}, {{sharedStateDirectory}} and {{taskOwnedStateDirectory}}. These many {{mkdir}} RPC requests would cause a very high pressure on the distributed file system, especially when the parallelism is large or jobs continue to failover again and again.\r\n\r\nWe could avoid these {{mkdir}} requests from task side if writing to a distributed file system.",
+    "commits": [
+      {
+        "sha": "398ca435074d507f529d2ec016abc9979be3a94d",
+        "message": "[FLINK-11696][checkpoint] Avoid to send mkdir requests to DFS from task side",
+        "author": "Myasuka",
+        "date": "2019-03-07T17:33:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1462,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/CheckpointStorageCoordinatorView.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/CheckpointStorageCoordinatorView.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsCheckpointStorage.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsCheckpointStorage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 177,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryBackendCheckpointStorage.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryBackendCheckpointStorage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 165,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/StateBackendMigrationTestBase.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/StateBackendMigrationTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1280,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/AbstractFileCheckpointStorageTestBase.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/AbstractFileCheckpointStorageTestBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 332,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsCheckpointStorageTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsCheckpointStorageTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 263,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsStateBackendEntropyTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsStateBackendEntropyTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 123,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/memory/MemoryCheckpointStorageTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/memory/MemoryCheckpointStorageTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 188,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/testutils/BackendForTestStream.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/testutils/BackendForTestStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 126,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockStateBackend.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockStateBackend.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "353de39cc7630b0843e8b395397d4e359dcb5b81",
+    "sha_after": "c5e5f0aebe211ba48bdaab71f8ef00c34c8e774f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/CheckpointCoordinator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1462,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/CheckpointStorageCoordinatorView.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/CheckpointStorageCoordinatorView.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 95,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsCheckpointStorage.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsCheckpointStorage.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 177,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryBackendCheckpointStorage.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/memory/MemoryBackendCheckpointStorage.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 165,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/StateBackendMigrationTestBase.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/StateBackendMigrationTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1280,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/AbstractFileCheckpointStorageTestBase.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/AbstractFileCheckpointStorageTestBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 332,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsCheckpointStorageTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsCheckpointStorageTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 263,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsStateBackendEntropyTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/filesystem/FsStateBackendEntropyTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 123,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/memory/MemoryCheckpointStorageTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/memory/MemoryCheckpointStorageTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 188,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/testutils/BackendForTestStream.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/testutils/BackendForTestStream.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 126,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockStateBackend.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/state/ttl/mock/MockStateBackend.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 153,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 8,
+    "refactorings": {
+      "Add Variable Modifier": 2,
+      "Rename Method": 1,
+      "Encapsulate Attribute": 1,
+      "Extract Variable": 1,
+      "Remove Thrown Exception Type": 1,
+      "Add Method Annotation": 1,
+      "Change Method Access Modifier": 1
+    }
+  },
+  "FLINK-13143": {
+    "jira_id": "FLINK-13143",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove CheckpointExceptionHandler relevant classes",
+    "description": "Since FLINK-11662 has been merged, we can clear {{CheckpointExceptionHandler}} relevant classes.\r\n\r\n{{CheckpointExceptionHandler}} used to implement {{setFailOnCheckpointingErrors}}. Now, it has only one implementation which is {{DecliningCheckpointExceptionHandler}}.",
+    "commits": [
+      {
+        "sha": "8408299abf3e5f421ed2867ffa5629171c47af6b",
+        "message": "[FLINK-13143] Refactor CheckpointExceptionHandler relevant classes",
+        "author": "yanghua",
+        "date": "2019-09-26T03:48:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandler.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 36,
+            "PARENT_LOC": 36,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandlerFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandlerFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 59,
+            "PARENT_LOC": 59,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 1450,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandlerTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandlerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 77,
+            "PARENT_LOC": 77,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1672,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "2b608e3169ee416c922a8337c2ba5fa873516fde",
+    "sha_after": "b65370bd89a90f3909eef37c2462012bc98dd10d",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandler.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 36,
+        "PARENT_LOC": 36,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandlerFactory.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandlerFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 59,
+        "PARENT_LOC": 59,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 15,
+        "PARENT_LOC": 1450,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandlerTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/CheckpointExceptionHandlerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 77,
+        "PARENT_LOC": 77,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1672,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Move And Inline Method": 2,
+      "Move Class": 1,
+      "Change Variable Type": 1
+    }
+  },
+  "FLINK-13992": {
+    "jira_id": "FLINK-13992",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Refactor Optional parameter in InputGateWithMetrics#updateMetrics",
+    "description": "As consensus from community code style discussion, in {{InputGateWithMetrics#updateMetrics}} we can refactor to reduce the usage of Optional parameter.\r\n\r\ncc [~azagrebin]\r\n\r\n{code:java}\r\ndiff --git a/flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/InputGateWithMetrics.java b/flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/InputGateWithMetrics.java\r\nindex 5d2cfd95c4..e548fbf02b 100644\r\n--- a/flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/InputGateWithMetrics.java\r\n+++ b/flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/InputGateWithMetrics.java\r\n@@ -24,6 +24,8 @@ import org.apache.flink.runtime.io.network.partition.consumer.BufferOrEvent;\r\n import org.apache.flink.runtime.io.network.partition.consumer.InputGate;\r\n import org.apache.flink.runtime.metrics.groups.TaskIOMetricGroup;\r\n \r\n+import javax.annotation.Nonnull;\r\n+\r\n import java.io.IOException;\r\n import java.util.Optional;\r\n import java.util.concurrent.CompletableFuture;\r\n@@ -67,12 +69,12 @@ public class InputGateWithMetrics extends InputGate {\r\n \r\n \t@Override\r\n \tpublic Optional<BufferOrEvent> getNext() throws IOException, InterruptedException {\r\n-\t\treturn updateMetrics(inputGate.getNext());\r\n+\t\treturn inputGate.getNext().map(this::updateMetrics);\r\n \t}\r\n \r\n \t@Override\r\n \tpublic Optional<BufferOrEvent> pollNext() throws IOException, InterruptedException {\r\n-\t\treturn updateMetrics(inputGate.pollNext());\r\n+\t\treturn inputGate.pollNext().map(this::updateMetrics);\r\n \t}\r\n \r\n \t@Override\r\n@@ -85,8 +87,8 @@ public class InputGateWithMetrics extends InputGate {\r\n \t\tinputGate.close();\r\n \t}\r\n \r\n-\tprivate Optional<BufferOrEvent> updateMetrics(Optional<BufferOrEvent> bufferOrEvent) {\r\n-\t\tbufferOrEvent.ifPresent(b -> numBytesIn.inc(b.getSize()));\r\n+\tprivate BufferOrEvent updateMetrics(@Nonnull BufferOrEvent bufferOrEvent) {\r\n+\t\tnumBytesIn.inc(bufferOrEvent.getSize());\r\n \t\treturn bufferOrEvent;\r\n \t}\r\n }\r\n{code}\r\n",
+    "commits": [
+      {
+        "sha": "c378433c3a478702087ba46f397acd27bc23fa13",
+        "message": "[FLINK-13992][coordination] Refactor Optional parameter in InputGateWithMetrics#updateMetrics",
+        "author": "tisonkun",
+        "date": "2019-09-16T09:36:11Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/InputGateWithMetrics.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/InputGateWithMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 92,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "2a6eefacb05ba4d624f148ff57f4afbf3f5acf90",
+    "sha_after": "3a49da62332d4cfaf0536a11fb7da8de11baa17e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/InputGateWithMetrics.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/taskmanager/InputGateWithMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 92,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Change Parameter Type": 1,
+      "Change Return Type": 1
+    }
+  },
+  "FLINK-14608": {
+    "jira_id": "FLINK-14608",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "avoid using Java Streams in JsonRowDeserializationSchema",
+    "description": "According to [https://flink.apache.org/contributing/code-style-and-quality-java.html], we should avoid using Java Streams in any performance critical code. Since this `DeserializationRuntimeConverter` will be called per field of each coming record, we should provide a non Java Streams implementation. ",
+    "commits": [
+      {
+        "sha": "98c9e908aae5317a3b8310cc2238f3031c6a42ef",
+        "message": "remove java stream from flink-json module",
+        "author": "Jiayi",
+        "date": "2019-11-06T15:34:39Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-formats/flink-json/src/main/java/org/apache/flink/formats/json/JsonRowDeserializationSchema.java",
+            "CHILD_PATH": "flink-formats/flink-json/src/main/java/org/apache/flink/formats/json/JsonRowDeserializationSchema.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 441,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "155885cc6d182bf0f6519a9992b21b957444b4fe",
+    "sha_after": "28cf30dbadabf829627781dc8aa05fbacb7ffe5a",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-formats/flink-json/src/main/java/org/apache/flink/formats/json/JsonRowDeserializationSchema.java",
+        "CHILD_PATH": "flink-formats/flink-json/src/main/java/org/apache/flink/formats/json/JsonRowDeserializationSchema.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 15,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 441,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Variable Modifier": 1,
+      "Add Parameter": 1
+    }
+  },
+  "FLINK-14714": {
+    "jira_id": "FLINK-14714",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "BytesHashMap should not warn invoking stack when it want to spill",
+    "description": "Now BytesHashMap will warn invoking stack when it want to spill, this lead to a lot of messages in logs.\r\n\r\nWe need remove the stack and just print warns.",
+    "commits": [
+      {
+        "sha": "29908a3c7794918fe7cb426364e550853b9f8dbf",
+        "message": "[FLINK-14714][table-runtime-blink] BytesHashMap should not warn invoking stack when it want to spill",
+        "author": "JingsongLi",
+        "date": "2019-11-12T07:29:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/aggregate/BytesHashMap.java",
+            "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/aggregate/BytesHashMap.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 707,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "5d8081f65095de092e08150adf5d301c74a38530",
+    "sha_after": "056e1fc39abae9f55910749e581aec966c1ef65c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/aggregate/BytesHashMap.java",
+        "CHILD_PATH": "flink-table/flink-table-runtime-blink/src/main/java/org/apache/flink/table/runtime/operators/aggregate/BytesHashMap.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 707,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 14,
+    "refactorings": {
+      "Add Method Annotation": 4,
+      "Change Method Access Modifier": 3,
+      "Remove Thrown Exception Type": 3,
+      "Extract Method": 2,
+      "Parameterize Variable": 1,
+      "Change Class Access Modifier": 1
+    }
+  },
+  "FLINK-14627": {
+    "jira_id": "FLINK-14627",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Refactor ExecutionGraph creation in tests as TestingExecutionGraphBuilder",
+    "description": "",
+    "commits": [
+      {
+        "sha": "2ffe594419c91e32291507339f4fc4844dbb6c57",
+        "message": "[FLINK-14627][tests] Refactor ExecutionGraph creation in tests as TestingExecutionGraphBuilder",
+        "author": "tisonkun",
+        "date": "2019-11-06T06:07:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 113,
+            "PARENT_LOC": 1838,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/ExecutionGraphCheckpointCoordinatorTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/ExecutionGraphCheckpointCoordinatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 252,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGAbortPendingCheckpointsTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGAbortPendingCheckpointsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 179,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGConcurrentFailoverTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGConcurrentFailoverTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 284,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGFailoverTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGFailoverTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 458,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ArchivedExecutionGraphTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ArchivedExecutionGraphTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 357,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphCoLocationRestartTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphCoLocationRestartTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 133,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphConstructionTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphConstructionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 34,
+            "LINES_DELETED": 138,
+            "PARENT_LOC": 649,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphDeploymentTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphDeploymentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 821,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphMetricsTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphMetricsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 221,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphNotEnoughResourceTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphNotEnoughResourceTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 169,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphRestartTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphRestartTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 140,
+            "LINES_DELETED": 167,
+            "PARENT_LOC": 893,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphTestUtils.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphTestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 164,
+            "PARENT_LOC": 661,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexInputConstraintTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexInputConstraintTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 22,
+            "PARENT_LOC": 234,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 86,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/GlobalModVersionTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/GlobalModVersionTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 207,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/LegacyJobVertexIdTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/LegacyJobVertexIdTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 82,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/PointwisePatternTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/PointwisePatternTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 369,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/TestingExecutionGraphBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/TestingExecutionGraphBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 179,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/VertexSlotSharingTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/VertexSlotSharingTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 29,
+            "PARENT_LOC": 126,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/partitioner/RescalePartitionerTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/partitioner/RescalePartitionerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 32,
+            "PARENT_LOC": 211,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "d36ce5ff77fae2b01b8fbe8e5c15d610de8ed9f5",
+    "sha_after": "14adea41421c90bddac8b1fd4078ac10d56bea9f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionGraph.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 113,
+        "PARENT_LOC": 1834,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/ExecutionGraphCheckpointCoordinatorTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/ExecutionGraphCheckpointCoordinatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 252,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGAbortPendingCheckpointsTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGAbortPendingCheckpointsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 179,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGConcurrentFailoverTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGConcurrentFailoverTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 284,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGFailoverTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/AdaptedRestartPipelinedRegionStrategyNGFailoverTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 458,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ArchivedExecutionGraphTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ArchivedExecutionGraphTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 21,
+        "PARENT_LOC": 357,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphCoLocationRestartTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphCoLocationRestartTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 133,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphConstructionTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphConstructionTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 34,
+        "LINES_DELETED": 138,
+        "PARENT_LOC": 649,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphDeploymentTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphDeploymentTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 829,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphMetricsTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphMetricsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 21,
+        "PARENT_LOC": 221,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphNotEnoughResourceTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphNotEnoughResourceTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 169,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphRestartTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphRestartTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 140,
+        "LINES_DELETED": 167,
+        "PARENT_LOC": 893,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphTestUtils.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionGraphTestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 164,
+        "PARENT_LOC": 661,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexInputConstraintTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexInputConstraintTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 22,
+        "PARENT_LOC": 234,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/ExecutionVertexTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 86,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/GlobalModVersionTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/GlobalModVersionTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 207,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/LegacyJobVertexIdTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/LegacyJobVertexIdTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 21,
+        "PARENT_LOC": 82,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/PointwisePatternTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/PointwisePatternTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 26,
+        "PARENT_LOC": 369,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/TestingExecutionGraphBuilder.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/TestingExecutionGraphBuilder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 179,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/VertexSlotSharingTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/executiongraph/VertexSlotSharingTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 29,
+        "PARENT_LOC": 126,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/partitioner/RescalePartitionerTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/partitioner/RescalePartitionerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 32,
+        "PARENT_LOC": 211,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 45,
+    "refactorings": {
+      "Remove Parameter Modifier": 13,
+      "Extract Method": 5,
+      "Remove Variable Modifier": 4,
+      "Parameterize Variable": 4,
+      "Change Method Access Modifier": 3,
+      "Replace Generic With Diamond": 2,
+      "Rename Attribute": 2,
+      "Move Method": 2,
+      "Move Class": 1,
+      "Change Thrown Exception Type": 1,
+      "Inline Method": 1,
+      "Extract Variable": 1,
+      "Reorder Parameter": 1,
+      "Remove Class Modifier": 1,
+      "Rename Method": 1,
+      "Encapsulate Attribute": 1,
+      "Remove Parameter": 1,
+      "Rename Parameter": 1
+    }
+  }
+}

@@ -1,0 +1,553 @@
+{
+  "FLINK-14699": {
+    "jira_id": "FLINK-14699",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Move ClosureCleaner to flink-core",
+    "description": "{{ClosureCleaner}} is currently under {{flink-java}}. However, it doesn't stick to {{flink-java}} and used in {{flink-streaming-java}}. IMHO {{flink-streaming-java}} should not base on {{flink-java}}( {{flink-batch-java}} in fact ). Thus, I propose to move {{ClosureCleaner}} to {{flink-core}}.\r\n\r\nCC [~chesnay] [~aljoscha]",
+    "commits": [
+      {
+        "sha": "dcaaf5af6a296f3fd87b26aabb81603d7ec3fadb",
+        "message": "[FLINK-14699][type] Move ClosureCleaner to flink-core",
+        "author": "tisonkun",
+        "date": "2019-11-15T01:03:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-java/src/main/java/org/apache/flink/api/java/ClosureCleaner.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/java/ClosureCleaner.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 271,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "flink-java/src/test/java/org/apache/flink/api/java/functions/ClosureCleanerTest.java",
+            "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/api/java/ClosureCleanerTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 522,
+            "STATUS": "R"
+          }
+        ]
+      }
+    ],
+    "sha_before": "fdc2555c7d417ddd62a700b2ea67b59193ea720e",
+    "sha_after": "fa8d11b53fdac1dc6d40e5a15a79ad5dee6a8d26",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-java/src/main/java/org/apache/flink/api/java/ClosureCleaner.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/api/java/ClosureCleaner.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 271,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "flink-java/src/test/java/org/apache/flink/api/java/functions/ClosureCleanerTest.java",
+        "CHILD_PATH": "flink-core/src/test/java/org/apache/flink/api/java/ClosureCleanerTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 522,
+        "STATUS": "R"
+      }
+    ],
+    "refactoring_count": 15,
+    "refactorings": {
+      "Move Class": 14,
+      "Move Source Folder": 1
+    }
+  },
+  "FLINK-14720": {
+    "jira_id": "FLINK-14720",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "Mark ExecutionVertex#deployToSlot with @VisibleForTesting annotation",
+    "description": "From tracking the call chain of {{ExecutionVertex#deployToSlot}}, it seems this method is only been called in the test code. IMO, we'd better bring down {{ExecutionVertex#deployToSlot}} access modifier and mark it with @VisibleForTesting annotation to reduce the risk of incorrect calls",
+    "commits": [
+      {
+        "sha": "90fb72df2f52eb2a0685dd2c9273e87685d9096d",
+        "message": "[FLINK-14720] Bring down ExecutionVertex#deployToSlot access modifier and mark it with @VisibleForTesting annotation",
+        "author": "yanghua",
+        "date": "2019-11-13T09:06:18Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionVertex.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionVertex.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 868,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ad531f0495f6a644342f4171234fb013a0d28d44",
+    "sha_after": "7201206caf99e7aba52618d7e04610b335c988f6",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionVertex.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionVertex.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 868,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Add Method Annotation": 1
+    }
+  },
+  "FLINK-14862": {
+    "jira_id": "FLINK-14862",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Fuse initalizeState and open passes in StreamTask#invoke",
+    "description": "Currently chained operators lack the ability to send records downstream during initializeState (AbstractStreamOperator#initalizeState), because downstream operators in the chain didn't open yet (AbstractStreamOperator#open).\r\n\r\nThe main problem with that is that the rawOperatorState and the rawKeyedStateInputs are only valid during the execution of initializeState, and with large raw states materializing to hand them over to be used at open is not feasible (at least without spilling to disk)\r\n\r\nSo, I would propose to fuse the loops here:\r\n\r\nhttps://github.com/apache/flink/blob/master/flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java#L435,L436\r\n\r\nInto a single loop that calls initalizeState and immediately open.",
+    "commits": [
+      {
+        "sha": "33d49fc92382fecd0c2f2c9bb22bef2e3e10d4a4",
+        "message": "[FLINK-14862][runtime] Fuse initializeState and open in StreamTask",
+        "author": "igalshilman",
+        "date": "2019-11-19T16:27:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 1495,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "93dfdd05a84f933473c7b22437e12c03239f9462",
+    "sha_after": "cbe0f148f7cc6562a697b8b54faf410831c5f70b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/StreamTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 18,
+        "PARENT_LOC": 1495,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Method": 1
+    }
+  },
+  "FLINK-14915": {
+    "jira_id": "FLINK-14915",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "SchedulingStrategyFactory#createInstance might not need to know JobGraph",
+    "description": "[~zhuzh] [~GJL] I just notice that {{SchedulingStrategyFactory#createInstance}} take a parameter {{JobGraph}} but neither the parameter is in use nor this class/method should know {{JobGraph}}. Could you explain why we need it or we can safely remove the parameter so that we get rid of confusing parameter?",
+    "commits": [
+      {
+        "sha": "91a9712e38f270006e6577e2976deb9993bb8243",
+        "message": "[FLINK-14915][runtime] Remove the unnecessary param JobGraph from SchedulingStrategyFactory#createInstance",
+        "author": "zhuzhurk",
+        "date": "2019-11-22T05:32:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultScheduler.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 468,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/EagerSchedulingStrategy.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/EagerSchedulingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 112,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/LazyFromSourcesSchedulingStrategy.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/LazyFromSourcesSchedulingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 176,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/SchedulingStrategyFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/SchedulingStrategyFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 33,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/strategy/TestSchedulingStrategy.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/strategy/TestSchedulingStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 122,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c7ae2b8559c0fe4cf17613249db0c2857bb91d94",
+    "sha_after": "793f3b05cdb176349262cc1a27c575d303b8a624",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultScheduler.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/DefaultScheduler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 468,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/EagerSchedulingStrategy.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/EagerSchedulingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 112,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/LazyFromSourcesSchedulingStrategy.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/LazyFromSourcesSchedulingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 176,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/SchedulingStrategyFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/strategy/SchedulingStrategyFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 33,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/strategy/TestSchedulingStrategy.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/strategy/TestSchedulingStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 122,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Remove Parameter": 4
+    }
+  },
+  "FLINK-14924": {
+    "jira_id": "FLINK-14924",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "CsvTableSource can not config empty column as null",
+    "description": "CsvTableSource can not config empty column as null, \r\nand convert  to empty string by default.\r\n\r\n ",
+    "commits": [
+      {
+        "sha": "e668b7fee390243db8312cc7a4ce3b71fb6f15a3",
+        "message": "[FLINK-14924][table sql / api]CsvTableSource can not config empty column as null.",
+        "author": "leonardBang",
+        "date": "2019-11-22T07:14:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/CsvTableSource.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/CsvTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 89,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 552,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "046ccec5f67c076bc423ef3029d339327ee324c2",
+        "message": "Address comment and format",
+        "author": "leonardBang",
+        "date": "2019-11-22T10:19:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/CsvTableSource.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/CsvTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 108,
+            "PARENT_LOC": 634,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "79e9081b8fd92132f264c790c59453ae295cd9af",
+        "message": "add equals() and hashCode() function",
+        "author": "leonardBang",
+        "date": "2019-11-22T13:56:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/CsvTableSource.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/CsvTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 568,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ec85f825cca7a3cc039663d463ad675219980281",
+    "sha_after": "c2f3af513f38ae80c8b5ad3a2e842284b1082074",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/CsvTableSource.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java-bridge/src/main/java/org/apache/flink/table/sources/CsvTableSource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 69,
+        "LINES_DELETED": 52,
+        "PARENT_LOC": 552,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Add Parameter": 1
+    }
+  },
+  "FLINK-14969": {
+    "jira_id": "FLINK-14969",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Refactor CliFrontendRunWithYarnTest reflect to new execution codepath",
+    "description": "After commit 8379bc5473e7f054b53cf9b3e532f4f7f974fe29 merged as part of FLINK-14851, {{CliFrontendRunWithYarnTest}} currently runs in a different way from that was previously. Thus we need to refactor {{CliFrontendRunWithYarnTest}} reflect to the new execution codepath.",
+    "commits": [
+      {
+        "sha": "0e8a517818a618d269110b7ddf305efa4e222e2b",
+        "message": "[FLINK-14969][tests] Refactor CliFrontendRunWithYarnTest reflect to new execution codepath",
+        "author": "tisonkun",
+        "date": "2019-11-27T08:27:45Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/CliFrontendRunWithYarnTest.java",
+            "CHILD_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/CliFrontendRunWithYarnTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 44,
+            "PARENT_LOC": 129,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/util/NonDeployingYarnClusterDescriptor.java",
+            "CHILD_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/util/NonDeployingYarnClusterDescriptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 79,
+            "PARENT_LOC": 79,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnClusterDescriptor.java",
+            "CHILD_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnClusterDescriptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 1695,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "f38106582e69765677ef8ebddece3a92641f6f22",
+    "sha_after": "981b0540a9f4e8a603d1cb49600bc928ba6043a0",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/CliFrontendRunWithYarnTest.java",
+        "CHILD_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/CliFrontendRunWithYarnTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 44,
+        "PARENT_LOC": 129,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/util/NonDeployingYarnClusterDescriptor.java",
+        "CHILD_PATH": "flink-yarn-tests/src/test/java/org/apache/flink/yarn/util/NonDeployingYarnClusterDescriptor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 79,
+        "PARENT_LOC": 79,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnClusterDescriptor.java",
+        "CHILD_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnClusterDescriptor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 1695,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Inline Method": 2
+    }
+  },
+  "FLINK-14962": {
+    "jira_id": "FLINK-14962",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "FindBugs warnings: Inefficient use of keySet iterator instead of entrySet iterator",
+    "description": "FindBugs report WMI_WRONG_MAP_ITERATOR warnings on master.\r\n\r\nrelated class : \r\n\r\norg.apache.flink.formats.parquet.ParquetMapInputFormat\r\n\r\norg.apache.flink.graph.library.CommunityDetection\r\n\r\norg.apache.flink.streaming.connectors.fs.bucketing.BucketingSink (already marked as \"Deprecated\")\r\n\r\n \r\n\r\nThe description of the bug is as follows:\r\n\r\n*WMI: Inefficient use of keySet iterator instead of entrySet iterator (WMI_WRONG_MAP_ITERATOR)*\r\n This method accesses the value of a Map entry, using a key that was retrieved from a keySet iterator. It is more efficient to use an iterator on the entrySet of the map, to avoid the Map.get(key) lookup.\r\n [http://findbugs.sourceforge.net/bugDescriptions.html#WMI_WRONG_MAP_ITERATOR]",
+    "commits": [
+      {
+        "sha": "5a64c61705e6911b0af7998049c6e064c263dda9",
+        "message": "FLINK-14962 FindBugs warnings: Inefficient use of keySet iterator instead of entrySet iterator",
+        "author": "caidezhi",
+        "date": "2019-11-27T05:10:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-filesystem/src/main/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-filesystem/src/main/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 1308,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/ParquetMapInputFormat.java",
+            "CHILD_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/ParquetMapInputFormat.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 127,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/CommunityDetection.java",
+            "CHILD_PATH": "flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/CommunityDetection.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 189,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "730119e8d41a077a0542a164ffcc0f600d1375c1",
+        "message": "[FLINK-14962] FindBugs warnings: Inefficient use of keySet iterator instead of entrySet iterator",
+        "author": "caidezhi",
+        "date": "2019-11-27T07:09:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-filesystem/src/main/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-filesystem/src/main/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1307,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/ParquetMapInputFormat.java",
+            "CHILD_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/ParquetMapInputFormat.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 129,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/CommunityDetection.java",
+            "CHILD_PATH": "flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/CommunityDetection.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 191,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "05b6cbc9d365c4acfdda107b8e1b05f92359cfe0",
+        "message": "[FLINK-14962] fix findbugs WMI_WRONG_MAP_ITERATOR warning",
+        "author": "caidezhi",
+        "date": "2019-12-03T06:14:11Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-filesystem/src/main/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-filesystem/src/main/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1306,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "afd5f1f23726d520b61f46f37961c97cd91c48fa",
+    "sha_after": "e2bc967b471a3c909619e5023bfb63500449ec77",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-filesystem/src/main/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-filesystem/src/main/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 1308,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/ParquetMapInputFormat.java",
+        "CHILD_PATH": "flink-formats/flink-parquet/src/main/java/org/apache/flink/formats/parquet/ParquetMapInputFormat.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 127,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/CommunityDetection.java",
+        "CHILD_PATH": "flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/CommunityDetection.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 189,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Change Variable Type": 2,
+      "Rename Variable": 2
+    }
+  }
+}

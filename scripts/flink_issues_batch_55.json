@@ -1,0 +1,883 @@
+{
+  "FLINK-36342": {
+    "jira_id": "FLINK-36342",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Rename misleading BufferDebloater variable 'targetTotalBufferSize'",
+    "description": "The variable named targetTotalBufferSize appears in class BufferDebloatConfiguration and some other classes has been incorrectly named. Based on the context and the origin of this variable, it is clearly a *Duration* type variable that is read from configuration(the key is\r\n*taskmanager.network.memory.buffer-debloat.target* and default value is 1s). So a more suitable name might be targetTotalTime.\r\n\r\nThis variable is used to calculate buffer size(see BufferDebloater#recalculateBufferSize), the specific code is as follows: \r\nlong desiredTotalBufferSizeInBytes = (currentThroughput * targetTotalBufferSize) / MILLIS_IN_SECOND; \r\nIf the variable name is not corrected, maintainers might find it is quite difficult to understand why the current throughput is multiplied by the target buffer size to calculate the total buffer size.",
+    "commits": [
+      {
+        "sha": "da167a5cddf4469e18a2eff2100b2ed73180176b",
+        "message": "[FLINK-36342][runtime] Rename misleading variable name 'targetTotalBufferSize'",
+        "author": "XuHao41",
+        "date": "2024-09-20T15:08:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGateFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGateFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 468,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/throughput/BufferDebloatConfiguration.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/throughput/BufferDebloatConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/throughput/BufferDebloater.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/throughput/BufferDebloater.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 140,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGateBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGateBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 215,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "950fceb43e628d50fb9f96973badc05cff34afa0",
+    "sha_after": "a6ae370b194fb216b35e9a50ba144e100d02d6df",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGateFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGateFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 468,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/throughput/BufferDebloatConfiguration.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/throughput/BufferDebloatConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 105,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/throughput/BufferDebloater.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/throughput/BufferDebloater.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 140,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGateBuilder.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/consumer/SingleInputGateBuilder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 215,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 6,
+    "refactorings": {
+      "Rename Parameter": 2,
+      "Rename Attribute": 2,
+      "Rename Method": 1,
+      "Rename Variable": 1
+    }
+  },
+  "FLINK-35825": {
+    "jira_id": "FLINK-35825",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "HiveTableSource supports report statistics for text file",
+    "description": "",
+    "commits": [
+      {
+        "sha": "1bf0b9c33e0baeb5cf33526c4d8f13cf36e8b2fa",
+        "message": "[FLINK-35825][hive] HiveTableSource supports report statistics for text file",
+        "author": "reswqa",
+        "date": "2024-07-12T05:20:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 513,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/util/TextFormatStatisticsReportUtil.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/util/TextFormatStatisticsReportUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 127,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/HiveTableSourceStatisticsReportTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/HiveTableSourceStatisticsReportTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 421,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/util/TextFormatStatisticsReportUtilTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/util/TextFormatStatisticsReportUtilTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 96,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "0c338ae6d21e6d3dc79764e7801cbb7adfe6a44f",
+    "sha_after": "59dc491f87e3c1181ead34cc63f59a8ad7258a74",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/HiveTableSource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 513,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/util/TextFormatStatisticsReportUtil.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/main/java/org/apache/flink/connectors/hive/util/TextFormatStatisticsReportUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 127,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/HiveTableSourceStatisticsReportTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/HiveTableSourceStatisticsReportTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 421,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/util/TextFormatStatisticsReportUtilTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-hive/src/test/java/org/apache/flink/connectors/hive/util/TextFormatStatisticsReportUtilTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 96,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Thrown Exception Type": 2
+    }
+  },
+  "FLINK-36764": {
+    "jira_id": "FLINK-36764",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add checkpoint type to checkpoint trace",
+    "description": "Currently it's impossible to distinguish checkpoints from savepoints. Also it would be handy to distinguish aligned and unaligned checkpoints.",
+    "commits": [
+      {
+        "sha": "0f2a727d1729cd00fa9820f0475e5d0f8b72ae6c",
+        "message": "[FLINK-36764] Add checkpoint type and unaligned flag to the checkpoint trace",
+        "author": "pnowojski",
+        "date": "2024-11-21T09:01:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/DefaultCheckpointStatsTracker.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/DefaultCheckpointStatsTracker.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 611,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/DefaultCheckpointStatsTrackerTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/DefaultCheckpointStatsTrackerTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 777,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c6a026ea0b50bd574da46f9dbbba7dcaaa6f2246",
+    "sha_after": "09ad45129ae729f9c40bddfc50b34f3f3c04d48e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/DefaultCheckpointStatsTracker.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/checkpoint/DefaultCheckpointStatsTracker.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 611,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/DefaultCheckpointStatsTrackerTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/checkpoint/DefaultCheckpointStatsTrackerTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 31,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 777,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Method": 1
+    }
+  },
+  "FLINK-36809": {
+    "jira_id": "FLINK-36809",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add ifNotExists param to createTable",
+    "description": "Table API's createTable currently doesn't support ignoreIfExists, like other interfaces for other resources already support.\r\n\r\nWe want to support the ignoreIfExists param for createTable. It should work the same way it does for other resources, like createFunction.\r\n\r\n \r\n\r\nSimilar to SQL's {{{}_IF NOT EXISTS_ clause{}}}.",
+    "commits": [
+      {
+        "sha": "d2bcde1986b8a02f114f9ff5556aae73919dcf7d",
+        "message": "[FLINK-36809][table] Support ignoreIfExists param for create table",
+        "author": "gustavodemorais",
+        "date": "2024-11-27T15:35:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/TableEnvironment.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/TableEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1269,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/TableEnvironmentImpl.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/TableEnvironmentImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1415,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "60f34f7cbc3c5d75de11ee71415682c579165e48",
+        "message": "[FLINK-36809][table] Support ignoreIfExists param for create temp table",
+        "author": "gustavodemorais",
+        "date": "2024-11-28T08:48:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/TableEnvironment.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/TableEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1298,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/TableEnvironmentImpl.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/TableEnvironmentImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1420,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 85,
+            "LINES_DELETED": 61,
+            "PARENT_LOC": 273,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "04e5c669476896718fe37931680d070bff6dd9b9",
+        "message": "[FLINK-36809][table] Support create table ignoreIfExists python api",
+        "author": "gustavodemorais",
+        "date": "2024-11-28T23:27:32Z",
+        "files": []
+      },
+      {
+        "sha": "49cd6b07bd02d59a749d371f7336a83bd020e1c8",
+        "message": "[FLINK-36809][table] nits: updated examples, docs, typos, helpers",
+        "author": "gustavodemorais",
+        "date": "2024-11-29T08:50:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/TableEnvironment.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/TableEnvironment.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1328,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 34,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 297,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "ef8f47de200339ff1638747cb143bd10e2fc9e40",
+        "message": "[FLINK-36809][table] code dedup with TEST_SCHEMA and TEST_DESCRIPTOR",
+        "author": "gustavodemorais",
+        "date": "2024-11-29T11:07:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+            "CHILD_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 77,
+            "PARENT_LOC": 318,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "2897ab7db1081c9bf1f477dc221b84e7c6686a6d",
+    "sha_after": "02510f1116d3da371e06c90ff950ca7304e8a5e7",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/TableEnvironment.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/TableEnvironment.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 61,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1269,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/TableEnvironmentImpl.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java/src/main/java/org/apache/flink/table/api/internal/TableEnvironmentImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1415,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+        "CHILD_PATH": "flink-table/flink-table-api-java/src/test/java/org/apache/flink/table/api/TableEnvironmentTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 88,
+        "LINES_DELETED": 47,
+        "PARENT_LOC": 223,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 8,
+    "refactorings": {
+      "Extract Method": 4,
+      "Replace Variable With Attribute": 3,
+      "Extract Attribute": 1
+    }
+  },
+  "FLINK-36873": {
+    "jira_id": "FLINK-36873",
+    "issue_type": "Improvement",
+    "resolution": "Resolved",
+    "title": "Adapting batch job progress recovery to Apache Celeborn",
+    "description": "I've identified several issues while attempting to enable Apache Celeborn to support Flink batch job recovery.\r\n\r\n*1. RestoreState Invocation*\r\n * The method _*{{ShuffleMaster#restoreState}}*_ should be triggered regardless of whether the Flink job requires recovery.\r\n * This method signifies that a Flink job needs to restore its state, but it is currently called only after {_}*{{ShuffleMaster#registerJob}}*{_}.\r\n\r\n * Consequently, it might not be invoked if the Flink job does not require recovery.\r\n\r\n * For Celeborn, this creates uncertainty regarding when to initialize certain components; if the initialization occurs during {*}_{{registerJob}}_{*}, it may lack essential information from the stored snapshot, whereas if it takes place during {*}_{{restoreState}}_{*}, there is a risk that it may not be invoked at all.\r\n\r\n*2. JobID Information Requirement* \r\n * Several methods in _*{{ShuffleMaster}}*_ should include _*JobID*_ information: {*}_{{ShuffleMaster#supportsBatchSnapshot}}_{*}, {_}*{{ShuffleMaster#snapshotState}}*{_}, and {_}*{{ShuffleMaster#restoreState}}*{_}.\r\n * These methods are intended for job-granularity state storage and restoration, but they currently do not incorporate JobID.\r\n * Consequently, Celeborn is unable to determine which job triggered these calls.\r\n\r\n{*}3. Cluster granularity store/restore state{*}:\r\n * Presently, _*{{ShuffleMaster}}*_ only offers job-granularity interfaces for storing and restoring state, as the _*{{NettyShuffleService}}*_ is stateless in terms of cluster granularity.\r\n * However, _*{{Celeborn#ShuffleMaster}}*_ needs to communicate with the Celeborn Master, necessitating the storage of certain cluster-level states, such as {_}*{{CelebornAppId}}*{_}.\r\n\r\n * In my opinion, the cluster-granularity store state interface can be execute after {_}*{{ShuffleMaster#start}}*{_}, and _*{{ShuffleMaster#start}}*_ adding a snapshot parameter to restore the cluster state.",
+    "commits": [
+      {
+        "sha": "b868c0a44f00036e62d0a37ac4f74b525ecb855c",
+        "message": "[FLINK-36873][runtime] Adapting batch job progress recovery to Apache Celeborn.",
+        "author": "JunRuiLee",
+        "date": "2024-12-16T06:44:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/Dispatcher.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/Dispatcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1619,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/adaptivebatch/AdaptiveBatchSchedulerFactory.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/adaptivebatch/AdaptiveBatchSchedulerFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 413,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/adaptivebatch/DefaultBatchJobRecoveryHandler.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/adaptivebatch/DefaultBatchJobRecoveryHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 846,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/NettyShuffleMaster.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/NettyShuffleMaster.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 217,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/ShuffleMaster.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/ShuffleMaster.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 157,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/ShuffleMasterSnapshotUtil.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/ShuffleMasterSnapshotUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 185,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/adaptivebatch/BatchJobRecoveryTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/adaptivebatch/BatchJobRecoveryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1164,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/shuffle/ShuffleMasterSnapshotUtilTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/shuffle/ShuffleMasterSnapshotUtilTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 118,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "12ee2993707e01fa665eaa35795f25c62c946d11",
+    "sha_after": "d6c3e8cddd4b01b0df1a772cbbafbc3bc5cf9a7e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/Dispatcher.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/dispatcher/Dispatcher.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1619,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/adaptivebatch/AdaptiveBatchSchedulerFactory.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/adaptivebatch/AdaptiveBatchSchedulerFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 413,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/adaptivebatch/DefaultBatchJobRecoveryHandler.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/scheduler/adaptivebatch/DefaultBatchJobRecoveryHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 846,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/NettyShuffleMaster.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/NettyShuffleMaster.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 217,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/ShuffleMaster.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/ShuffleMaster.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 157,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/ShuffleMasterSnapshotUtil.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/ShuffleMasterSnapshotUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 185,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/adaptivebatch/BatchJobRecoveryTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/scheduler/adaptivebatch/BatchJobRecoveryTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1164,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/shuffle/ShuffleMasterSnapshotUtilTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/shuffle/ShuffleMasterSnapshotUtilTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 118,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Add Parameter": 2,
+      "Remove Parameter": 1,
+      "Rename Parameter": 1,
+      "Change Parameter Type": 1
+    }
+  },
+  "FLINK-36934": {
+    "jira_id": "FLINK-36934",
+    "issue_type": "Improvement",
+    "resolution": "Resolved",
+    "title": "Enrich numSubpartitions to TierMasterAgent#addPartitionAndGetShuffleDescriptor",
+    "description": "Tier master agent missing the number of subpartitions to record paritition metric in remote shuffle service.",
+    "commits": [
+      {
+        "sha": "1a507829aaff136787e6fac8789bf3b01ed76f43",
+        "message": "[FLINK-36934][network] Enrich numSubpartitions to TierMasterAgent#addPartitionAndGetShuffleDescriptor",
+        "author": "reswqa",
+        "date": "2024-12-19T07:26:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/shuffle/TieredInternalShuffleMaster.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/shuffle/TieredInternalShuffleMaster.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/storage/TieredStorageMasterClient.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/storage/TieredStorageMasterClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 76,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/NoOpMasterAgent.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/NoOpMasterAgent.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 55,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/TierMasterAgent.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/TierMasterAgent.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 46,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/remote/RemoteTierMasterAgent.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/remote/RemoteTierMasterAgent.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 78,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/NettyShuffleMaster.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/NettyShuffleMaster.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 217,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/remote/RemoteTierMasterAgentTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/remote/RemoteTierMasterAgentTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 61,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a0d2d87e84cdbfd062d04464e1c8298c7e40165e",
+    "sha_after": "1523f2c2062b860a2abfe75f8ead276bb161d64a",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/shuffle/TieredInternalShuffleMaster.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/shuffle/TieredInternalShuffleMaster.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/storage/TieredStorageMasterClient.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/storage/TieredStorageMasterClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 76,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/NoOpMasterAgent.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/NoOpMasterAgent.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 55,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/TierMasterAgent.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/TierMasterAgent.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 46,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/remote/RemoteTierMasterAgent.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/remote/RemoteTierMasterAgent.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 78,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/NettyShuffleMaster.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/shuffle/NettyShuffleMaster.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 223,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/remote/RemoteTierMasterAgentTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/io/network/partition/hybrid/tiered/tier/remote/RemoteTierMasterAgentTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 61,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Add Parameter": 5
+    }
+  },
+  "FLINK-22091": {
+    "jira_id": "FLINK-22091",
+    "issue_type": "Improvement",
+    "resolution": "Resolved",
+    "title": "env.java.home option didn't take effect in resource negotiator",
+    "description": "If we have set the value of env.java.home in flink-conf.yaml, it will take effect in standalone mode, but it won't take effect in resource negotiator such as yarn, kubernetes, etc.. Maybe we can do some change and make it take effect?",
+    "commits": [
+      {
+        "sha": "282f4a39240395d78946126f9a297f4f83bad678",
+        "message": "[FLINK-22091][yarn] Make Flink on YARN honor env.java.home",
+        "author": "X-czh",
+        "date": "2024-12-31T14:47:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+            "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 559,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/clusterframework/ContaineredTaskManagerParameters.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/clusterframework/ContaineredTaskManagerParameters.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnClusterDescriptor.java",
+            "CHILD_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnClusterDescriptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2001,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-yarn/src/test/java/org/apache/flink/yarn/UtilsTest.java",
+            "CHILD_PATH": "flink-yarn/src/test/java/org/apache/flink/yarn/UtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 695,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-yarn/src/test/java/org/apache/flink/yarn/YarnClusterDescriptorTest.java",
+            "CHILD_PATH": "flink-yarn/src/test/java/org/apache/flink/yarn/YarnClusterDescriptorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1008,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "9878e561af30a90dd5491e9df9c99c8c17734a82",
+    "sha_after": "f0c8f18ee09297c4c92b36d8ce7d0e0259f80178",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/ConfigConstants.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+        "CHILD_PATH": "flink-core/src/main/java/org/apache/flink/configuration/CoreOptions.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 559,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/clusterframework/ContaineredTaskManagerParameters.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/clusterframework/ContaineredTaskManagerParameters.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 96,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnClusterDescriptor.java",
+        "CHILD_PATH": "flink-yarn/src/main/java/org/apache/flink/yarn/YarnClusterDescriptor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2001,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-yarn/src/test/java/org/apache/flink/yarn/UtilsTest.java",
+        "CHILD_PATH": "flink-yarn/src/test/java/org/apache/flink/yarn/UtilsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 40,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 695,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-yarn/src/test/java/org/apache/flink/yarn/YarnClusterDescriptorTest.java",
+        "CHILD_PATH": "flink-yarn/src/test/java/org/apache/flink/yarn/YarnClusterDescriptorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1008,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Extract Variable": 1,
+      "Replace Variable With Attribute": 1
+    }
+  }
+}

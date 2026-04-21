@@ -1,0 +1,630 @@
+{
+  "FLINK-20169": {
+    "jira_id": "FLINK-20169",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Move emitting MAX_WATERMARK out of SourceOperator processing loop",
+    "description": "It would be better to move checking for END_OF_INPUT and emitting the MAX_WATERMARK out of the SourceOperator#processInput.",
+    "commits": [
+      {
+        "sha": "2b82b9448e3bb43d3e7da50bce557f50c07ae19b",
+        "message": "[FLINK-20169] Move emitting MAX_WATERMARK out of the SourceOperator processing loop",
+        "author": "dawidwys",
+        "date": "2020-11-16T09:18:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 310,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/SourceOperatorStreamTask.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/SourceOperatorStreamTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 110,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/SourceOperatorTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/SourceOperatorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 19,
+            "PARENT_LOC": 242,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/source/SourceOperatorEventTimeTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/source/SourceOperatorEventTimeTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 300,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/SourceOperatorStreamTaskTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/SourceOperatorStreamTaskTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 209,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskMailboxTestHarness.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskMailboxTestHarness.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 168,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "958fc80d226c7e7b4ed73d0c14021940db7bc7c6",
+    "sha_after": "b878f54d54bbf1b8f966924e3d1dab8c23f7c628",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SourceOperator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 310,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/SourceOperatorStreamTask.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/runtime/tasks/SourceOperatorStreamTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 110,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/SourceOperatorTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/SourceOperatorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 19,
+        "PARENT_LOC": 242,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/source/SourceOperatorEventTimeTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/operators/source/SourceOperatorEventTimeTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 300,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/SourceOperatorStreamTaskTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/SourceOperatorStreamTaskTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 31,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 209,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskMailboxTestHarness.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/runtime/tasks/StreamTaskMailboxTestHarness.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 168,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Inline Method": 1,
+      "Extract Method": 1
+    }
+  },
+  "FLINK-20293": {
+    "jira_id": "FLINK-20293",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "Remove the useless constructor of ContinuousFileMonitoringFunction",
+    "description": "In 1.11, we introduce {{ContinuousFileMonitoringFunction}} with given {{globalModificationTime}} to support {{HiveTableSource}} continuously reading non-partitioned file. While this feature has a bug, see [FLINK-20277|https://issues.apache.org/jira/browse/FLINK-20277]. \r\nIn master, after [FLINK-19888|https://issues.apache.org/jira/browse/FLINK-19888] finished, {{HiveTableSource}} does not depend on {{ContinuousFileMonitoringFunction}} any more, we can revert the changes of [FLINK-17435|https://issues.apache.org/jira/browse/FLINK-17435] about the ContinuousFileMonitoringFunction part to avoid such bug.",
+    "commits": [
+      {
+        "sha": "854ec2ce74e7056feb97f010044a6ef8ebcdfcad",
+        "message": "[FLINK-20293] Remove the useless constructor of ContinuousFileMonitoringFunction",
+        "author": "godfreyhe",
+        "date": "2020-11-23T09:47:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/source/ContinuousFileMonitoringFunction.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/source/ContinuousFileMonitoringFunction.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 393,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a4cc8c22b0bc9d50d9eda456ba5f6ce636282fcd",
+    "sha_after": "c9782bec05acfe0470a21b668a0646fca99802a2",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/source/ContinuousFileMonitoringFunction.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/source/ContinuousFileMonitoringFunction.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 393,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Inline Method": 1
+    }
+  },
+  "FLINK-20444": {
+    "jira_id": "FLINK-20444",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Chain AsyncWaitOperator to new sources",
+    "description": "For legacy sources, we had to disable chaining because of incompatible threading models.\r\nNew sources are working fine however and it would give some users massive performance improvements.",
+    "commits": [
+      {
+        "sha": "6dc29a18d93752eb9b08a219278a0b855b1d7d23",
+        "message": "[FLINK-20444][runtime] Chain YieldingOperatorFactory to new sources.",
+        "author": "Arvid Heise",
+        "date": "2020-12-01T13:04:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1279,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 123,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/StreamOperatorFactory.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/StreamOperatorFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 97,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGeneratorTest.java",
+            "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGeneratorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1169,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "aa1ef6298e53758142da272554ecaab022732e8f",
+    "sha_after": "f79a09b8488190b549f4b7159f3e95818d57946a",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGenerator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1279,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleOperatorFactory.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/SimpleOperatorFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 123,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/StreamOperatorFactory.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/operators/StreamOperatorFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 97,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGeneratorTest.java",
+        "CHILD_PATH": "flink-streaming-java/src/test/java/org/apache/flink/streaming/api/graph/StreamingJobGraphGeneratorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1169,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Method": 1
+    }
+  },
+  "FLINK-20441": {
+    "jira_id": "FLINK-20441",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Deprecate CheckpointConfig.setPreferCheckpointForRecovery",
+    "description": "According to FLINK-20427, we should deprecate {{CheckpointConfig.setPreferCheckpointForRecovery}} so that we can remove it in the next release.",
+    "commits": [
+      {
+        "sha": "842a2f76ac5abee4c8c7f9bf88309650a3565b74",
+        "message": "[FLINK-20441] Deprecate CheckpointConfig.setPreferCheckpointForRecovery and .isPreferCheckpointForRecovery",
+        "author": "tillrohrmann",
+        "date": "2020-12-01T10:58:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 635,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "7a7c87096ab76f416cd7c393240faa8454db36f0",
+    "sha_after": "232d0f1c2547a7af3f13cd1f3a1ba772172367de",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+        "CHILD_PATH": "flink-streaming-java/src/main/java/org/apache/flink/streaming/api/environment/CheckpointConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 635,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Method Annotation": 2
+    }
+  },
+  "FLINK-20209": {
+    "jira_id": "FLINK-20209",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add missing checkpoint configuration to Flink UI",
+    "description": "Some of the [checkpointing configurations|https://ci.apache.org/projects/flink/flink-docs-stable/ops/config.html#checkpointing] are not shown in the Flink UI，Can we consider adding these configurations to the checkpoints configuration tab to make it easier for users to view checkpoint configurations.\r\n\r\nThese configurations need to be added：\r\n{code:java}\r\nexecution.checkpointing.prefer-checkpoint-for-recovery\r\n\r\nexecution.checkpointing.tolerable-failed-checkpoints\r\n\r\nexecution.checkpointing.unaligned\r\n{code}\r\n \r\n\r\n!image-2020-11-18-16-54-31-638.png|width=915,height=311!",
+    "commits": [
+      {
+        "sha": "4a8bb6eeb532ce5e28869ab0c06c903552a8dccb",
+        "message": "[FLINK-20209][web] Add tolerable failed checkpoints config to web ui",
+        "author": "coolderli",
+        "date": "2020-12-04T03:32:31Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/handler/job/checkpoints/CheckpointConfigHandler.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/handler/job/checkpoints/CheckpointConfigHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 116,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/messages/checkpoints/CheckpointConfigInfo.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/messages/checkpoints/CheckpointConfigInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 213,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/messages/checkpoints/CheckpointConfigInfoTest.java",
+            "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/messages/checkpoints/CheckpointConfigInfoTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 47,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "199ee724d95a658d6aa26156a6560750c2083ca0",
+    "sha_after": "59809fc3afc226530741e736504f032c17755a5e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/handler/job/checkpoints/CheckpointConfigHandler.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/handler/job/checkpoints/CheckpointConfigHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 116,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/messages/checkpoints/CheckpointConfigInfo.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/rest/messages/checkpoints/CheckpointConfigInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 213,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/messages/checkpoints/CheckpointConfigInfoTest.java",
+        "CHILD_PATH": "flink-runtime/src/test/java/org/apache/flink/runtime/rest/messages/checkpoints/CheckpointConfigInfoTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 47,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Add Parameter": 1
+    }
+  },
+  "FLINK-19013": {
+    "jira_id": "FLINK-19013",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Log start/end of state restoration",
+    "description": "State restoration can take a significant amount of time if the state is large enough, or in special cases like FLINK-19008.\r\n\r\nIt would be useful for debugging if we'd log the start/end of {{RestoreOperation#restore.}}",
+    "commits": [
+      {
+        "sha": "85cde0a983ed4f07511ae7e72835a60b78a1e525",
+        "message": "[FLINK-19013][state-backends] Add start/end logs for state restoration",
+        "author": "Myasuka",
+        "date": "2020-12-15T17:30:23Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/AbstractKeyedStateBackendBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/AbstractKeyedStateBackendBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 69,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/heap/HeapKeyedStateBackendBuilder.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/heap/HeapKeyedStateBackendBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 152,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/heap/HeapRestoreOperation.java",
+            "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/heap/HeapRestoreOperation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 302,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBKeyedStateBackendBuilder.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBKeyedStateBackendBuilder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 521,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/AbstractRocksDBRestoreOperation.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/AbstractRocksDBRestoreOperation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 225,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/RocksDBFullRestoreOperation.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/RocksDBFullRestoreOperation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 245,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/RocksDBIncrementalRestoreOperation.java",
+            "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/RocksDBIncrementalRestoreOperation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 504,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ec2bc631423febc5f9cde6f3d82336b2ee3e9a7f",
+    "sha_after": "f4a0f78ac153efa5995028f90df2438ddd65a79b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/AbstractKeyedStateBackendBuilder.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/AbstractKeyedStateBackendBuilder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 69,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/heap/HeapKeyedStateBackendBuilder.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/heap/HeapKeyedStateBackendBuilder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 152,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/heap/HeapRestoreOperation.java",
+        "CHILD_PATH": "flink-runtime/src/main/java/org/apache/flink/runtime/state/heap/HeapRestoreOperation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 302,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBKeyedStateBackendBuilder.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/RocksDBKeyedStateBackendBuilder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 521,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/AbstractRocksDBRestoreOperation.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/AbstractRocksDBRestoreOperation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 225,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/RocksDBFullRestoreOperation.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/RocksDBFullRestoreOperation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 245,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/RocksDBIncrementalRestoreOperation.java",
+        "CHILD_PATH": "flink-state-backends/flink-statebackend-rocksdb/src/main/java/org/apache/flink/contrib/streaming/state/restore/RocksDBIncrementalRestoreOperation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 504,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Change Attribute Access Modifier": 2,
+      "Remove Attribute Modifier": 2,
+      "Move And Rename Attribute": 2,
+      "Pull Up Attribute": 1
+    }
+  },
+  "FLINK-20546": {
+    "jira_id": "FLINK-20546",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Misuse of the method in KafkaDynamicTableFactoryTest",
+    "description": "hi all, I am reading something about DynamicTable Source/Sink Factory recently, and one thing let me confused. In `KafkaDynamicTableFactoryTest`, `getBasicSourceOptions()`  and `getBasicSinkOptions()` are created for source table and sink table, respectively. However, in the situation of validating sink table, `getBasicSourceOptions()` is called, for example in method `testSinkWithTopicListOrTopicPattern`、`testInvalidSinkSemantic` etc.  Although no exception is thrown, it also should be fixed. WDYT?",
+    "commits": [
+      {
+        "sha": "724112679db3c21c7d05133e135aecc0e1f5f38d",
+        "message": "[FLINK-20546][kafka]fix method misuse in DynamicTableFactoryTest",
+        "author": "zhouchao8",
+        "date": "2020-12-12T08:53:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/KafkaDynamicTableFactoryTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/KafkaDynamicTableFactoryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 774,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/UpsertKafkaDynamicTableFactoryTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/UpsertKafkaDynamicTableFactoryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 427,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "5d88094ad00bc0294d17aa94e2d838d073739248",
+        "message": "[FLINK-20546][kafka]test source table with pkSchema",
+        "author": "zoucao",
+        "date": "2020-12-21T14:41:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/KafkaDynamicTableFactoryTest.java",
+            "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/KafkaDynamicTableFactoryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 773,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "9e4da23d9b81f6f97cea3490a76475f33a59a21e",
+    "sha_after": "5fb6c0b30cfe30bd8f3a3bfc5aed815049e7c6b8",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/KafkaDynamicTableFactoryTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/KafkaDynamicTableFactoryTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 774,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/UpsertKafkaDynamicTableFactoryTest.java",
+        "CHILD_PATH": "flink-connectors/flink-connector-kafka/src/test/java/org/apache/flink/streaming/connectors/kafka/table/UpsertKafkaDynamicTableFactoryTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 427,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Variable": 1
+    }
+  }
+}
