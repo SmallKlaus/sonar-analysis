@@ -4,14 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       project:
-        description: 'Project to analyze (flink, kafka, etc.)'
+        description: 'Project to analyze'
         required: true
         default: 'flink'
         type: choice
         options:
           - 'flink'
           - 'kafka'
-          - 'hadoop'
+          - 'hadoop_common'
+          - 'hdfs'
+          - 'mapreduce'
+          - 'yarn'
       batch_number:
         description: 'Batch number to process'
         required: true
@@ -42,18 +45,21 @@ jobs:
           cd scripts
           PROJECT="${{ github.event.inputs.project }}"
           
-          # Extract config using Python
+          # Extract config using Python and write to GITHUB_OUTPUT
           python3 << EOF
           import json
-          with open('scripts/project_configs.json') as f:
+          import os
+          
+          with open('project_configs.json') as f:
               configs = json.load(f)
           
           config = configs.get('$PROJECT', {})
           
-          print(f"repository={config.get('repository', '')}")
-          print(f"build_system={config.get('build_system', 'maven')}")
-          print(f"requires_bundle={str(config.get('requires_bundle', False)).lower()}")
-          print(f"bundle_url={config.get('bundle_url', '')}")
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+              fh.write(f"repository={config.get('repository', '')}\n")
+              fh.write(f"build_system={config.get('build_system', 'maven')}\n")
+              fh.write(f"requires_bundle={str(config.get('requires_bundle', False)).lower()}\n")
+              fh.write(f"bundle_url={config.get('bundle_url', '')}\n")
           EOF
       
       - name: Checkout project repository
@@ -109,14 +115,13 @@ jobs:
           mkdir -p ~/.m2
           python3 scripts/generate_maven_settings.py ${{ github.event.inputs.project }}
       
-      - name: Download batch data
+      - name: Verify batch data
         run: |
           PROJECT="${{ github.event.inputs.project }}"
           BATCH="${{ github.event.inputs.batch_number }}"
           
-          cp scripts/${PROJECT}_issues_batch_${BATCH}.json .
           echo "✓ Processing ${PROJECT} batch ${BATCH}"
-          ls -lh ${PROJECT}_issues_batch_${BATCH}.json
+          ls -lh scripts/${PROJECT}_issues_batch_${BATCH}.json
       
       - name: Run analysis
         env:
