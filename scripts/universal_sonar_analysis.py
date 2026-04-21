@@ -358,9 +358,23 @@ sonar.dbd.enabled=false
         )
         
         task_id = None
-        for line in process.stdout:
-            if "task?id=" in line:
-                task_id = line.split("task?id=")[1].strip()
+        error_logs = []
+        
+        # Create a dedicated log file for this specific scan
+        safe_key = project_key.replace(":", "_")
+        scan_log_path = os.path.join(CONFIG["output_dir"], f"sonar_scan_{safe_key}.log")
+        
+        with open(scan_log_path, "w", encoding="utf-8") as log_fh:
+            for line in process.stdout:
+                log_fh.write(line)
+                
+                # Extract the task ID if successful
+                if "task?id=" in line:
+                    task_id = line.split("task?id=")[1].strip()
+                
+                # Keep track of error lines for console output
+                if "ERROR" in line or "Exception" in line:
+                    error_logs.append(line.strip())
         
         process.wait(timeout=3600)
         
@@ -368,7 +382,15 @@ sonar.dbd.enabled=false
             logger.info(f"✓ Scan complete, task: {task_id}")
             return task_id
         else:
-            logger.error("✗ Scan failed")
+            logger.error(f"✗ Scan failed (Exit Code {process.returncode}). Full log at: {scan_log_path}")
+            
+            # Print the captured error context to the main console
+            if error_logs:
+                logger.error("--- Scanner Error Output ---")
+                for err in error_logs[-15:]:  # Show up to the last 15 error lines
+                    logger.error(f"  {err}")
+                logger.error("----------------------------")
+            
             return None
             
     finally:
