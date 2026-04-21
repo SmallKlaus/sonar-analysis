@@ -1,0 +1,906 @@
+{
+  "HDFS-17451": {
+    "jira_id": "HDFS-17451",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "RBF: fix spotbugs for redundant nullcheck of dns.",
+    "description": "h2. Dodgy code Warnings\r\n||Code||Warning||\r\n|RCN|Redundant nullcheck of dns, which is known to be non-null in org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer.getCachedDatanodeReport(HdfsConstants$DatanodeReportType)|\r\n| |[Bug type RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE (click for details)|https://ci-hadoop.apache.org/job/hadoop-multibranch/job/PR-6655/8/artifact/out/branch-spotbugs-hadoop-hdfs-project_hadoop-hdfs-rbf-warnings.html#RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE]\r\nIn class org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer\r\nIn method org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer.getCachedDatanodeReport(HdfsConstants$DatanodeReportType)\r\nValue loaded from dns\r\nReturn value of org.apache.hadoop.thirdparty.com.google.common.cache.LoadingCache.get(Object) of type Object\r\nRedundant null check at RouterRpcServer.java:[line 1093]|",
+    "commits": [
+      {
+        "sha": "4ae49e955dab61cfcfc8f3b58d314d65e2765e52",
+        "message": "RBF: fix spotbugs for redundant nullcheck of dns.",
+        "author": "KeeProMise",
+        "date": "2024-04-03T02:15:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2111,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f43a1c75f464c081d3de3b807f23bec27fc173cb",
+        "message": "fix spotbugs",
+        "author": "KeeProMise",
+        "date": "2024-04-03T07:51:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 2111,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6404692c0973a7b018ca77f4aaad4248b62782e2",
+    "sha_after": "782c5014416920b4cfaf1f24a516b4436d8c72bf",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RouterRpcServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 2111,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Inline Variable": 1
+    }
+  },
+  "HDFS-17514": {
+    "jira_id": "HDFS-17514",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "RBF: Routers keep using cached stateID even when active NN returns unset header",
+    "description": "When a namenode that had \"dfs.namenode.state.context.enabled\" set to true is restarted with the configuration set to false, routers will keep using a previously cached state ID.\r\n\r\n\r\nWithout RBF\r\n* clients that fetched the old stateID could have stale reads even after msyncing\r\n* new clients will go to the active.\r\n\r\nWith RBF\r\n* client that fetched the old stateID could have stale reads like above.\r\n* New clients will also fetch the stale stateID and potentially have stale reads\r\n\r\nNew clients that are created after the restart should not fetch the stale state ID.",
+    "commits": [
+      {
+        "sha": "ca832c31ed0910bed22eaba1cb596ffbe6c67b34",
+        "message": "HDFS-17514: RBF: Routers should unset cached stateID when namenode does not set header.",
+        "author": "simbadzina",
+        "date": "2024-05-08T07:39:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 53,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 975,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f6c3404afde7f27d0a323803433533269e2e60bb",
+        "message": "Patch to fix bug.",
+        "author": "simbadzina",
+        "date": "2024-05-08T07:40:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 109,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1024,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1ff66982264465e37af9798530ca0053dea90ee5",
+        "message": "Remove unneccessary reset of poolLocalStateId. Add check to assert behavior of old filesystem object.",
+        "author": "simbadzina",
+        "date": "2024-05-08T08:19:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1024,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e4e3c5503a856c47beee2fb4fc93c0c35abd2011",
+        "message": "Whitespace cleanup.",
+        "author": "simbadzina",
+        "date": "2024-05-08T08:21:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 1028,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "c2452922760c6ef50b574a5f4a7ec523445da702",
+        "message": "Fix failing unit test TestNoNamenodesAvailableLongTime.testAllObserverAbnormality",
+        "author": "simbadzina",
+        "date": "2024-05-08T13:49:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 113,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 1026,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "9a344c175af55747acce428d615f61d1b9e9cb82",
+        "message": "Add unit test for movement of PoolAlignmentContext.",
+        "author": "simbadzina",
+        "date": "2024-05-13T17:26:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestPoolAlignmentContext.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestPoolAlignmentContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 53,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "afb800fd9c78343d772f45c77a3430409b515034",
+        "message": "Reset PoolLocalStateIDContext as well to protect clients with the same UGI from using a stale value.",
+        "author": "simbadzina",
+        "date": "2024-05-13T17:28:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 113,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestPoolAlignmentContext.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestPoolAlignmentContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 84,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "14ab9f7e6a8d3d3680c496a44c1ec5635596770b",
+        "message": "Clean up import and fix checkstyle issue.",
+        "author": "simbadzina",
+        "date": "2024-05-13T21:58:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestPoolAlignmentContext.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestPoolAlignmentContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 84,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "8d9d58dfc842269a0ae233c0adbd2267a65daebf",
+    "sha_after": "6a4f0be854b36b0dd985aba8d3110b0f2928c2fc",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/PoolAlignmentContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 109,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestObserverWithRouter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 59,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 975,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestPoolAlignmentContext.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestPoolAlignmentContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 53,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Method": 1
+    }
+  },
+  "HDFS-17539": {
+    "jira_id": "HDFS-17539",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "TestFileChecksum should not spin up a MiniDFSCluster for every test",
+    "description": "TestFileChecksum has 34 tests. Add its brother the parameterized COMPOSITE_CRC version and that's 68 times a cluster is spun up then shutdown when twice is necessary (or maybe even once but 2 is not too bad).",
+    "commits": [
+      {
+        "sha": "44cc9b4ac96f97af780818671892767e7afab30c",
+        "message": "HDFS-17539. Make TestFileChecksum fields static",
+        "author": "kokonguyen191",
+        "date": "2024-05-30T09:15:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/TestFileChecksum.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/TestFileChecksum.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 28,
+            "PARENT_LOC": 687,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "2e1deee87a5ecedbab09db1e546da733771aa11a",
+    "sha_after": "776c0a3ab9565efca22c17f41e53f27415f23b30",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/TestFileChecksum.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/TestFileChecksum.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 28,
+        "PARENT_LOC": 687,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 41,
+    "refactorings": {
+      "Add Attribute Modifier": 33,
+      "Add Method Annotation": 2,
+      "Remove Method Annotation": 2,
+      "Add Method Modifier": 2,
+      "Rename Parameter": 1,
+      "Add Parameter": 1
+    }
+  },
+  "HDFS-17576": {
+    "jira_id": "HDFS-17576",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Support user defined auth Callback",
+    "description": "Some security provider may define a new javax.security.auth.callback.Callback.  This JIRA is to allow users to configure a customized callback handler in such case.",
+    "commits": [
+      {
+        "sha": "de95eae23c509dc1a3142530a7992f1bbacef87d",
+        "message": "HDFS-17576. Support user defined auth Callback.",
+        "author": "szetszwo",
+        "date": "2024-07-17T04:42:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/client/HdfsClientConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/client/HdfsClientConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 557,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/DataTransferSaslUtil.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/DataTransferSaslUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 601,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 485,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 63,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "fe631882a55c762a48bbbcb9333d00a1c37623a4",
+        "message": "Add the new property to hdfs-default.xml.",
+        "author": "szetszwo",
+        "date": "2024-07-18T02:04:11Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 505,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 63,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b22751dbbb9b69aa7dffe66823ac210ee7e2c62b",
+        "message": "tigger test",
+        "author": "szetszwo",
+        "date": "2024-07-18T09:14:18Z",
+        "files": []
+      },
+      {
+        "sha": "e3e1a8ac804742fa0c47f122a327d30eb07df6ce",
+        "message": "tigger test",
+        "author": "szetszwo",
+        "date": "2024-07-19T05:53:24Z",
+        "files": []
+      },
+      {
+        "sha": "90554113e38b10b501e9ee5449ea51994aef7a1f",
+        "message": "tigger test again",
+        "author": "szetszwo",
+        "date": "2024-07-19T11:09:12Z",
+        "files": []
+      }
+    ],
+    "sha_before": "9dad697dbcaf6f4ac92da0d176668bca7265c097",
+    "sha_after": "a5eb5e961174dffb53f20633280eecddc02a4aca",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/client/HdfsClientConfigKeys.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/client/HdfsClientConfigKeys.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 557,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/DataTransferSaslUtil.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/DataTransferSaslUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 601,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 39,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 28,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 485,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 63,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Add Variable Modifier": 2,
+      "Change Class Access Modifier": 2
+    }
+  },
+  "HDFS-17606": {
+    "jira_id": "HDFS-17606",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Do not require implementing CustomizedCallbackHandler",
+    "description": "HDFS-17576 added a CustomizedCallbackHandler interface which declares the following method:\r\n{code}\r\n  void handleCallback(List<Callback> callbacks, String name, char[] password)\r\n      throws UnsupportedCallbackException, IOException;\r\n{code}\r\n\r\nThis Jira is to allow an implementation to define the handleCallback method without implementing the CustomizedCallbackHandler interface.  It is to avoid a security provider  depending on the HDFS project.",
+    "commits": [
+      {
+        "sha": "67720bd90dea0716f2ff11b76ca0e8b3cc389dbf",
+        "message": "HDFS-17606. Do not require implementing CustomizedCallbackHandler.",
+        "author": "szetszwo",
+        "date": "2024-08-17T21:46:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 39,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 505,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 63,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "068a4d69ee6515fda1d6d5751767c65483d74c6f",
+        "message": "Empty commit",
+        "author": "szetszwo",
+        "date": "2024-08-19T03:38:51Z",
+        "files": []
+      },
+      {
+        "sha": "f62c3fe1c87dfed0c67182e1e7a4b3dc0c38ceab",
+        "message": "Address review comments.",
+        "author": "szetszwo",
+        "date": "2024-08-19T18:13:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 59,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 511,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 89,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2a150183b0f6bb4ac6480bae0ebebb610711bb7e",
+        "message": "Fix checkstyle.",
+        "author": "szetszwo",
+        "date": "2024-08-20T02:55:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 116,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "372ad3683bb141e6cda002f63e5646cccbf85cf8",
+        "message": "Add javadoc.",
+        "author": "szetszwo",
+        "date": "2024-08-20T16:08:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 117,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "b15ed27cfbfe80e83ce835aa882cc3f62211b300",
+    "sha_after": "012ae9d1aa04f9636a7d872126bda727737e9e70",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/CustomizedCallbackHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 39,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/SaslDataTransferServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 505,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/protocol/datatransfer/sasl/TestCustomizedCallbackHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 66,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 63,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 8,
+    "refactorings": {
+      "Rename Method": 3,
+      "Change Variable Type": 1,
+      "Replace Attribute With Variable": 1,
+      "Change Attribute Access Modifier": 1,
+      "Extract Method": 1,
+      "Extract And Move Method": 1
+    }
+  },
+  "HDFS-17644": {
+    "jira_id": "HDFS-17644",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add log when a node selection is rejected by BPP UpgradeDomain",
+    "description": "Currently there is no log if a DN selection is rejected by BlockPlacementUpgradeDomain policy. \r\n\r\nWe want to log it similar as other cases in  enum NodeNotChosenReason.\r\n\r\n ",
+    "commits": [
+      {
+        "sha": "e67b2eac7c848be4b3861f3f84ad993df57d44da",
+        "message": "HDFS-17644:Add log when a node selection is rejected by BPP UpgradeDomain",
+        "author": "li-leyang",
+        "date": "2024-10-10T18:37:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1405,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyWithUpgradeDomain.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyWithUpgradeDomain.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 312,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "0b3755347c82cfac9381e05df44c3fe89b959b80",
+    "sha_after": "eb1e30395b3b413d8366653ba7269f20174bc81b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1405,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyWithUpgradeDomain.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyWithUpgradeDomain.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 312,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Change Method Access Modifier": 1,
+      "Change Class Access Modifier": 1
+    }
+  },
+  "HDFS-17683": {
+    "jira_id": "HDFS-17683",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add metrics for acquiring dataset read/write lock",
+    "description": "Add metrics for acquiring dataset read/write lock",
+    "commits": [
+      {
+        "sha": "94e71e109716bddf9ef4ee393f8e08b377ec20df",
+        "message": "HDFS-17683. Add metrics for acquiring dataset read/write lock.",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-05T10:02:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 4391,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataSetLockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataSetLockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 297,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/metrics/DataNodeMetrics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/metrics/DataNodeMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 820,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7c3d71a91ea68ca016c0ee839a2877f00eaefcbf",
+        "message": "trigger yetus.",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-05T10:06:06Z",
+        "files": []
+      },
+      {
+        "sha": "9d06760f255ebb5f8c4d8bf8e1ca4d855a50a6d9",
+        "message": "trigger yetus.",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-05T10:46:15Z",
+        "files": []
+      },
+      {
+        "sha": "4bfade3c70372d6fceebccca4fc6e362376869b1",
+        "message": "add UT",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-09T06:46:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeMetrics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 819,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "217ea1438a9218411597e46414760db5aaa0277f",
+        "message": "fix checkstyle",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-09T06:48:25Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeMetrics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 842,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "bf4b991a3821ed56ee8e3af728566ce4d5732b29",
+        "message": "trigger yetus.",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-09T12:33:02Z",
+        "files": []
+      },
+      {
+        "sha": "655d8289f670c95278c514fb86a50f41731f0d33",
+        "message": "trigger yetus.",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-10T15:00:33Z",
+        "files": []
+      },
+      {
+        "sha": "4d3b3ca95d74f54ad36bfb6e73a8a73fd0711393",
+        "message": "trigger yetus.",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-11T01:36:29Z",
+        "files": []
+      },
+      {
+        "sha": "0bdb7fa8bc74f7f7f049513e9fb89ab6800b2f04",
+        "message": "add metrics in Metrics.md",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-16T02:07:07Z",
+        "files": []
+      },
+      {
+        "sha": "0d97be036476f4c51a1c4ab16e65c2d96ca557fc",
+        "message": "use try-with-resources in testDataNodeDatasetLockMetrics",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-19T03:11:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeMetrics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 844,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "04cabfb540edb2128ffe130313226d7c0d812372",
+        "message": "trigger yetus.",
+        "author": "hfutatzhanghb",
+        "date": "2024-12-21T10:20:28Z",
+        "files": []
+      },
+      {
+        "sha": "002b5781dbf915eafec721853a9fe9c16923f2e8",
+        "message": "trigger yetus.",
+        "author": "hfutatzhanghb",
+        "date": "2025-01-04T04:41:42Z",
+        "files": []
+      }
+    ],
+    "sha_before": "fd653fa988544d9baab7175f0b419d12327903d8",
+    "sha_after": "fd4aa2a0d418e31956eea3aea8ce6f083f7e2213",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 4391,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataSetLockManager.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataSetLockManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 331,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/metrics/DataNodeMetrics.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/metrics/DataNodeMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 820,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeMetrics.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 819,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Add Parameter": 1
+    }
+  }
+}

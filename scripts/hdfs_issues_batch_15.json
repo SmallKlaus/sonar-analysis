@@ -1,0 +1,1618 @@
+{
+  "HDFS-16967": {
+    "jira_id": "HDFS-16967",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "RBF: File based state stores should allow concurrent access to the records",
+    "description": "File based state store implementations (StateStoreFileImpl and StateStoreFileSystemImpl) should allow updating as well as reading of the state store records concurrently rather than serially. Concurrent access to the record files on the hdfs based store seems to be improving the state store cache loading performance by more than 10x.\r\n\r\nFor instance, in order to maintain data integrity, when any mount table record(s) is updated, the cache is reloaded. This reload operation seems to be able to gain significant performance improvement by the concurrent access of the mount table records.",
+    "commits": [
+      {
+        "sha": "0c41ead9dc12fca491f65604bea088c9e19b4a5a",
+        "message": "HDFS-16967. RBF: File based state stores should allow concurrent access to the records",
+        "author": "virajjasani",
+        "date": "2023-03-30T22:36:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 427,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 129,
+            "LINES_DELETED": 43,
+            "PARENT_LOC": 456,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 164,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileSystemImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileSystemImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 691,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFile.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFile.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 88,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 33,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 130,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "70d39f0260f784f29f75257793fc0091fba018ef",
+        "message": "addendum",
+        "author": "virajjasani",
+        "date": "2023-03-31T23:40:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 542,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFile.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFile.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 112,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 149,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "a8673be3f9f35ffc4ef2c2c9bc7ece4c1ffeaf6b",
+        "message": "addendum",
+        "author": "virajjasani",
+        "date": "2023-04-03T20:57:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 543,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "14c5810d5ef284216a88ee1d0c158fc451cf7fda",
+    "sha_after": "937caf7de9e50268ff49af86825eac698fb98d2d",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 427,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 154,
+        "LINES_DELETED": 43,
+        "PARENT_LOC": 456,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 164,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileSystemImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileSystemImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 175,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 691,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFile.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFile.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 28,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 88,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFileSystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 33,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 130,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 25,
+    "refactorings": {
+      "Remove Method Annotation": 3,
+      "Extract Method": 2,
+      "Add Class Annotation": 2,
+      "Change Thrown Exception Type": 2,
+      "Add Parameter": 2,
+      "Change Method Access Modifier": 2,
+      "Parameterize Variable": 1,
+      "Replace Loop With Pipeline": 1,
+      "Replace Generic With Diamond": 1,
+      "Rename Variable": 1,
+      "Inline Variable": 1,
+      "Try With Resources": 1,
+      "Change Variable Type": 1,
+      "Add Variable Modifier": 1,
+      "Rename Method": 1,
+      "Add Method Annotation": 1,
+      "Add Thrown Exception Type": 1,
+      "Remove Method Modifier": 1
+    }
+  },
+  "HDFS-16971": {
+    "jira_id": "HDFS-16971",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add read time metrics for remote reads in Statistics",
+    "description": "In Filesystem.java, currently it only collects bytes read not the corresponding timing of reads.\r\nIn particular, we're interested in time spent on remote reads(not local reads). Adding timing info will help us understand it better and further analyze how locality of DN behaves. ",
+    "commits": [
+      {
+        "sha": "5b7c0723f9c852f0966ce50ba5d6bebdf2be874d",
+        "message": "add read metrics for remote reads in FileSystem Statistics",
+        "author": "Melissa You",
+        "date": "2023-04-04T22:48:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 34,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 4926,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 158,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/TestFileSystemStorageStatistics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/TestFileSystemStorageStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 136,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSClient.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 3531,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSInputStream.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 2095,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSStripedInputStream.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSStripedInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 568,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/StripeReader.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/StripeReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 487,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "ef018d4e277af047977579b162133663c67120a1",
+        "message": "empty commit to trigger build",
+        "author": "Melissa You",
+        "date": "2023-04-05T17:08:33Z",
+        "files": []
+      },
+      {
+        "sha": "7313169073a6bda7d7568ef5cf38bcda22181d08",
+        "message": "remove white space",
+        "author": "Melissa You",
+        "date": "2023-04-05T22:23:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 4960,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSStripedInputStream.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSStripedInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 570,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e2564fcd67b98ac411414b78282bfd0aefa99706",
+        "message": "empty commit to trigger build",
+        "author": "Melissa You",
+        "date": "2023-04-05T22:55:38Z",
+        "files": []
+      },
+      {
+        "sha": "75e323eacbb7d3a1b009e4006881f431f61b336f",
+        "message": "rename to include unit",
+        "author": "Melissa You",
+        "date": "2023-04-06T20:15:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 4960,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 161,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSClient.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 3535,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSInputStream.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 2098,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSStripedInputStream.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSStripedInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 570,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/StripeReader.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/StripeReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 490,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d0ceeb067f6498751aa578101be4bc26a1e5dfad",
+        "message": "rename to include unit",
+        "author": "Melissa You",
+        "date": "2023-04-06T20:23:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 161,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "345a96158c5806b0d9523b6016f4e9213b5c06bb",
+        "message": "rename tests",
+        "author": "Melissa You",
+        "date": "2023-04-07T04:57:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/TestFileSystemStorageStatistics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/TestFileSystemStorageStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 140,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7354c06aa2fc5e68ffe42efd6e47d52ed2443a49",
+        "message": "add unit to variable name",
+        "author": "Melissa You",
+        "date": "2023-04-11T19:01:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSInputStream.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 2098,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "5d3873e3ed0b265840ac8d719b7686d94d0be3c9",
+        "message": "address comments",
+        "author": "Melissa You",
+        "date": "2023-04-12T18:09:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 4960,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 161,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/TestFileSystemStorageStatistics.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/TestFileSystemStorageStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 140,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSClient.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 3535,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/StripeReader.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/StripeReader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 490,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "06f9bdffa6a717600e46f5d6b6efd7783121b546",
+    "sha_after": "2b60d0c1f440e61b57085abd2d72a30db7c013cf",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 34,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 4926,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/FileSystemStorageStatistics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 158,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/TestFileSystemStorageStatistics.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/TestFileSystemStorageStatistics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 136,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSClient.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 3531,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSInputStream.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSInputStream.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 2095,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSStripedInputStream.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/DFSStripedInputStream.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 568,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/StripeReader.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/StripeReader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 487,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Add Parameter": 2,
+      "Rename Parameter": 1
+    }
+  },
+  "HDFS-16974": {
+    "jira_id": "HDFS-16974",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Consider volumes average load of each DataNode when choosing target.",
+    "description": "The current target choosing policy only considers the load of the entire datanode. If both DN1 and DN2 have an `xceiverCount` of 100, but DN1 has 10 volumes to write to and DN2 only has 1, then the pressure on DN2 is actually much greater than that on DN1. This patch has added a configuration that allows us to avoid nodes with too much pressure on a single volume when choosing targets, so as to avoid overloading datanodes with few volumes or slowing down writes.",
+    "commits": [
+      {
+        "sha": "d2b8a5223eb08fc1fd4cf4377b7dad6e5b4d7852",
+        "message": "HDFS-16974. Consider load of every volume when choosing target.",
+        "author": "zhangshuyan0",
+        "date": "2023-04-09T14:34:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2030,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1372,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeDescriptor.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeDescriptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1131,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2262,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStats.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStats.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/FSClusterStats.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/FSClusterStats.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 69,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HeartbeatManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HeartbeatManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 570,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/BaseReplicationPolicyTest.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/BaseReplicationPolicyTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 166,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestReplicationPolicyRatioConsiderLoadWithStorage.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestReplicationPolicyRatioConsiderLoadWithStorage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 167,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "36cd093c3ce00e029effa3115987aef5bd1df1b8",
+        "message": "fix code style.",
+        "author": "zhangshuyan0",
+        "date": "2023-04-10T12:43:25Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 2037,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeDescriptor.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeDescriptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1142,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStatistics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 83,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestReplicationPolicyRatioConsiderLoadWithStorage.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestReplicationPolicyRatioConsiderLoadWithStorage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 167,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "84d2150f6aa6c216a9d0987ab7d5c7f302b427a2",
+        "message": "check style.",
+        "author": "zhangshuyan0",
+        "date": "2023-04-11T02:23:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1388,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeDescriptor.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeDescriptor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1147,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStatistics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStatistics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 85,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/FSClusterStats.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/FSClusterStats.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 79,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e28141709bf5b71a8bd4b49b630d781ec248b87e",
+        "message": "code style.",
+        "author": "zhangshuyan0",
+        "date": "2023-04-11T11:41:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HeartbeatManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HeartbeatManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 574,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "f1936d29f1f28bc0ce833147ff016a07aeb163b6",
+    "sha_after": "0185afafeac26a447b6138b2d74a6f5ed0051d0b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2030,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockPlacementPolicyDefault.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1372,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeDescriptor.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeDescriptor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1131,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeManager.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2262,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStatistics.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStatistics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 83,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStats.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeStats.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 223,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/FSClusterStats.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/FSClusterStats.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 69,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HeartbeatManager.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HeartbeatManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 570,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/BaseReplicationPolicyTest.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/BaseReplicationPolicyTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 166,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestReplicationPolicyRatioConsiderLoadWithStorage.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestReplicationPolicyRatioConsiderLoadWithStorage.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 169,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Remove Method Modifier": 1
+    }
+  },
+  "HDFS-17009": {
+    "jira_id": "HDFS-17009",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "RBF: state store putAll should also return failed records",
+    "description": "State store implementations allow adding/updating multiple records using putAll. The implementation returns whether all records were successfully added or updated. We should also allow the implementation to return which records failed to get updated.",
+    "commits": [
+      {
+        "sha": "eae4e18475049d3cb7acb0b4a19eb9d55c5d71b4",
+        "message": "HDFS-17009. RBF: state store putAll should also return failed records",
+        "author": "virajjasani",
+        "date": "2023-05-16T17:30:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreOperationResult.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreOperationResult.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 49,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreRecordOperations.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreRecordOperations.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreBaseImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreBaseImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 89,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 568,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 429,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 402,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/impl/MountTableStoreImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/impl/MountTableStoreImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 282,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/FederationStateStoreTestUtils.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/FederationStateStoreTestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 276,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 692,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/records/MockStateStoreDriver.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/records/MockStateStoreDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 146,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "16808b5ae61486d3db42ccadfda5c0f828d99213",
+        "message": "addendum",
+        "author": "virajjasani",
+        "date": "2023-05-16T22:56:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreOperationResult.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreOperationResult.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 30,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 49,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 574,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 433,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 406,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "482897a0f657a19c7a28831431bbec1cf4d3065c",
+    "sha_after": "8e173851410a529ed7d85600d17fc1f6580029df",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreOperationResult.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreOperationResult.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 79,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreRecordOperations.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/StateStoreRecordOperations.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 156,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreBaseImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreBaseImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 89,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 568,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 429,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 402,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/impl/MountTableStoreImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/impl/MountTableStoreImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 282,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/FederationStateStoreTestUtils.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/FederationStateStoreTestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 276,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 692,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/records/MockStateStoreDriver.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/records/MockStateStoreDriver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 146,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 11,
+    "refactorings": {
+      "Change Return Type": 5,
+      "Add Variable Modifier": 3,
+      "Extract Variable": 2,
+      "Add Parameter": 1
+    }
+  },
+  "HDFS-16979": {
+    "jira_id": "HDFS-16979",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "RBF: Add dfsrouter port in hdfsauditlog",
+    "description": " \r\n\r\nwhen client is using proxyuser via realuser, the hdfs aduilg log is lack of dfsrouter port infomation.\r\n\r\nclient (using proxyuser)-> dfsrouter -> namenode\r\nclientport dfsrouterport\r\n\r\nhdfsauditlog should record dfsrouterport",
+    "commits": [
+      {
+        "sha": "0a45fff7a67c5e7dfdbf5827fd72aada636523cd",
+        "message": "add proxyUserPort log in hdfsauditlog",
+        "author": "lgh",
+        "date": "2023-04-13T12:40:27Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/CallerContext.java",
+            "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/CallerContext.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 276,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterRpc.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterRpc.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2274,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 9022,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "aa90ae5efbf8082da46544d828ecf076c857b669",
+        "message": "fix checkstyle warning",
+        "author": "lgh",
+        "date": "2023-05-12T02:22:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterRpc.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterRpc.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2281,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "bba663038d91e1954251190e3c0c19b5cfb084bd",
+    "sha_after": "f6770dee476900c73ee3dc0a14149a363019a7ba",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/CallerContext.java",
+        "CHILD_PATH": "hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/ipc/CallerContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 276,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterRpc.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterRpc.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2274,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 9022,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Remove Variable Modifier": 1
+    }
+  },
+  "HDFS-17020": {
+    "jira_id": "HDFS-17020",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "RBF: mount table addAll should print failed records in std error",
+    "description": "Now that state store putAll supports returning failed records keys, addAll command for mount entries should also support printing failed records in the standard error.",
+    "commits": [
+      {
+        "sha": "6bd8f3f6805087405cf0dbaf3d27383f19c23cef",
+        "message": "HDFS-17020. RBF: mount table addAll should print failed records in std error",
+        "author": "virajjasani",
+        "date": "2023-05-18T23:18:23Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/impl/MountTableStoreImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/impl/MountTableStoreImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 282,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/protocol/AddMountTableEntriesResponse.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/protocol/AddMountTableEntriesResponse.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 42,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/protocol/impl/pb/AddMountTableEntriesResponsePBImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/protocol/impl/pb/AddMountTableEntriesResponsePBImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 72,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/tools/federation/RouterAdmin.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/tools/federation/RouterAdmin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1479,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterAdminCLI.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterAdminCLI.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1951,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "9753f1c37aca937f03c002c598c9f9a75c75bbdc",
+        "message": "addendum",
+        "author": "virajjasani",
+        "date": "2023-05-22T03:21:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 575,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 433,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreSerializableImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreSerializableImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 108,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 406,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterAdminCLI.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterAdminCLI.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1956,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 711,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "afe850ca2c283791890ba3450f2c2ae2559186d9",
+    "sha_after": "3b65b5d68f80dc15374067324d9d5413f0efd5ef",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreFileBaseImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 575,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreMySQLImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 433,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreSerializableImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreSerializableImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 108,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/driver/impl/StateStoreZooKeeperImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 406,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/impl/MountTableStoreImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/impl/MountTableStoreImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 282,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/protocol/AddMountTableEntriesResponse.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/protocol/AddMountTableEntriesResponse.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 42,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/protocol/impl/pb/AddMountTableEntriesResponsePBImpl.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/store/protocol/impl/pb/AddMountTableEntriesResponsePBImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 72,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/tools/federation/RouterAdmin.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/tools/federation/RouterAdmin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1479,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterAdminCLI.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/router/TestRouterAdminCLI.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1951,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/store/driver/TestStateStoreDriverBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 711,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  },
+  "HDFS-17037": {
+    "jira_id": "HDFS-17037",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Consider nonDfsUsed when running balancer",
+    "description": "When we run balancer with `BalancingPolicy.Node` policy, our goal is to make each datanode storage balanced. But in the current implementation, the balancer doesn't account for storage used by non-dfs on the datanodes, which can make the situation worse for datanodes that are already strained on storage.",
+    "commits": [
+      {
+        "sha": "ee0d67c3e4908bea7d955e95f7859125521e449f",
+        "message": "HDFS-17037. Consider nonDfsUsed when running balancer.",
+        "author": "zhangshuyan0",
+        "date": "2023-06-04T12:49:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 159,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/balancer/TestBalancer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/balancer/TestBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 48,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 1922,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/SimulatedFSDataset.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/SimulatedFSDataset.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1623,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3b43d6befddda0e06633b87b8d5eb202ede985d3",
+        "message": "code style.",
+        "author": "zhangshuyan0",
+        "date": "2023-06-05T02:07:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/balancer/TestBalancer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/balancer/TestBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1944,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d33d9978d2e01fc7aadf9b9b14ad44a4dd55e912",
+        "message": "code style.",
+        "author": "zhangshuyan0",
+        "date": "2023-06-05T12:07:25Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 159,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "6a1ccb42b25a40a7112a179be3acfdf62c87fef0",
+        "message": "feedback review.",
+        "author": "zhangshuyan0",
+        "date": "2023-06-07T12:30:14Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/server/protocol/StorageReport.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/server/protocol/StorageReport.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 92,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 159,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "86c4919792e86c08b90626583ad880fbe89edbbc",
+        "message": "code style & comment.",
+        "author": "zhangshuyan0",
+        "date": "2023-06-08T02:57:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 159,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "7bb09f10109d47bfae71a04928f2424982a80319",
+    "sha_after": "9c989515ba4f128747cc3afffed9a3ab3b59e70e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/server/protocol/StorageReport.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/server/protocol/StorageReport.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 92,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/balancer/BalancingPolicy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 159,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/balancer/TestBalancer.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/balancer/TestBalancer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 48,
+        "LINES_DELETED": 26,
+        "PARENT_LOC": 1922,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/SimulatedFSDataset.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/SimulatedFSDataset.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 15,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 1623,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 9,
+    "refactorings": {
+      "Add Parameter": 4,
+      "Rename Parameter": 3,
+      "Rename Variable": 2
+    }
+  }
+}

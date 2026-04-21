@@ -1,0 +1,923 @@
+{
+  "HDFS-17053": {
+    "jira_id": "HDFS-17053",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Optimize method BlockInfoStriped#findSlot to reduce time complexity.",
+    "description": "Currently, in method findSlot. there exists codes snippet below:\r\n{code:java}\r\nfor (; i < getCapacity(); i++) {\r\n  if (getStorageInfo(i) == null) {\r\n    return i;\r\n  }\r\n} {code}\r\nit will compute （triplets.length / 3;) every iteration, I think this can be optimized.",
+    "commits": [
+      {
+        "sha": "dc84781b7aaba2dcf6b68e15eece218a992871a2",
+        "message": "HDFS-17053. Optimize method BlockInfoStriped#findSlot to reduce time complexity.",
+        "author": "hfutatzhanghb",
+        "date": "2023-06-18T12:34:29Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockInfoStriped.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockInfoStriped.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 327,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "7c54a78343566716a8991a67b619fb0811c66dc7",
+    "sha_after": "e14c52c25f2d79051020622442f14f2615a0141b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockInfoStriped.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockInfoStriped.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 327,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  },
+  "HDFS-17044": {
+    "jira_id": "HDFS-17044",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Set size of non-exist block to NO_ACK when process FBR or IBR to avoid useless report from DataNode",
+    "description": "When NameNode processes DataNode increment or full block report, if block is not in the blocks map, it will be added to invalidate and the replica should be removed from the data-node, and the block size should be to set NO_ACK,  should be reduce some useless DataNode block reports.",
+    "commits": [
+      {
+        "sha": "471aef73c6d48ae671bdd2e5a0259ff513762cb4",
+        "message": "HDFS-17044. Process reported block toInvalidate logic should set the block size to NO_ACK",
+        "author": "haiyang1987",
+        "date": "2023-06-11T04:49:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 5656,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7c050420e10749e270c659c95b8657163210f141",
+        "message": "HDFS-17044. update comment and add ut",
+        "author": "haiyang1987",
+        "date": "2023-06-18T14:15:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 5659,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/metrics/DataNodeMetrics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/metrics/DataNodeMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 776,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 79,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2124,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1dca8abc23b5b757ca196f8d6e9152f0bc40c714",
+        "message": "HDFS-17044. update comment and checkstytle",
+        "author": "haiyang1987",
+        "date": "2023-06-19T02:49:10Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 75,
+            "LINES_DELETED": 73,
+            "PARENT_LOC": 2203,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "0b2c3585713b28911b9b1a28f08c92b7db34179f",
+        "message": "HDFS-17044. update comment",
+        "author": "haiyang1987",
+        "date": "2023-06-19T03:44:05Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 2205,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "ab1cc97c8cbff87efc5e1bf6fca51532e5c76b88",
+        "message": "HDFS-17044. fix checkstytle",
+        "author": "haiyang1987",
+        "date": "2023-06-19T11:11:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 2206,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "8a5299015045600345d50ac41ab3264c0baec03d",
+    "sha_after": "4bd873b816dbd889f410428d6e618586d4ff1780",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 5657,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/metrics/DataNodeMetrics.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/metrics/DataNodeMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 776,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestBlockManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 80,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2124,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  },
+  "HDFS-17075": {
+    "jira_id": "HDFS-17075",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Reconfig disk balancer parameters for datanode",
+    "description": "Rolling restart datanodes takes long time, can make disk balanacer parameters dfs.disk.balancer.enabled and dfs.disk.balancer.plan.valid.interval in datanode reconfigurable to facilitate cluster operation and maintenance.",
+    "commits": [
+      {
+        "sha": "39107bb41801cffbb1abfe7ee3c10aeb455ded89",
+        "message": "HDFS-17075. Reconfig disk balancer parameters for datanode",
+        "author": "haiyang1987",
+        "date": "2023-07-09T12:43:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 4259,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DiskBalancer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DiskBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1173,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeReconfiguration.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeReconfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 797,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/diskbalancer/TestDiskBalancerRPC.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/diskbalancer/TestDiskBalancerRPC.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 324,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7eaa9319bbca6a6e0d58684d450b1780edc9d18c",
+        "message": "HDFS-17075. Fix UT",
+        "author": "haiyang1987",
+        "date": "2023-07-10T06:44:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/TestDFSAdmin.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/TestDFSAdmin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1284,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "55ac41ff89076ed9aedc24c981a861e5c64e5aec",
+        "message": "HDFS-17075. Modify patch based on comments",
+        "author": "haiyang1987",
+        "date": "2023-07-14T11:28:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 4307,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DiskBalancer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DiskBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 1226,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "dd6b17b1bfcb62b0b18605571c3e591fc0973383",
+        "message": "HDFS-17075. Fix checkstyle",
+        "author": "haiyang1987",
+        "date": "2023-07-15T10:08:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DiskBalancer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DiskBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1225,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "b95595158fe11a15cbe32b9336204528554a216b",
+    "sha_after": "c44823dadb73a3033f515329f70b2e3126fcb7be",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 4255,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DiskBalancer.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DiskBalancer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 54,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1173,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeReconfiguration.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/datanode/TestDataNodeReconfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 57,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 797,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/diskbalancer/TestDiskBalancerRPC.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/diskbalancer/TestDiskBalancerRPC.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 324,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/TestDFSAdmin.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/TestDFSAdmin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1284,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Encapsulate Attribute": 2,
+      "Add Attribute Modifier": 2,
+      "Rename Method": 1,
+      "Add Method Annotation": 1,
+      "Change Method Access Modifier": 1
+    }
+  },
+  "HDFS-17115": {
+    "jira_id": "HDFS-17115",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "HttpFS Add Support getErasureCodeCodecs API",
+    "description": "We should ensure that *WebHDFS* remains synchronized with {*}HttpFS{*}, as the former has already implemented the *getErasureCodeCodecs* interface.",
+    "commits": [
+      {
+        "sha": "560935a2699ca54e77c8b8e58f2d1001e77c5605",
+        "message": "HDFS-17115. HttpFS Add Support getErasureCodeCodecs API",
+        "author": "zhtttylz",
+        "date": "2023-07-22T18:20:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1802,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/FSOperations.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/FSOperations.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2372,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/HttpFSParametersProvider.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/HttpFSParametersProvider.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 767,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/HttpFSServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/HttpFSServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1105,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/metrics/HttpFSServerMetrics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/metrics/HttpFSServerMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 173,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 2200,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "be3442123dd58aa36d51cc04f94eae6151b94b35",
+        "message": "fix checkstyle.",
+        "author": "zhtttylz",
+        "date": "2023-07-25T03:43:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 2241,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ad001c93cf90bf9fb57bec7d23e31de780cbfe8f",
+    "sha_after": "068d8c7e4db635e453604453ed9793b070facdf8",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/client/HttpFSFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1802,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/FSOperations.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/FSOperations.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2372,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/HttpFSParametersProvider.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/HttpFSParametersProvider.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 767,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/HttpFSServer.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/HttpFSServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1105,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/metrics/HttpFSServerMetrics.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java/org/apache/hadoop/fs/http/server/metrics/HttpFSServerMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 173,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 54,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 2200,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Add Method Annotation": 1
+    }
+  },
+  "HDFS-17117": {
+    "jira_id": "HDFS-17117",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Print reconstructionQueuesInitProgress periodically when BlockManager processMisReplicatesAsync.",
+    "description": "BlockManager#processMisReplicatesAsync can periodically print reconstructionQueuesInitProgress,  so that the admin can get the progress of the replication queues initialisation.\r\nReady to add logs and metrics.",
+    "commits": [
+      {
+        "sha": "eb9a07eec576641c7969e31af62c6dec6496ffdc",
+        "message": "HDFS-17117. BlockManager#processMisReplicatesAsync can periodically print reconstructionQueuesInitProgress",
+        "author": "haiyang1987",
+        "date": "2023-07-23T05:06:50Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/metrics/NamenodeBeanMetrics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/metrics/NamenodeBeanMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 893,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "bacb1d1931a817b8d145829fdb0fdd6e6562fc8e",
+        "message": "HDFS-17117. BlockManager#processMisReplicatesAsync can periodically print reconstructionQueuesInitProgress",
+        "author": "haiyang1987",
+        "date": "2023-07-23T05:08:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 5660,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 9034,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/metrics/FSNamesystemMBean.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/metrics/FSNamesystemMBean.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 264,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "496c8eb45196466ae1c09578777f04bb97d857c3",
+        "message": "HDFS-17117. Modify patch based on comments",
+        "author": "haiyang1987",
+        "date": "2023-07-25T10:08:14Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 5662,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/metrics/FSNamesystemMBean.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/metrics/FSNamesystemMBean.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 271,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 228,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "da81e3a010b6ab2181e2e403ca69bf0481c4ff78",
+        "message": "HDFS-17117. Modify patch based on comments",
+        "author": "haiyang1987",
+        "date": "2023-07-26T09:58:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/metrics/NamenodeBeanMetrics.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/metrics/NamenodeBeanMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 898,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 5664,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 9043,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/metrics/FSNamesystemMBean.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/metrics/FSNamesystemMBean.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 271,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 272,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "cfa115081c0f649326ee842311a9b5bcb6b5a06f",
+        "message": "HDFS-17117. Modify patch based on comments",
+        "author": "haiyang1987",
+        "date": "2023-07-26T10:02:45Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 272,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "21783ce5268c2df9dacefcaa292dbffb7eb4f55f",
+        "message": "HDFS-17117. Modify patch based on comments",
+        "author": "haiyang1987",
+        "date": "2023-07-26T10:04:05Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 272,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "24f5f708df0dff0ea16018b511a020559ac54230",
+    "sha_after": "1d09dcc614e0faf212c657b276406ba1d69dc175",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/metrics/NamenodeBeanMetrics.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/metrics/NamenodeBeanMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 893,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 5660,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 9036,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/metrics/FSNamesystemMBean.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/metrics/FSNamesystemMBean.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 264,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestFSNamesystemMBean.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 44,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 228,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Change Attribute Type": 1,
+      "Change Return Type": 1
+    }
+  },
+  "HDFS-17184": {
+    "jira_id": "HDFS-17184",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Improve BlockReceiver to throws DiskOutOfSpaceException when initialize",
+    "description": "BlockReceiver class will receives a block and writes to its disk,\r\nin the constructor method, createTemporary and createRbw will execute chooseVolume, and DiskOutOfSpaceException may occur in chooseVolume.\r\ncurrent in the processing logic, if the exception occurs will be cacth by BlockReceiver.java line_282 catch(IOException ioe) here, and cleanupBlock() will be executed here.\r\n\r\nsince the replica of the current block has not been added to ReplicaMap, executing cleanupBlock will throw ReplicaNotFoundException.\r\nthe ReplicaNotFoundException exception will overwrite the actual DiskOutOfSpaceException, resulting in inaccurate exception information.\r\n\r\n{code:java}\r\nBlockReceiver(final ExtendedBlock block, final StorageType storageType,\r\n      final DataInputStream in,\r\n      final String inAddr, final String myAddr,\r\n      final BlockConstructionStage stage, \r\n      final long newGs, final long minBytesRcvd, final long maxBytesRcvd, \r\n      final String clientname, final DatanodeInfo srcDataNode,\r\n      final DataNode datanode, DataChecksum requestedChecksum,\r\n      CachingStrategy cachingStrategy,\r\n      final boolean allowLazyPersist,\r\n      final boolean pinning,\r\n      final String storageId) throws IOException {\r\n    try{\r\n      ...\r\n     } catch (ReplicaAlreadyExistsException bae) {\r\n       throw bae;\r\n     } catch (ReplicaNotFoundException bne) {\r\n       throw bne;\r\n     } catch(IOException ioe) {\r\n      if (replicaInfo != null) {\r\n        replicaInfo.releaseAllBytesReserved();\r\n      }\r\n      IOUtils.closeStream(this); \r\n      cleanupBlock();// if ReplicaMap does not exist  replica  will throw ReplicaNotFoundException\r\n      ...\r\n      throw ioe;\r\n    }\r\n  }\r\n{code}\r\n\r\n\r\n",
+    "commits": [
+      {
+        "sha": "6e3aac10f09120e8185544fa6a6f9faeb3fbd800",
+        "message": "HDFS-17184. In BlockReceiver constructor method need throw DiskOutOfSpaceException",
+        "author": "haiyang1987",
+        "date": "2023-09-09T12:44:23Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/BlockReceiver.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/BlockReceiver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1744,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/fsdataset/RoundRobinVolumeChoosingPolicy.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/fsdataset/RoundRobinVolumeChoosingPolicy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 131,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "27cb55182168b00dcbc3613af3475a2327997d0a",
+    "sha_after": "cc66683b1a96596c6e30d9b644471aee0537d683",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/BlockReceiver.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/BlockReceiver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 1744,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/fsdataset/RoundRobinVolumeChoosingPolicy.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/fsdataset/RoundRobinVolumeChoosingPolicy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 131,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Change Variable Type": 1,
+      "Rename Variable": 1
+    }
+  },
+  "HDFS-17197": {
+    "jira_id": "HDFS-17197",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Show file replication when listing corrupt files.",
+    "description": "Files with different replication have different reliability guarantees. We need to pay attention to corrupted files with a specified replication greater than or equal to 3. So, when listing corrupt files, it would be useful to display the corresponding replication of the files.",
+    "commits": [
+      {
+        "sha": "b6957d74806004b85674016af809acd72c32c42c",
+        "message": "HDFS-17197. Show file replication when listing corrupt files.",
+        "author": "zhangshuyan0",
+        "date": "2023-09-17T09:40:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 9078,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "16e9ef6d27294c8c02121e9209a705fc56e57e31",
+        "message": "fix code style.",
+        "author": "zhangshuyan0",
+        "date": "2023-09-18T02:15:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 9084,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "77b8819990c5244a6600811030e631b7d914c382",
+        "message": "feedback review.",
+        "author": "zhangshuyan0",
+        "date": "2023-09-19T12:04:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 9084,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "fced8099a4edc9fac6a2b6ad0ce0f0d97c1c4565",
+        "message": "refactor.",
+        "author": "zhangshuyan0",
+        "date": "2023-09-20T04:01:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 9089,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3bcf9571f354ba8368ed4a70283af387a83f2c4d",
+        "message": "fix code style.",
+        "author": "zhangshuyan0",
+        "date": "2023-09-20T13:04:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 9098,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "13c5825c00499374f35dc3d97f16f89bb0b3e364",
+    "sha_after": "ecee022e49269bd6612d32695c6b46a95c6bf11e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 9078,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Add Parameter": 2,
+      "Change Method Access Modifier": 1
+    }
+  }
+}

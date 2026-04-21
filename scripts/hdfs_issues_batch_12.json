@@ -1,0 +1,769 @@
+{
+  "HDFS-16603": {
+    "jira_id": "HDFS-16603",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Improve DatanodeHttpServer With Netty recommended method",
+    "description": "When reading the code, I found that some usage methods are outdated due to the upgrade of netty components.\r\n\r\n{color:#172b4d}*1.DatanodeHttpServer#Constructor*{color}\r\n{code:java}\r\n@Deprecated\r\npublic static final ChannelOption<Integer> WRITE_BUFFER_HIGH_WATER_MARK = valueOf(\"WRITE_BUFFER_HIGH_WATER_MARK\"); \r\nDeprecated. Use WRITE_BUFFER_WATER_MARK\r\n\r\n@Deprecated\r\npublic static final ChannelOption<Integer> WRITE_BUFFER_LOW_WATER_MARK = valueOf(\"WRITE_BUFFER_LOW_WATER_MARK\");\r\nDeprecated. Use WRITE_BUFFER_WATER_MARK\r\n-----\r\n\r\nthis.httpServer.childOption(\r\n          ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK,\r\n          conf.getInt(\r\n              DFSConfigKeys.DFS_WEBHDFS_NETTY_HIGH_WATERMARK,\r\n              DFSConfigKeys.DFS_WEBHDFS_NETTY_HIGH_WATERMARK_DEFAULT));\r\n\r\nthis.httpServer.childOption(\r\n          ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,\r\n          conf.getInt(\r\n              DFSConfigKeys.DFS_WEBHDFS_NETTY_LOW_WATERMARK,\r\n              DFSConfigKeys.DFS_WEBHDFS_NETTY_LOW_WATERMARK_DEFAULT));\r\n\r\n{code}\r\n*2.Duplicate code* \r\n{code:java}\r\nChannelFuture f = httpServer.bind(infoAddr);\r\ntry {\r\n f.syncUninterruptibly();\r\n} catch (Throwable e) {\r\n  if (e instanceof BindException) {\r\n   throw NetUtils.wrapException(null, 0, infoAddr.getHostName(),\r\n   infoAddr.getPort(), (SocketException) e);\r\n } else {\r\n   throw e;\r\n }\r\n}\r\nhttpAddress = (InetSocketAddress) f.channel().localAddress();\r\nLOG.info(\"Listening HTTP traffic on \" + httpAddress);{code}\r\n*3.io.netty.bootstrap.ChannelFactory Deprecated*\r\n\r\n*use io.netty.channel.ChannelFactory instead.*\r\n{code:java}\r\n/** @deprecated */\r\n@Deprecated\r\npublic interface ChannelFactory<T extends Channel> {\r\n    T newChannel();\r\n}{code}",
+    "commits": [
+      {
+        "sha": "57052ec1efd002a5d19c86ceae0a150f99ae7e36",
+        "message": "HDFS-16603. Improve DatanodeHttpServer With Netty recommended method.",
+        "author": "slfan1989",
+        "date": "2022-05-29T03:37:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/web/DatanodeHttpServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/web/DatanodeHttpServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 34,
+            "PARENT_LOC": 418,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/TestAbandonBlock.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/TestAbandonBlock.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 131,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "23b2944ed49f48e7ba3589e344784dfbc43992eb",
+        "message": "HDFS-16603. Improve DatanodeHttpServer With Netty recommended method.",
+        "author": "slfan1989",
+        "date": "2022-05-29T06:18:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/web/DatanodeHttpServer.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/web/DatanodeHttpServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 410,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "7c66266b4e08639426e30b38218227b5997c18bf",
+    "sha_after": "e85f827f0aba30bd2e7b7f40232f6da394575cfc",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/web/DatanodeHttpServer.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/web/DatanodeHttpServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 34,
+        "PARENT_LOC": 418,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/TestAbandonBlock.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/TestAbandonBlock.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 131,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Method": 2,
+      "Parameterize Variable": 2
+    }
+  },
+  "HDFS-16581": {
+    "jira_id": "HDFS-16581",
+    "issue_type": "Improvement",
+    "resolution": "Resolved",
+    "title": "Print node status when executing printTopology",
+    "description": "We can use the dfsadmin tool to see which DataNodes the cluster has, and some of these nodes are alive, DECOMMISSIONED, or DECOMMISSION_INPROGRESS. It would be helpful if we could get this information in a timely manner, such as troubleshooting cluster failures, tracking node status, etc.",
+    "commits": [
+      {
+        "sha": "deaf1fe116bad4bdf83fc1918cb15fa17d1c1219",
+        "message": "HDFS-16581.Print node status when executing printTopology.",
+        "author": "jianghuazhu",
+        "date": "2022-06-12T13:33:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/DFSAdmin.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/DFSAdmin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 32,
+            "LINES_DELETED": 28,
+            "PARENT_LOC": 2753,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/TestDFSAdmin.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/TestDFSAdmin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 48,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1218,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "1b25851ad9ca5d1fc12b67089bb5adaa53641245",
+    "sha_after": "6cbeae2e52cc0c0c328c72c227c7b67dc48ec986",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/DFSAdmin.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/DFSAdmin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 32,
+        "LINES_DELETED": 28,
+        "PARENT_LOC": 2753,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/TestDFSAdmin.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/TestDFSAdmin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 48,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1219,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 8,
+    "refactorings": {
+      "Change Variable Type": 4,
+      "Replace Generic With Diamond": 2,
+      "Rename Variable": 2
+    }
+  },
+  "HDFS-16613": {
+    "jira_id": "HDFS-16613",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "EC: Improve performance of decommissioning dn with many ec blocks",
+    "description": "In a hdfs cluster with a lot of EC blocks, decommission a dn is very slow. The reason is unlike replication blocks can be replicated from any dn which has the same block replication, the ec block have to be replicated from the decommissioning dn.\r\n\r\nThe configurations dfs.namenode.replication.max-streams and dfs.namenode.replication.max-streams-hard-limit will limit the replication speed, but increase these configurations will create risk to the whole cluster's network. So it should add a new configuration to limit the decommissioning dn, distinguished from the cluster wide max-streams limit.",
+    "commits": [
+      {
+        "sha": "f99a2cfe30196ca4b6574020d739c3f65f257d65",
+        "message": "EC: Improve performance of decommissioning dn with many ec blocks",
+        "author": "lfxy",
+        "date": "2022-06-03T15:04:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 2251,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 9028,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1099,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "22112b1d5346b6af6e3d217ffa810e9ca1afc91d",
+        "message": "Add test case for decommission in progress",
+        "author": "lfxy",
+        "date": "2022-06-11T09:23:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1102,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "18d4df80c1892129a666b3b8fd1f3f62bf79444b",
+        "message": "Add comments for decommissioning test case",
+        "author": "lfxy",
+        "date": "2022-06-11T12:01:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1112,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6cbeae2e52cc0c0c328c72c227c7b67dc48ec986",
+    "sha_after": "9e3fc40ecb5aff56163dcee6565368405b5100cd",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeManager.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/DatanodeManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 2251,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 9028,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 1099,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Add Parameter": 3,
+      "Inline Variable": 1,
+      "Localize Parameter": 1
+    }
+  },
+  "HDFS-16655": {
+    "jira_id": "HDFS-16655",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "OIV: print out erasure coding policy name in oiv Delimited output",
+    "description": "By adding erasure coding policy name to oiv output, it will help with oiv post-analysis to have a overview of all folders/files with specified ec policy and to apply internal regulation based on this information. In particular, it wiil be convenient for the platform to calculate the real storage size of the ec file.",
+    "commits": [
+      {
+        "sha": "ad7531836d3adf5a2eccdd5dc67e00e9980c5d7d",
+        "message": "print out erasure coding policy name in oiv Delimited output",
+        "author": "Neilxzn",
+        "date": "2022-07-09T06:52:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/OfflineImageViewerPB.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/OfflineImageViewerPB.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 273,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageDelimitedTextWriter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageDelimitedTextWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 197,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageTextWriter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageTextWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 1032,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/TestOfflineImageViewerForErasureCodingPolicy.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/TestOfflineImageViewerForErasureCodingPolicy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 181,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "d6cd3b422a224891df2dfa9d1c71db423f4511b5",
+        "message": "fix some code style",
+        "author": "xiezhineng",
+        "date": "2022-07-18T07:00:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/OfflineImageViewerPB.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/OfflineImageViewerPB.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 277,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageDelimitedTextWriter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageDelimitedTextWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 229,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageTextWriter.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageTextWriter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1045,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/TestOfflineImageViewerForErasureCodingPolicy.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/TestOfflineImageViewerForErasureCodingPolicy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 181,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "8f83d9f56d775c73af6e3fa1d6a9aa3e64eebc37",
+    "sha_after": "2f49eec5dd0b188bd9d7b1a3a8617a34407b3f72",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/OfflineImageViewerPB.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/OfflineImageViewerPB.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 273,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageDelimitedTextWriter.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageDelimitedTextWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 35,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 197,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageTextWriter.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/PBImageTextWriter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 24,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1032,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/TestOfflineImageViewerForErasureCodingPolicy.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/tools/offlineImageViewer/TestOfflineImageViewerForErasureCodingPolicy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 186,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Parameter": 2
+    }
+  },
+  "HDFS-16660": {
+    "jira_id": "HDFS-16660",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Improve Code With Lambda in IPCLoggerChannel class",
+    "description": "Improve Code With Lambda in IPCLoggerChannel class",
+    "commits": [
+      {
+        "sha": "f1a8761754e75b4ca3cb23b97b62cd702f0940e4",
+        "message": "HDFS-16660. Improve Code With Lambda in IPCLoggerChannel class",
+        "author": "zengqiang.xu",
+        "date": "2022-07-13T15:07:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/client/IPCLoggerChannel.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/client/IPCLoggerChannel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 117,
+            "LINES_DELETED": 204,
+            "PARENT_LOC": 782,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b127d81e1e28476267bdd32d25c4a409f1b255de",
+        "message": "HDFS-16660. Modify the patch based on the comment.",
+        "author": "zengqiang.xu",
+        "date": "2022-07-14T12:51:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/client/IPCLoggerChannel.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/client/IPCLoggerChannel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 43,
+            "PARENT_LOC": 695,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3363789c5141b6988f2b94532edd1960f623d0a2",
+        "message": "HDFS-16660. Change some codes based on comment",
+        "author": "zengqiang.xu",
+        "date": "2022-07-18T02:18:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/client/IPCLoggerChannel.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/client/IPCLoggerChannel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 25,
+            "PARENT_LOC": 676,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c92ff0b4f1135e84527e25087d9cc65250bd0222",
+    "sha_after": "24560f2eb52f4bc4fa47efc4eab6989b08808ae7",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/client/IPCLoggerChannel.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/client/IPCLoggerChannel.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 128,
+        "LINES_DELETED": 240,
+        "PARENT_LOC": 782,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 28,
+    "refactorings": {
+      "Replace Anonymous With Lambda": 20,
+      "Add Variable Modifier": 4,
+      "Rename Variable": 3,
+      "Remove Thrown Exception Type": 1
+    }
+  },
+  "HDFS-16671": {
+    "jira_id": "HDFS-16671",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "RBF: RouterRpcFairnessPolicyController supports configurable permit acquire timeout",
+    "description": "RouterRpcFairnessPolicyController supports configurable permit acquire timeout. Hardcode 1s is very long, and it has causes an incident in our prod environment when one nameserivce is busy.\r\n\r\nAnd the optimal timeout maybe should be less than p50(avgTime).\r\n\r\nAnd all handlers in RBF is waiting to acquire the permit of the busy ns. \r\n\r\n{code:java}\r\n\"IPC Server handler 12 on default port 8888\" #2370 daemon prio=5 os_prio=0 tid=? nid=?  waiting on condition [?]\r\n   java.lang.Thread.State: TIMED_WAITING (parking)\r\n\tat sun.misc.Unsafe.park(Native Method)\r\n\t- parking to wait for  <?> (a java.util.concurrent.Semaphore$NonfairSync)\r\n\tat java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:215)\r\n\tat java.util.concurrent.locks.AbstractQueuedSynchronizer.doAcquireSharedNanos(AbstractQueuedSynchronizer.java:1037)\r\n\tat java.util.concurrent.locks.AbstractQueuedSynchronizer.tryAcquireSharedNanos(AbstractQueuedSynchronizer.java:1328)\r\n\tat java.util.concurrent.Semaphore.tryAcquire(Semaphore.java:409)\r\n\tat org.apache.hadoop.hdfs.server.federation.fairness.AbstractRouterRpcFairnessPolicyController.acquirePermit(AbstractRouterRpcFairnessPolicyController.java:56)\r\n\tat org.apache.hadoop.hdfs.server.federation.fairness.DynamicRouterRpcFairnessPolicyController.acquirePermit(DynamicRouterRpcFairnessPolicyController.java:123)\r\n\tat org.apache.hadoop.hdfs.server.federation.router.RouterRpcClient.acquirePermit(RouterRpcClient.java:1500)\r\n{code}\r\n",
+    "commits": [
+      {
+        "sha": "300d8ee4cdc6e947826d469442a41c5cfe0534b7",
+        "message": "HDFS-16671. RBF: RouterRpcFairnessPolicyController supports configurable permit acquire timeout",
+        "author": "zengqiang.xu",
+        "date": "2022-07-20T12:34:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 96,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/StaticRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/StaticRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 138,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 384,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 209,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "bfb922926e46f644cad83389f6ca9c404085315d",
+        "message": "HDFS-16671. Modify patch based on comments",
+        "author": "zengqiang.xu",
+        "date": "2022-07-21T03:01:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 106,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/StaticRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/StaticRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 137,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 387,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 234,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d985449246a38b8399ac9c716874924ef51da4bb",
+        "message": "HDFS-16671. Modify patch based on comment.",
+        "author": "zengqiang.xu",
+        "date": "2022-07-22T13:10:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 104,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 388,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 234,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "fcbdd2fbf85cffccef4ad55223d4f1236564450a",
+        "message": "HDFS-16671. Modify code based comment",
+        "author": "zengqiang.xu",
+        "date": "2022-07-23T15:52:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 104,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 388,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 236,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e5436d5a832fb785127e8ab33519820efdb8b564",
+        "message": "HDFS-16671. Modify patch based on comments",
+        "author": "zengqiang.xu",
+        "date": "2022-07-27T15:02:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 234,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "a5adc27c99ffa0ee4f274276afd38f0e7367b9d2",
+    "sha_after": "f80fab2b902a1b21f942ab3eed09ed2c80a90f48",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/AbstractRouterRpcFairnessPolicyController.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 96,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/StaticRouterRpcFairnessPolicyController.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/fairness/StaticRouterRpcFairnessPolicyController.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 138,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/main/java/org/apache/hadoop/hdfs/server/federation/router/RBFConfigKeys.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 384,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs-rbf/src/test/java/org/apache/hadoop/hdfs/server/federation/fairness/TestRouterRpcFairnessPolicyController.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 24,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 209,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Inline Variable": 1
+    }
+  },
+  "HDFS-16709": {
+    "jira_id": "HDFS-16709",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove redundant cast in FSEditLogOp.class",
+    "description": "When I read some class about Edits of NameNode, I found that there are much redundant cast in FSEditLogOp.class, I feel that we should remove them.\r\n\r\nSuch as:\r\n{code:java}\r\nstatic UpdateBlocksOp getInstance(OpInstanceCache cache) {\r\n  return (UpdateBlocksOp)cache.get(OP_UPDATE_BLOCKS);\r\n} {code}\r\nBecause cache.get() have cast the response to T, such as:\r\n{code:java}\r\n@SuppressWarnings(\"unchecked\")\r\npublic <T extends FSEditLogOp> T get(FSEditLogOpCodes opCode) {\r\n  return useCache ? (T)CACHE.get().get(opCode) : (T)newInstance(opCode);\r\n} {code}",
+    "commits": [
+      {
+        "sha": "6154108e9b0acbe7f86cb9b0e553d1d60f6722b4",
+        "message": "HDFS-16709. Remove redundant cast in FSEditLogOp.class",
+        "author": "zengqiang.xu",
+        "date": "2022-08-01T13:08:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSEditLogOp.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSEditLogOp.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 54,
+            "PARENT_LOC": 5630,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestEditLogRace.java",
+            "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestEditLogRace.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 744,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "06f0f7db7951b6d49da0270716263579ad317a81",
+    "sha_after": "895f7c51fd1031e0674c30e6daca27531ad4a3db",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSEditLogOp.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSEditLogOp.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 54,
+        "PARENT_LOC": 5630,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestEditLogRace.java",
+        "CHILD_PATH": "hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestEditLogRace.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 744,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Variable": 1
+    }
+  }
+}
