@@ -328,7 +328,9 @@ def sonar_scan(repo_path: str, project_key: str, build_system: BuildSystem) -> s
     
     exclusions = ",".join(CONFIG["sonar_exclusions"]) if CONFIG["sonar_exclusions"] else ""
     
+    # ADDED: sonar.organization is now explicitly passed to the scanner
     props_content = f"""
+sonar.organization={CONFIG['sonar_organization']}
 sonar.projectKey={full_project_key}
 sonar.sources={sources_str}
 sonar.java.binaries={binaries_str}
@@ -360,7 +362,6 @@ sonar.dbd.enabled=false
         task_id = None
         error_logs = []
         
-        # Create a dedicated log file for this specific scan
         safe_key = project_key.replace(":", "_")
         scan_log_path = os.path.join(CONFIG["output_dir"], f"sonar_scan_{safe_key}.log")
         
@@ -368,11 +369,9 @@ sonar.dbd.enabled=false
             for line in process.stdout:
                 log_fh.write(line)
                 
-                # Extract the task ID if successful
                 if "task?id=" in line:
                     task_id = line.split("task?id=")[1].strip()
                 
-                # Keep track of error lines for console output
                 if "ERROR" in line or "Exception" in line:
                     error_logs.append(line.strip())
         
@@ -384,10 +383,9 @@ sonar.dbd.enabled=false
         else:
             logger.error(f"✗ Scan failed (Exit Code {process.returncode}). Full log at: {scan_log_path}")
             
-            # Print the captured error context to the main console
             if error_logs:
                 logger.error("--- Scanner Error Output ---")
-                for err in error_logs[-15:]:  # Show up to the last 15 error lines
+                for err in error_logs[-15:]:
                     logger.error(f"  {err}")
                 logger.error("----------------------------")
             
