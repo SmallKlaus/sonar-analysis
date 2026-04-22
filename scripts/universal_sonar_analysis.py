@@ -488,7 +488,7 @@ def main():
         
         try:
             sha_before = item["sha_before"]
-            sha_after = item["commits"][0]["sha"]
+            sha_after = item["sha_after"]
             
             before_year = year_from_iso(item["commits"][-1].get("date", ""))
             after_year = year_from_iso(item["commits"][0].get("date", ""))
