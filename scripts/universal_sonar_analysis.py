@@ -105,8 +105,9 @@ def git_checkout(repo_path: str, sha: str) -> bool:
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             timeout=30
         )
+        # ADDED: -e output/ to prevent wiping out our reports
         subprocess.run(
-            ["git", "clean", "-fd"],
+            ["git", "clean", "-fd", "-e", "output/"],
             cwd=repo_path, check=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             timeout=30
@@ -116,7 +117,6 @@ def git_checkout(repo_path: str, sha: str) -> bool:
     except subprocess.CalledProcessError as e:
         logger.error(f"✗ Git checkout failed: {e}")
         return False
-
 
 # ============================================================================
 # BUILD SYSTEM ABSTRACTION
@@ -541,10 +541,12 @@ def main():
                 continue
             
             after_metrics = get_measures(project_key)
+            
+            # FIXED: Changed updated_after to updatedAfter and created_after to createdAfter
             fixed_issues = fetch_issues(project_key, statuses="CLOSED", 
-                                       resolutions="FIXED", updated_after=scan_time)
+                                       resolutions="FIXED", updatedAfter=scan_time)
             new_issues = fetch_issues(project_key, statuses="OPEN,CONFIRMED,REOPENED",
-                                     created_after=scan_time)
+                                     createdAfter=scan_time)
             
             # Save report
             report = {
