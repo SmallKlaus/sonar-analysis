@@ -11,7 +11,10 @@ on:
         options:
           - 'flink'
           - 'kafka'
-          - 'spring-framework'
+          - 'hadoop_common'
+          - 'hdfs'
+          - 'mapreduce'
+          - 'yarn'
       batch_number:
         description: 'Batch number to process'
         required: true
@@ -19,13 +22,13 @@ on:
         type: string
 
 permissions:
-  contents: write   # ← Required: allows runner to push checkpoints back to repo
+  contents: write   # Required: allows the runner to push checkpoints back to this repo
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
     timeout-minutes: 360
-
+    
     steps:
       - name: Maximize build space
         run: |
@@ -36,50 +39,53 @@ jobs:
 
       - name: Checkout analysis scripts
         uses: actions/checkout@v4
+        # No 'path:' here — scripts repo lands at workspace root.
+        # Internal 'scripts/' folder is then at $GITHUB_WORKSPACE/scripts/
         with:
-          path: scripts
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 1
 
-      - name: Configure git for checkpoint commits
+      - name: Configure git and initialise checkpoints directory
         run: |
-          cd scripts
+          # Configure git identity for checkpoint commits
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
-          # Create checkpoints directory if it doesn't exist
+          # Create checkpoints/ at the repo root if it does not exist yet
           mkdir -p checkpoints
           if [ ! -f checkpoints/.gitkeep ]; then
             touch checkpoints/.gitkeep
             git add checkpoints/.gitkeep
-            git commit -m "Initialize checkpoints directory" || true
+            git commit -m "chore: initialise checkpoints directory" || true
             git push origin HEAD || true
           fi
 
-          echo "✓ Git configured for checkpoint commits"
-
+          echo "✓ Git configured and checkpoints directory ready"
+      
       - name: Load project configuration
         id: config
         run: |
-          cd scripts
-          python3 - << 'EOF'
-          import json, os
-
-          project = "${{ github.event.inputs.project }}"
-
-          with open("project_configs.json") as f:
-              configs = json.load(f)
-
-          config = configs.get(project, {})
+          PROJECT="${{ github.event.inputs.project }}"
           
-          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"repository={config.get('repository', '')}\n")
-              f.write(f"build_system={config.get('build_system', 'maven')}\n")
-              f.write(f"requires_bundle={str(config.get('requires_bundle', False)).lower()}\n")
-              f.write(f"bundle_url={config.get('bundle_url', '')}\n")
+          # Extract config using Python and write to GITHUB_OUTPUT
+          python3 << EOF
+          import json
+          import os
+          
+          # Point directly to the scripts folder from the workspace root
+          with open('scripts/project_configs.json') as f:
+              configs = json.load(f)
+          
+          config = configs.get('$PROJECT', {})
+          
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+              fh.write(f"repository={config.get('repository', '')}\n")
+              fh.write(f"build_system={config.get('build_system', 'maven')}\n")
+              fh.write(f"requires_bundle={str(config.get('requires_bundle', False)).lower()}\n")
+              fh.write(f"bundle_url={config.get('bundle_url', '')}\n")
           EOF
-
+      
       - name: Checkout project repository
         uses: actions/checkout@v4
         with:
@@ -87,54 +93,60 @@ jobs:
           ref: master
           fetch-depth: 0
           path: project
-
+      
       - name: Import TD analysis commits (if needed)
         if: steps.config.outputs.requires_bundle == 'true'
         run: |
           cd project
+          echo "Downloading commit bundle..."
           wget -q ${{ steps.config.outputs.bundle_url }}
           BUNDLE_FILE=$(basename ${{ steps.config.outputs.bundle_url }})
+          
           git bundle verify $BUNDLE_FILE
           git fetch $BUNDLE_FILE 'refs/td-analysis/*:refs/td-analysis/*'
           rm $BUNDLE_FILE
+          
           echo "✓ Commits imported: $(git for-each-ref refs/td-analysis/ | wc -l)"
-
+      
       - name: Setup Java 8
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
-
+      
       - name: Setup Java 11
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
-
+      
       - name: Setup Java 17 (default)
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: ${{ steps.config.outputs.build_system }}
-
+      
       - name: Install SonarScanner
         run: |
           wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
           unzip -q sonar-scanner-cli-5.0.1.3006-linux.zip
           echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
-
+      
       - name: Configure Maven (if Maven project)
         if: steps.config.outputs.build_system == 'maven'
-        run: python3 scripts/generate_maven_settings.py ${{ github.event.inputs.project }}
-
-      - name: Download batch data
+        run: |
+          mkdir -p ~/.m2
+          python3 scripts/generate_maven_settings.py ${{ github.event.inputs.project }}
+      
+      - name: Verify batch data
         run: |
           PROJECT="${{ github.event.inputs.project }}"
           BATCH="${{ github.event.inputs.batch_number }}"
-          cp scripts/${PROJECT}_issues_batch_${BATCH}.json .
-          echo "✓ Loaded ${PROJECT} batch ${BATCH}"
-
+          
+          echo "✓ Processing ${PROJECT} batch ${BATCH}"
+          ls -lh scripts/${PROJECT}_issues_batch_${BATCH}.json
+      
       - name: Run analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -142,13 +154,13 @@ jobs:
           PROJECT_NAME: ${{ github.event.inputs.project }}
           BATCH_NUMBER: ${{ github.event.inputs.batch_number }}
           PROJECT_REPO_PATH: ${{ github.workspace }}/project
-          SCRIPTS_REPO_PATH: ${{ github.workspace }}/scripts
+          SCRIPTS_REPO_PATH: ${{ github.workspace }}   # Root of the scripts repo (contains scripts/ and checkpoints/)
           SONAR_SCANNER_OPTS: "-Xmx6656m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
         run: |
           cd project
           mkdir -p output
           python3 ../scripts/universal_sonar_analysis.py
-
+      
       - name: Upload results
         uses: actions/upload-artifact@v4
         if: always()
