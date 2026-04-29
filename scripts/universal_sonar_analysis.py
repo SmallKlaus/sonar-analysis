@@ -177,7 +177,7 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
             # Stage only the specific checkpoint files
             for f in files:
                 subprocess.run(
-                    ["git", "add", f],
+                    ["git", "add", "force", f],
                     cwd=SCRIPTS_REPO_PATH, check=True,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
@@ -217,7 +217,9 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
             return
 
         except subprocess.CalledProcessError as e:
+            stderr = e.stderr.decode("utf-8", errors="replace").strip()
             logger.warning(f"    ⚠ Git push failed (attempt {attempt}/3): {e}")
+            logger.warning(f"      stderr: {stderr}")
             if attempt < 3:
                 time.sleep(5 * attempt)
 
