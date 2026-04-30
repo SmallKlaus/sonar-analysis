@@ -201,14 +201,14 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
 
             # Rebase on any remote changes before pushing
             subprocess.run(
-                ["git", "pull", "--rebase", "origin", "HEAD"],
+                ["git", "pull", "--rebase", "origin", "master"],
                 cwd=SCRIPTS_REPO_PATH,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
 
             # Push
             subprocess.run(
-                ["git", "push", "origin", "HEAD"],
+                ["git", "push", "origin", "HEAD:refs/heads/master"],
                 cwd=SCRIPTS_REPO_PATH, check=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
