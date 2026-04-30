@@ -177,7 +177,7 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
             # Stage only the specific checkpoint files
             for f in files:
                 subprocess.run(
-                    ["git", "add", "force", f],
+                    ["git", "add", "--force", f],
                     cwd=SCRIPTS_REPO_PATH, check=True,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
