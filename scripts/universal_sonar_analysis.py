@@ -222,7 +222,7 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
             # append-only — our new keys will be re-added by the commit
             # that follows the rebase.
             pull = subprocess.run(
-                ["git", "pull", "--rebase", "-X", "theirs", "origin", "master"],
+                ["git", "pull", "--rebase", "-X", "theirs", "origin", "main"],
                 cwd=SCRIPTS_REPO_PATH,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
@@ -257,7 +257,7 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
 
             # ── Push ──────────────────────────────────────────────────────
             subprocess.run(
-                ["git", "push", "origin", "HEAD:refs/heads/master"],
+                ["git", "push", "origin", "HEAD:refs/heads/main"],
                 cwd=SCRIPTS_REPO_PATH, check=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
