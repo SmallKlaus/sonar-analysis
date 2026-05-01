@@ -168,7 +168,7 @@ def checkpoint_issue(issue_id: str, status: str, progress: dict,
 
 
 def _git_push_checkpoints(issue_id: str, status: str, files: list):
-    # Stage files once — this doesn't need to be retried
+    # Stage files once
     for f in files:
         try:
             subprocess.run(
@@ -181,7 +181,7 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
             logger.error(f"    ✗ git add failed for {f}: {stderr}")
             return
 
-    # Check if there's actually anything staged
+    # Nothing staged?
     diff = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=SCRIPTS_REPO_PATH
@@ -203,12 +203,26 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
         logger.error(f"    ✗ git commit failed: {stderr}")
         return
 
-    # Retry loop: pull --rebase THEN push together as one unit
-    for attempt in range(1, 6):  # 5 attempts for parallel runner contention
+    # Retry loop: abort any broken rebase state, pull, then push
+    for attempt in range(1, 6):
         try:
-            # Pull with rebase right before pushing — must be inside the retry loop
+            # ── Always abort any in-progress rebase before trying ────────
+            # This is a no-op if no rebase is in progress, so it's safe
+            # to run unconditionally on every attempt.
+            subprocess.run(
+                ["git", "rebase", "--abort"],
+                cwd=SCRIPTS_REPO_PATH,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+
+            # ── Pull remote changes, preferring theirs on conflict ───────
+            # -X theirs tells git: if there's a conflict during the rebase,
+            # automatically accept the remote version of the conflicting
+            # chunk. This is safe here because the progress JSON is
+            # append-only — our new keys will be re-added by the commit
+            # that follows the rebase.
             pull = subprocess.run(
-                ["git", "pull", "--rebase", "origin", "master"],
+                ["git", "pull", "--rebase", "-X", "theirs", "origin", "master"],
                 cwd=SCRIPTS_REPO_PATH,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
@@ -218,6 +232,30 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
                 time.sleep(5 * attempt)
                 continue
 
+            # ── Re-stage and amend after the rebase ──────────────────────
+            # After rebasing onto the remote, our checkpoint files need to
+            # be re-staged because the rebase may have dropped them if
+            # -X theirs resolved the conflict by taking the remote version.
+            for f in files:
+                subprocess.run(
+                    ["git", "add", "--force", f],
+                    cwd=SCRIPTS_REPO_PATH,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                )
+
+            # Only amend if there's something new to add
+            diff_after = subprocess.run(
+                ["git", "diff", "--cached", "--quiet"],
+                cwd=SCRIPTS_REPO_PATH
+            )
+            if diff_after.returncode != 0:
+                subprocess.run(
+                    ["git", "commit", "--amend", "--no-edit"],
+                    cwd=SCRIPTS_REPO_PATH,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                )
+
+            # ── Push ──────────────────────────────────────────────────────
             subprocess.run(
                 ["git", "push", "origin", "HEAD:refs/heads/master"],
                 cwd=SCRIPTS_REPO_PATH, check=True,
