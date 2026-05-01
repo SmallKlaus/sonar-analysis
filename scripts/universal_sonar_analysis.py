@@ -168,45 +168,56 @@ def checkpoint_issue(issue_id: str, status: str, progress: dict,
 
 
 def _git_push_checkpoints(issue_id: str, status: str, files: list):
-    """
-    Stage, commit, and push checkpoint files back to the scripts repository.
-    Retries up to 3 times to handle transient network issues or push conflicts.
-    """
-    for attempt in range(1, 4):
+    # Stage files once — this doesn't need to be retried
+    for f in files:
         try:
-            # Stage only the specific checkpoint files
-            for f in files:
-                subprocess.run(
-                    ["git", "add", "--force", f],
-                    cwd=SCRIPTS_REPO_PATH, check=True,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE
-                )
-
-            # Nothing to commit?
-            diff = subprocess.run(
-                ["git", "diff", "--cached", "--quiet"],
-                cwd=SCRIPTS_REPO_PATH
-            )
-            if diff.returncode == 0:
-                logger.info("    ✓ Checkpoint unchanged — nothing to push")
-                return
-
-            # Commit
             subprocess.run(
-                ["git", "commit", "-m",
-                 f"checkpoint({PROJECT_NAME}): {issue_id} [{status}] batch {BATCH_NUMBER}"],
+                ["git", "add", "--force", f],
                 cwd=SCRIPTS_REPO_PATH, check=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
+        except subprocess.CalledProcessError as e:
+            stderr = e.stderr.decode("utf-8", errors="replace").strip()
+            logger.error(f"    ✗ git add failed for {f}: {stderr}")
+            return
 
-            # Rebase on any remote changes before pushing
-            subprocess.run(
+    # Check if there's actually anything staged
+    diff = subprocess.run(
+        ["git", "diff", "--cached", "--quiet"],
+        cwd=SCRIPTS_REPO_PATH
+    )
+    if diff.returncode == 0:
+        logger.info("    ✓ Checkpoint unchanged — nothing to push")
+        return
+
+    # Commit once
+    try:
+        subprocess.run(
+            ["git", "commit", "-m",
+             f"checkpoint({PROJECT_NAME}): {issue_id} [{status}] batch {BATCH_NUMBER}"],
+            cwd=SCRIPTS_REPO_PATH, check=True,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+    except subprocess.CalledProcessError as e:
+        stderr = e.stderr.decode("utf-8", errors="replace").strip()
+        logger.error(f"    ✗ git commit failed: {stderr}")
+        return
+
+    # Retry loop: pull --rebase THEN push together as one unit
+    for attempt in range(1, 6):  # 5 attempts for parallel runner contention
+        try:
+            # Pull with rebase right before pushing — must be inside the retry loop
+            pull = subprocess.run(
                 ["git", "pull", "--rebase", "origin", "master"],
                 cwd=SCRIPTS_REPO_PATH,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
+            if pull.returncode != 0:
+                stderr = pull.stderr.decode("utf-8", errors="replace").strip()
+                logger.warning(f"    ⚠ git pull --rebase failed (attempt {attempt}/5): {stderr}")
+                time.sleep(5 * attempt)
+                continue
 
-            # Push
             subprocess.run(
                 ["git", "push", "origin", "HEAD:refs/heads/master"],
                 cwd=SCRIPTS_REPO_PATH, check=True,
@@ -218,12 +229,13 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
 
         except subprocess.CalledProcessError as e:
             stderr = e.stderr.decode("utf-8", errors="replace").strip()
-            logger.warning(f"    ⚠ Git push failed (attempt {attempt}/3): {e}")
+            logger.warning(f"    ⚠ Git push failed (attempt {attempt}/5): {e}")
             logger.warning(f"      stderr: {stderr}")
-            if attempt < 3:
-                time.sleep(5 * attempt)
+            wait = 5 * attempt
+            logger.warning(f"      Retrying in {wait}s...")
+            time.sleep(wait)
 
-    logger.error("    ✗ Could not push checkpoint after 3 attempts — files saved locally only")
+    logger.error("    ✗ Could not push checkpoint after 5 attempts — files saved locally only")
 
 
 def restore_from_checkpoint(issue_id: str, progress: dict) -> bool:
