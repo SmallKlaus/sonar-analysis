@@ -276,36 +276,28 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
     logger.error("    ✗ Could not push checkpoint after 5 attempts — files saved locally only")
 
 
-def restore_from_checkpoint(issue_id: str, progress: dict) -> bool:
+def restore_from_checkpoint(issue_id: str) -> bool:
     """
-    If the issue already has a checkpoint entry, copy its files from
-    checkpoints/ into the run's output/ directory and return True so
-    the main loop can skip re-analysis.
+    Check if a report already exists in checkpoints/. If so, copy
+    both the report and log into output/ and return True to skip analysis.
+    """
+    report_src = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_report.json")
 
-    Returns False when the issue has not been checkpointed yet.
-    """
-    if issue_id not in progress:
+    # A report file present = issue was successfully analyzed before
+    # No report = either failed or never run — analyze it
+    if not os.path.exists(report_src):
         return False
 
-    entry  = progress[issue_id]
-    status = entry["status"]
-    logger.info(
-        f"  ↩ Already checkpointed — status={status}, "
-        f"batch={entry.get('batch')}, ts={entry.get('timestamp')}"
-    )
+    logger.info(f"  ↩ Found in checkpoints — skipping analysis")
 
     # Restore report
-    src = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_report.json")
-    if os.path.exists(src):
-        dst = os.path.join(CONFIG["output_dir"], f"{issue_id}_report.json")
-        shutil.copy2(src, dst)
-        logger.info(f"    ✓ Restored report → output/{issue_id}_report.json")
+    shutil.copy2(report_src, os.path.join(CONFIG["output_dir"], f"{issue_id}_report.json"))
+    logger.info(f"    ✓ Restored report → output/{issue_id}_report.json")
 
-    # Restore build log
-    src = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_build.log")
-    if os.path.exists(src):
-        dst = os.path.join(CONFIG["output_dir"], f"{issue_id}_build.log")
-        shutil.copy2(src, dst)
+    # Restore log if present (best effort)
+    log_src = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_build.log")
+    if os.path.exists(log_src):
+        shutil.copy2(log_src, os.path.join(CONFIG["output_dir"], f"{issue_id}_build.log"))
         logger.info(f"    ✓ Restored log    → output/{issue_id}_build.log")
 
     return True
@@ -738,7 +730,7 @@ def main():
         # ── CHECKPOINT CHECK ──────────────────────────────────────────────
         # If the issue was already processed in a previous run (success OR
         # failure), restore its files into output/ and skip re-analysis.
-        if restore_from_checkpoint(issue_id, progress):
+        if restore_from_checkpoint(issue_id):
             status = progress[issue_id]["status"]
             logger.info(f"  ↩ Skipping — already checkpointed as '{status}'")
             restored.append(issue_id)
