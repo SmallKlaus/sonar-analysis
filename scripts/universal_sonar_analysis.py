@@ -731,10 +731,9 @@ def main():
         # If the issue was already processed in a previous run (success OR
         # failure), restore its files into output/ and skip re-analysis.
         if restore_from_checkpoint(issue_id):
-            status = progress[issue_id]["status"]
-            logger.info(f"  ↩ Skipping — already checkpointed as '{status}'")
+            logger.info(f"  ↩ Skipping — already checkpointed")
             restored.append(issue_id)
-            (successes if status == "success" else failures).append(issue_id)
+            successes.append(issue_id)  # restored = previously successful by definition
             continue
         # ─────────────────────────────────────────────────────────────────
 
