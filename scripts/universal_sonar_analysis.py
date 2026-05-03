@@ -750,6 +750,13 @@ def main():
             
             before_toolchain = get_toolchain(before_year)
             after_toolchain  = get_toolchain(after_year)
+
+            if "force_java_version" in PROJECT_CONFIG:
+                forced_java = PROJECT_CONFIG["force_java_version"]
+                before_toolchain["java_major"] = forced_java
+                before_toolchain["java_source"] = forced_java
+                after_toolchain["java_major"] = forced_java
+                after_toolchain["java_source"] = forced_java
             
             project_key = f"{PROJECT_NAME}:{issue_id}"
             create_public_project(project_key)
