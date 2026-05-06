@@ -762,6 +762,14 @@ def main():
 
     logger.info(f"✓ Loaded {len(issues)} issues from batch {BATCH_NUMBER}")
 
+    # ── One-time pre-requisites ───────────────────────────────────────────
+    if PROJECT_CONFIG.get("requires_thirdparty_build"):
+        # Use any toolchain — thirdparty build doesn't vary per issue
+        sample_year = year_from_iso(list(issues.values())[0]["commits"][0].get("date", ""))
+        if not build_hadoop_thirdparty(CONFIG["repo_path"], get_toolchain(sample_year)):
+            logger.error("✗ hadoop-thirdparty pre-build failed — aborting batch")
+            return
+    
     successes, failures, restored = [], [], []
 
     for idx, (issue_id, item) in enumerate(issues.items(), 1):
@@ -803,11 +811,6 @@ def main():
             project_key = f"{PROJECT_NAME}:{issue_id}"
             create_public_project(project_key)
 
-            # Before the BEFORE scan, inside the issue loop:
-            if PROJECT_CONFIG.get("requires_thirdparty_build"):
-                if not build_hadoop_thirdparty(CONFIG["repo_path"], before_toolchain):
-                    raise RuntimeError("hadoop-thirdparty pre-build failed")
-            
             # ── BEFORE scan ───────────────────────────────────────────────
             logger.info("\n▶ BEFORE SCAN")
             if not git_checkout(CONFIG["repo_path"], sha_before):
