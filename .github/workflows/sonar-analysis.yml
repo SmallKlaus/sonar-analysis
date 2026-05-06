@@ -151,13 +151,19 @@ jobs:
       - name: Install protoc versions (required for Hadoop)
         if: contains(fromJSON('["hadoop_common","hdfs","mapreduce","yarn"]'), github.event.inputs.project)
         run: |
-          # Install protoc 2.5.0 (for Hadoop 2.x / early 3.x commits)
-          wget -q https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protoc-2.5.0-linux-x86_64.zip
-          unzip -q protoc-2.5.0-linux-x86_64.zip -d protoc-2.5.0
-          sudo cp protoc-2.5.0/bin/protoc /usr/local/bin/protoc-2.5.0
-          rm -rf protoc-2.5.0 protoc-2.5.0-linux-x86_64.zip
+          # ── protoc 2.5.0 (build from source — no pre-built binary exists) ──
+          sudo apt-get install -y autoconf automake libtool curl make g++ unzip
+          wget -q https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
+          tar -xzf protobuf-2.5.0.tar.gz
+          cd protobuf-2.5.0
+          ./configure --prefix=/usr/local/protoc-2.5.0
+          make -j$(nproc)
+          sudo make install
+          sudo ln -sf /usr/local/protoc-2.5.0/bin/protoc /usr/local/bin/protoc-2.5.0
+          cd ..
+          rm -rf protobuf-2.5.0 protobuf-2.5.0.tar.gz
 
-          # Install protoc 3.7.1 (for Hadoop 3.3.x commits)
+          # ── protoc 3.7.1 (pre-built binary exists) ──────────────────────
           wget -q https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/protoc-3.7.1-linux-x86_64.zip
           unzip -q protoc-3.7.1-linux-x86_64.zip -d protoc-3.7.1
           sudo cp protoc-3.7.1/bin/protoc /usr/local/bin/protoc-3.7.1
