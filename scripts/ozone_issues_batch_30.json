@@ -1,0 +1,1075 @@
+{
+  "HDDS-8354": {
+    "jira_id": "HDDS-8354",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "WARNING on ObjectEndpoint#get",
+    "description": "We see the following WARNING message when launching S3 Gateway.\r\n{code:java}\r\nozone-s3g-6bd9d99555-lgmsl: WARNING: The following warnings have been detected: WARNING: A HTTP GET method, public javax.ws.rs.core.Response org.apache.hadoop.ozone.s3.endpoint.ObjectEndpoint.get(java.lang.String,java.lang.String,java.lang.String,int,java.lang.String,java.io.InputStream) throws java.io.IOException,org.apache.hadoop.ozone.s3.exception.OS3Exception, should not consume any entity. {code}\r\nThis is because the method accepts a request body even though the endpoint never uses an HTTP request body.\r\n * https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGET.html",
+    "commits": [
+      {
+        "sha": "34a1f7dfbf3eab69f73020c76c08b6d7258a11ab",
+        "message": "Follow checkstyle",
+        "author": "okumin",
+        "date": "2023-04-02T13:39:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/s3gateway/src/main/java/org/apache/hadoop/ozone/s3/endpoint/ObjectEndpoint.java",
+            "CHILD_PATH": "hadoop-ozone/s3gateway/src/main/java/org/apache/hadoop/ozone/s3/endpoint/ObjectEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1070,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "4a8844151afa1a6e1ef1213763a73cdd14aa1f9c",
+    "sha_after": "ac42bf0c779a46920971fb4f0d8c8bbe7f2171a7",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/s3gateway/src/main/java/org/apache/hadoop/ozone/s3/endpoint/ObjectEndpoint.java",
+        "CHILD_PATH": "hadoop-ozone/s3gateway/src/main/java/org/apache/hadoop/ozone/s3/endpoint/ObjectEndpoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1071,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/s3gateway/src/test/java/org/apache/hadoop/ozone/s3/endpoint/TestListParts.java",
+        "CHILD_PATH": "hadoop-ozone/s3gateway/src/test/java/org/apache/hadoop/ozone/s3/endpoint/TestListParts.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 139,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/s3gateway/src/test/java/org/apache/hadoop/ozone/s3/endpoint/TestObjectGet.java",
+        "CHILD_PATH": "hadoop-ozone/s3gateway/src/test/java/org/apache/hadoop/ozone/s3/endpoint/TestObjectGet.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 13,
+        "PARENT_LOC": 227,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/s3gateway/src/test/java/org/apache/hadoop/ozone/s3/endpoint/TestPermissionCheck.java",
+        "CHILD_PATH": "hadoop-ozone/s3gateway/src/test/java/org/apache/hadoop/ozone/s3/endpoint/TestPermissionCheck.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 332,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/s3gateway/src/test/java/org/apache/hadoop/ozone/s3/metrics/TestS3GatewayMetrics.java",
+        "CHILD_PATH": "hadoop-ozone/s3gateway/src/test/java/org/apache/hadoop/ozone/s3/metrics/TestS3GatewayMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 608,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Remove Parameter": 1
+    }
+  },
+  "HDDS-8325": {
+    "jira_id": "HDDS-8325",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Consolidate and refine RocksDB metrics of services",
+    "description": "RocksDB related metrics are important indicators of how RocksDB is running, and also can facilitate RocksDB related issue investigation. \r\n\r\nThe majority of RocksDB metrics are exposed when property \"ozone.metastore.rocksdb.statistics\" is set to 'ALL'.  \r\n\r\n\r\nIssues found are,\r\n1.  RocksDB metric of one RocksDB instance are exposed twice in jmx, one time in prometheus. Here is DN example, dn-crl.db is exposed twice in JMX with different metrics name.  (b) is exposed in prometheus\r\n\r\na. ) \"name\" : \"Hadoop:service=Ozone,name=RocksDbStore,dbName=dn-crl.db\", \r\nb. ) \"name\" : \"Hadoop:service=HddsDatanode,name=Rocksdb_dn-crl.db\",   \r\n\r\n2.  blob related RocksDB metrics are exposed. Blob DB is not used in Ozone, we can filter these parts of metrics\r\n\r\n3.  duplicate \"estimated key count\" info exposed in both Rocksdb_scm.db and SCMMetadataStoreMetrics.  \r\n\r\nThis task will \r\n1. remove the duplicated exposure of RocksDB instance in jmx\r\n2. filter blob db related metrics\r\n3. remove SCMMetadataStoreMetrics as its function is covered by Rocksdb_scm.db already. \r\n\r\n ",
+    "commits": [
+      {
+        "sha": "0bd4255e523ea623d314aa43f4fb0e75dad4e45b",
+        "message": "HDDS-8325. Consolidate and refine RocksDB metrics of services.",
+        "author": "ChenSammi",
+        "date": "2023-03-31T03:43:29Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/PrometheusMetricsSinkUtil.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/PrometheusMetricsSinkUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 116,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/RocksDBStoreMBean.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/RocksDBStoreMetrics.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 104,
+            "PARENT_LOC": 369,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/db/RDBStore.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/db/RDBStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 28,
+            "PARENT_LOC": 473,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/test/java/org/apache/hadoop/hdds/utils/db/TestRDBStore.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/test/java/org/apache/hadoop/hdds/utils/db/TestRDBStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 390,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/metadata/SCMMetadataStoreImpl.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/metadata/SCMMetadataStoreImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 342,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/metadata/SCMMetadataStoreMetrics.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/metadata/SCMMetadataStoreMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 105,
+            "PARENT_LOC": 105,
+            "STATUS": "D"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/metadata/TestSCMMetadataStoreImpl.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/metadata/TestSCMMetadataStoreImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 67,
+            "PARENT_LOC": 67,
+            "STATUS": "D"
+          }
+        ]
+      },
+      {
+        "sha": "ee6e26926fbd6627ad856b8c4998a6740f73102d",
+        "message": "fix checkstyle",
+        "author": "ChenSammi",
+        "date": "2023-03-31T05:24:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/test/java/org/apache/hadoop/hdds/utils/db/TestRDBStore.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/test/java/org/apache/hadoop/hdds/utils/db/TestRDBStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 364,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "e22a8f610390df8589dbacbe6e6be2a64044e19f",
+    "sha_after": "910eef097dac7f93a9d0900aa1783960002185a5",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/PrometheusMetricsSinkUtil.java",
+        "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/PrometheusMetricsSinkUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 116,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/RocksDBStoreMBean.java",
+        "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/RocksDBStoreMetrics.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 104,
+        "PARENT_LOC": 369,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/db/RDBStore.java",
+        "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/db/RDBStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 28,
+        "PARENT_LOC": 473,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/framework/src/test/java/org/apache/hadoop/hdds/utils/db/TestRDBStore.java",
+        "CHILD_PATH": "hadoop-hdds/framework/src/test/java/org/apache/hadoop/hdds/utils/db/TestRDBStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 28,
+        "PARENT_LOC": 390,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/metadata/SCMMetadataStoreImpl.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/metadata/SCMMetadataStoreImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 342,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/metadata/SCMMetadataStoreMetrics.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/metadata/SCMMetadataStoreMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 105,
+        "PARENT_LOC": 105,
+        "STATUS": "D"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/metadata/TestSCMMetadataStoreImpl.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/metadata/TestSCMMetadataStoreImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 67,
+        "PARENT_LOC": 67,
+        "STATUS": "D"
+      }
+    ],
+    "refactoring_count": 6,
+    "refactorings": {
+      "Rename Class": 1,
+      "Rename Attribute": 1,
+      "Change Attribute Type": 1,
+      "Change Variable Type": 1,
+      "Rename Variable": 1,
+      "Change Return Type": 1
+    }
+  },
+  "HDDS-8417": {
+    "jira_id": "HDDS-8417",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Cap on the queue of commands at DN",
+    "description": "When command is operating very slowly, its observed that queue is getting pilled up. In one of environment, below are queued up causing usages of approx 5GB memory,\r\n * Block delete command: 2.8k\r\n * Close Container command: 13k\r\n * Close pipeline command: 2390k\r\n * replicate container command: 57k\r\n\r\nThis is happening when disk is almost full and command is running very slow.\r\n\r\nSCM keeps sending same command every heartbeat.\r\n\r\nSo a cap on queue is required and need reject further command accumulation. This needs to be done for each command type queue based on memory occupancy and repeating of command from SCM.\r\n\r\n \r\n\r\n*Command size pattern:*\r\n\r\nDeleteBlockCommand: 1.7MB  (having 5804 containers)\r\n\r\nClosePipelineCommand: 130 bytes\r\n\r\nCreate Pipeline: 3.3KB  (DN Info: 1KB * 3 DN)\r\n\r\nReplicate Container: 1.2KB (DN Info 1KB)\r\n\r\nCloseContainer: 1.2KB (Encoded token 1KB)\r\n\r\nDeleteContainer: 100 bytes\r\n\r\n \r\n\r\n*DeleteBlockCommand:* triggered by SCM at every 5 min default, and is repeated again if some blocks response has not come. So this operation can be retried again when ignored by DN or do not send.\r\n\r\nA special handling with max queue size: *5* should be enough.\r\n\r\n \r\n\r\n*ClosePipeline/CloseContainer/DeleteContainer:* retried by SCM again for every container/pipeline, so queue size: *5000* should be enough.\r\n\r\n*CreatePipeline/ReplicateContainer* is controlled by SCM which is not retried / repeated, so can support 5000 as queue size\r\n\r\n*Others* can follow similar default size as *5000* as CAP.\r\n\r\n ",
+    "commits": [
+      {
+        "sha": "ffee742a027e06a0248a301d01d8115ad8b966e2",
+        "message": "HDDS-8417. Cap on queue of commands at DN",
+        "author": "sumitagrawl",
+        "date": "2023-04-26T15:19:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/DeleteContainerCommandHandler.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/DeleteContainerCommandHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 169,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/TestDeleteContainerCommandHandler.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/TestDeleteContainerCommandHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2c4e567cbf167c53d96e68f0b6d40a147d0188a8",
+        "message": "HDDS-8417. Cap on queue of commands at DN",
+        "author": "sumitagrawl",
+        "date": "2023-04-27T10:28:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationSupervisor.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationSupervisor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 310,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/TestDeleteContainerCommandHandler.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/TestDeleteContainerCommandHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 167,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/replication/ReplicationSupervisorScheduling.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/replication/ReplicationSupervisorScheduling.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 35,
+            "PARENT_LOC": 166,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/replication/TestReplicationSupervisor.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/replication/TestReplicationSupervisor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 47,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 640,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "53e2189e7c2115dd817d0cc026299224fe898c6b",
+        "message": "HDDS-8417. Cap on queue of commands at DN",
+        "author": "sumitagrawl",
+        "date": "2023-04-27T11:01:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/TestDeleteContainerCommandHandler.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/TestDeleteContainerCommandHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6a7c0706cb86baad0f375b966e050e8cf4f2a5a3",
+    "sha_after": "c616e8d63f104e74b0a368e65f6ea282239e2db5",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/DatanodeConfiguration.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/DatanodeConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 648,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/DatanodeStateMachine.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/DatanodeStateMachine.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 732,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/StateContext.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/StateContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 961,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/DeleteContainerCommandHandler.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/DeleteContainerCommandHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 156,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/ReconstructECContainersCommandHandler.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/ReconstructECContainersCommandHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 84,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationSupervisor.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationSupervisor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 300,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/TestStateContext.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/TestStateContext.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 687,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/TestDeleteContainerCommandHandler.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/common/statemachine/commandhandler/TestDeleteContainerCommandHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 43,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 135,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/replication/ReplicationSupervisorScheduling.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/replication/ReplicationSupervisorScheduling.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 132,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/replication/TestReplicationSupervisor.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/replication/TestReplicationSupervisor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 51,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 639,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/ClosedContainerReplicator.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/ClosedContainerReplicator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 226,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Add Parameter": 6,
+      "Modify Attribute Annotation": 1
+    }
+  },
+  "HDDS-7489": {
+    "jira_id": "HDDS-7489",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Create a Freon tool to simulate datanodes",
+    "description": "We need a Freon tool to simulate a number of datanodes and coordinate with SCM to create a number of containers on the simulated datanodes. This will help to verify the capability of SCM to handle thousand of nodes and exabytes of data.\r\n\r\nExample usage: a simulation of 5K datanodes with 40K containers per datanode, i.e. simulating 1 exabyte of raw data. \r\n\r\n \r\n{code:java}\r\nozone freon simulate-datanode -t 20 -n 5000 -c 40000 {code}",
+    "commits": [
+      {
+        "sha": "fefc150e434a5df8999cf98332d4777f66439ec2",
+        "message": "HDDS-7489. Create a Freon tool to simulate datanodes",
+        "author": "duongkame",
+        "date": "2022-12-23T19:07:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+            "CHILD_PATH": "hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 87,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 342,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 569,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/Freon.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/Freon.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 131,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4b522e2b8378dba4fa10aba4a3f14d5e9f5950cf",
+        "message": "correct javadoc.",
+        "author": "duongkame",
+        "date": "2022-12-23T19:14:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 569,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3510da4bd11302f9290b1e08fde79fb458874a0c",
+        "message": "Fix rat.",
+        "author": "duongkame",
+        "date": "2022-12-23T19:16:58Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 342,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 569,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2ac9c51f42bfff81ecf5810ea17bb45afa7f8453",
+        "message": "Satisfy checkstyle firebugs..",
+        "author": "duongkame",
+        "date": "2022-12-23T20:22:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 358,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 585,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "c2fd0890c5ae2ed5ef023e1403247a143c5eba3f",
+        "message": "Fix error sending heartbeats after restarting the simulator.",
+        "author": "duongkame",
+        "date": "2022-12-23T23:59:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 354,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 583,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "50d5c3dae99d760faed65b93467b3085e494f55e",
+        "message": "Update hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+        "author": "duongkame",
+        "date": "2023-01-26T17:42:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+            "CHILD_PATH": "hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 118,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7eefad44910fc8abd17a67a8583c34e6af34c48a",
+        "message": "Update hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+        "author": "duongkame",
+        "date": "2023-01-26T17:43:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+            "CHILD_PATH": "hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 118,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "19467c49879b8d580ff240bd8dbf6c0ec11e47c9",
+    "sha_after": "3e682b84709d881ee257ca9fd4c048987c62b5b1",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+        "CHILD_PATH": "hadoop-hdds/common/src/main/java/org/apache/hadoop/hdds/server/JsonUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 40,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 87,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulationState.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 375,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/DatanodeSimulator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 587,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/Freon.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/Freon.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 131,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Modify Class Annotation": 1
+    }
+  },
+  "HDDS-8547": {
+    "jira_id": "HDDS-8547",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Support Trash for FSO bucket using ozone sh command",
+    "description": "Using fs command when trash is enabled and user deletes the file for FSO bucket it goes inside Trash.\r\n\r\nCurrently with bucket level permissions User can run Ozone sh key delete and the data will not be moved to trash.",
+    "commits": [
+      {
+        "sha": "046939467140d004717bf5e7ad4ea7c272324040",
+        "message": "HDDS-8547. Support Trash for FSO bucket using ozone sh command.",
+        "author": "ashishkr200",
+        "date": "2023-05-05T07:11:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/shell/TestOzoneShellHA.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/shell/TestOzoneShellHA.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 131,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 1237,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 96,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 50,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "a3c884f7a3b5ef1f807de0be238b43af0a780658",
+        "message": "HDDS-8547. Update robot test.",
+        "author": "ashishkr200",
+        "date": "2023-05-05T10:32:49Z",
+        "files": []
+      },
+      {
+        "sha": "bbf6b0e0ddc9e1c4ce0e96a31bf4ee3829a0e48a",
+        "message": "HDDS-8547. Update robot test.",
+        "author": "ashishkr200",
+        "date": "2023-05-05T11:12:05Z",
+        "files": []
+      },
+      {
+        "sha": "529a24e4caae013ec07c085c877f688e2258f4dd",
+        "message": "HDDS-8547. Update robot test.",
+        "author": "ashishkr200",
+        "date": "2023-05-05T12:34:52Z",
+        "files": []
+      },
+      {
+        "sha": "db4944aed1216d7a40f3352f7654738215b68bb8",
+        "message": "HDDS-8547. Add robot test.",
+        "author": "ashishkr200",
+        "date": "2023-05-08T04:31:05Z",
+        "files": []
+      },
+      {
+        "sha": "3beaa1982a065ccedf1475b6234ae9f25dc04566",
+        "message": "HDDS-8547. Add robot test.",
+        "author": "ashishkr200",
+        "date": "2023-05-08T04:43:57Z",
+        "files": []
+      },
+      {
+        "sha": "72bd6593b1417c0c072baff4e80b75336db4b20e",
+        "message": "HDDS-8547. Update robot test.",
+        "author": "ashishkr200",
+        "date": "2023-05-08T06:03:29Z",
+        "files": []
+      },
+      {
+        "sha": "358f48b075883296ae01d7a8b0a607da608fb129",
+        "message": "HDDS-8547. Update robot test.",
+        "author": "ashishkr200",
+        "date": "2023-05-08T07:50:18Z",
+        "files": []
+      },
+      {
+        "sha": "95c0a836187999cd57468911c48cafb6a9a7142a",
+        "message": "HDDS-8547. Fix review comments.",
+        "author": "ashishkr200",
+        "date": "2023-05-09T10:57:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/shell/TestOzoneShellHA.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/shell/TestOzoneShellHA.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1363,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 38,
+            "LINES_DELETED": 26,
+            "PARENT_LOC": 144,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7e9f839418b522455d109a2254474b4bade74fa7",
+        "message": "HDDS-8547. Fix Review Comment.",
+        "author": "ashishkr200",
+        "date": "2023-05-11T09:53:42Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 47,
+            "LINES_DELETED": 39,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "28d7de8b018dea82829a52a3a8db61a5a6e0a0c1",
+        "message": "HDDS-8547. Fix Review Comment.",
+        "author": "ashishkr200",
+        "date": "2023-05-12T12:04:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 164,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "9d78dfd3e95f853f9441866e02092ac5d41c549c",
+    "sha_after": "d1615b4d4d83a3f6a05d38f32d080c50a80225fe",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/shell/TestOzoneShellHA.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/shell/TestOzoneShellHA.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 174,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 1237,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/shell/keys/DeleteKeyHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 111,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 50,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Add Parameter": 1
+    }
+  },
+  "HDDS-8639": {
+    "jira_id": "HDDS-8639",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Clean up OzoneOutputStream and the related code.",
+    "description": "- Check the parameters (null, class) in OzoneOutputStream constructors and don't have check it again in the code.\r\n- Remove unused feInfo from KeyDataStreamOutput.\r\n- Remove duplicated replicationConfig parameter from RpcClient.createDataStreamOutput(..).\r\n- Add addAllMetadataGdpr to OmKeyArgs.Builder to take care GDPR_FLAG.\r\n- Refactor GDPRSymmetricKey related code.",
+    "commits": [
+      {
+        "sha": "56ded3498528e302e07f711c6988aa3f25d60de0",
+        "message": "HDDS-8639. Clean up OzoneOutputStream and the related code.",
+        "author": "szetszwo",
+        "date": "2023-05-17T14:19:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/io/KeyDataStreamOutput.java",
+            "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/io/KeyDataStreamOutput.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 510,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/io/OzoneOutputStream.java",
+            "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/io/OzoneOutputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 102,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/rpc/RpcClient.java",
+            "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/rpc/RpcClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 74,
+            "PARENT_LOC": 2382,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmKeyArgs.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmKeyArgs.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 329,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/security/GDPRSymmetricKey.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/security/GDPRSymmetricKey.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 25,
+            "PARENT_LOC": 87,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/test/java/org/apache/hadoop/ozone/security/TestGDPRSymmetricKey.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/test/java/org/apache/hadoop/ozone/security/TestGDPRSymmetricKey.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 69,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "bb5cf11550b56421674045be838084765c632c80",
+    "sha_after": "8474bc8e13f539342a5364b8ef902d5ce2e9266c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/io/KeyDataStreamOutput.java",
+        "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/io/KeyDataStreamOutput.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 510,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/io/OzoneOutputStream.java",
+        "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/io/OzoneOutputStream.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 102,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/rpc/RpcClient.java",
+        "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/rpc/RpcClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 36,
+        "LINES_DELETED": 74,
+        "PARENT_LOC": 2382,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmKeyArgs.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmKeyArgs.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 329,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/security/GDPRSymmetricKey.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/security/GDPRSymmetricKey.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 35,
+        "LINES_DELETED": 25,
+        "PARENT_LOC": 87,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/test/java/org/apache/hadoop/ozone/security/TestGDPRSymmetricKey.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/test/java/org/apache/hadoop/ozone/security/TestGDPRSymmetricKey.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 69,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 21,
+    "refactorings": {
+      "Add Variable Modifier": 5,
+      "Add Attribute Modifier": 4,
+      "Rename Parameter": 3,
+      "Extract Method": 3,
+      "Change Thrown Exception Type": 2,
+      "Extract And Move Method": 2,
+      "Inline Variable": 1,
+      "Localize Parameter": 1
+    }
+  },
+  "HDDS-8676": {
+    "jira_id": "HDDS-8676",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "Speed up TestContainerBalancer ",
+    "description": "TestContainerBalancer may take 10 minutes in CI.  We should try to reduce that.\r\n\r\n{code}\r\n[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 602.857 s - in org.apache.hadoop.hdds.scm.container.balancer.TestContainerBalancer\r\n{code}",
+    "commits": [
+      {
+        "sha": "3db2f4b6ba592516469ad2c7d18955476b0ba61b",
+        "message": "HDDS-8676. Speed up TestContainerBalancer",
+        "author": "adoroszlai",
+        "date": "2023-05-25T07:33:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancer.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 446,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1144,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/balancer/TestContainerBalancer.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/balancer/TestContainerBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 287,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "586a20274c5505c0ea083101a4d4e681529098fb",
+    "sha_after": "b0953f8918c99b9b2dc8478b0786d8a2de2e5fa2",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancer.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 446,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1144,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/balancer/TestContainerBalancer.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/balancer/TestContainerBalancer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 287,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Extract Variable": 1,
+      "Add Class Annotation": 1,
+      "Move Code": 1
+    }
+  }
+}

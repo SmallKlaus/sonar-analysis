@@ -1,0 +1,572 @@
+{
+  "HDDS-5708": {
+    "jira_id": "HDDS-5708",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Skip sending container close command to unhealthy replica",
+    "description": "unhealthy replica cannot be closed by close container command.  There is no big impact except that there will huge logs as following in scm.log and has some impact on problem investigation efficiency.   This task aims to reduce the useless LOGs in scm.log.    \r\n\r\nOf course, we need a better way to handle the unhealthy container which is always in CLOSING state.  We will find the solution once we know how the container becomes unhealthy with all 3 unhealthy replicas. \r\n\r\n\r\n2021-09-01 21:19:10,903 [ReplicationMonitor] INFO org.apache.hadoop.hdds.scm.container.ReplicationManager: Sending close container command for container #110490 to datanode 0a16a9a7-1af0-4fbe-9b32-9e67df46b4c7{ip: 11.26.17.139, host: 11.26.17.139, ports: [REPLICATION=9886, RATIS=9858, RATIS_ADMIN=9858, RATIS_SERVER=9858, STANDALONE=9859], parent: rack561349, networkLocation: /rack561349, certSerialId: null, persistedOpState: IN_SERVICE, persistedOpStateExpiryEpochSec: 0}.\r\n2021-09-01 21:24:11,199 [ReplicationMonitor] INFO org.apache.hadoop.hdds.scm.container.ReplicationManager: Sending close container command for container #110490 to datanode 0a16a9a7-1af0-4fbe-9b32-9e67df46b4c7{ip: 11.26.17.139, host: 11.26.17.139, ports: [REPLICATION=9886, RATIS=9858, RATIS_ADMIN=9858, RATIS_SERVER=9858, STANDALONE=9859], parent: rack561349, networkLocation: /rack561349, certSerialId: null, persistedOpState: IN_SERVICE, persistedOpStateExpiryEpochSec: 0}.\r\n\r\n",
+    "commits": [
+      {
+        "sha": "71104b33c0019828be47600e6f47b8091c8d4662",
+        "message": "HDDS-5708. Skip sending container close command to unhealthy replica.",
+        "author": "ChenSammi",
+        "date": "2021-09-03T03:52:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/ReplicationManager.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/ReplicationManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 2005,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/TestReplicationManager.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/TestReplicationManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1771,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "51cf86e8009bd1e275fa510f4d115455f6a96ad2",
+        "message": "failed UT",
+        "author": "ChenSammi",
+        "date": "2021-09-03T07:05:29Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/TestReplicationManager.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/TestReplicationManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1795,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "e97ea36b596ad66c3476181d9d6f428a0204dbaa",
+    "sha_after": "2d57e9fff0287516c8af9e250f39197dcf998977",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/ReplicationManager.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/ReplicationManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 2022,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/TestReplicationManager.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/TestReplicationManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 24,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1771,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Replace Pipeline With Loop": 1
+    }
+  },
+  "HDDS-5748": {
+    "jira_id": "HDDS-5748",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Reuse mini-clusters in TestOzoneFSWithObjectStoreCreate",
+    "description": "TestOzoneFSWithObjectStoreCreate typically runs in about 212 seconds:\r\n\r\n{code}\r\n [INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 212.789 s - in org.apache.hadoop.fs.ozone.TestOzoneFSWithObjectStoreCreate\r\n[INFO] Running org.apache.hadoop.fs.ozone.TestOzoneFileSystem\r\n{code}\r\n\r\nRefactoring to re-use the mini-cluster across all tests should greatly reduce this runtime.",
+    "commits": [
+      {
+        "sha": "06f421bb67f3b057695291c393d9a73f96d1a0ed",
+        "message": "HDDS-5748. Reuse mini-clusters in TestOzoneFSWithObjectStoreCreate",
+        "author": "S O'Donnell",
+        "date": "2021-09-15T10:50:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/fs/ozone/TestOzoneFSWithObjectStoreCreate.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/fs/ozone/TestOzoneFSWithObjectStoreCreate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 464,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c5a012b245f222b7a30610db5ed3355b22517427",
+    "sha_after": "ee19b95ff0e4260c4fd64bd58a7702facff408ec",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/fs/ozone/TestOzoneFSWithObjectStoreCreate.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/fs/ozone/TestOzoneFSWithObjectStoreCreate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 464,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Extract Fixture": 2,
+      "Add Attribute Modifier": 1
+    }
+  },
+  "HDDS-5717": {
+    "jira_id": "HDDS-5717",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Refactor TestOzoneManagerListVolumes to resuse mini-ozone clusters",
+    "description": "TestOzoneManagerListVolumes takes about 215 seconds to run, as it has several tests, and each tests creates a new mini-cluster:\r\n\r\n{code}\r\n[INFO] Running org.apache.hadoop.ozone.om.TestOzoneManagerListVolumes\r\n[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 215.633 s - in org.apache.hadoop.ozone.om.TestOzoneManagerListVolumes\r\n{code}\r\n\r\nWe can refactor the test to use the same Mini-Cluster and just restart the OM component between each test, saving a lot of time.\r\n\r\nNote that this requires a small change in the OzoneManagerImpl class too.",
+    "commits": [
+      {
+        "sha": "42013e6035148e9f286a16cfe5fb49388cba1214",
+        "message": "HDDS-5717. Refactor TestOzoneManagerListVolumes to reuse mini-ozone clusters",
+        "author": "S O'Donnell",
+        "date": "2021-09-06T12:00:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerListVolumes.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerListVolumes.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 66,
+            "LINES_DELETED": 47,
+            "PARENT_LOC": 306,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/OzoneManager.java",
+            "CHILD_PATH": "hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/OzoneManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 4359,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "456c324bb6e75581e7dfd7dd09b9bd330df41156",
+        "message": "Trigger CI",
+        "author": "S O'Donnell",
+        "date": "2021-09-06T19:18:36Z",
+        "files": []
+      },
+      {
+        "sha": "54b10ec0f7186a1907ccb1fba65bf34e05236b5e",
+        "message": "Removed extra reference to isAclEnabled",
+        "author": "S O'Donnell",
+        "date": "2021-09-09T11:21:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/OzoneManager.java",
+            "CHILD_PATH": "hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/OzoneManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 4373,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ee19b95ff0e4260c4fd64bd58a7702facff408ec",
+    "sha_after": "da18617764e1c2513d65b05a285f5df90d6891be",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerListVolumes.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerListVolumes.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 66,
+        "LINES_DELETED": 47,
+        "PARENT_LOC": 306,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/OzoneManager.java",
+        "CHILD_PATH": "hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/OzoneManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 4359,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 14,
+    "refactorings": {
+      "Add Attribute Modifier": 3,
+      "Add Method Modifier": 3,
+      "Remove Parameter": 2,
+      "Split Method": 1,
+      "Rename Method": 1,
+      "Add Method Annotation": 1,
+      "Change Method Access Modifier": 1,
+      "Remove Attribute Modifier": 1,
+      "Extract Method": 1
+    }
+  },
+  "HDDS-5749": {
+    "jira_id": "HDDS-5749",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Reuse mini-clusters in TestOzoneFsHAURLs",
+    "description": "TestOzoneFsHAURLs runs in about 104 seconds:\r\n\r\n{code}\r\n[INFO] Running org.apache.hadoop.fs.ozone.TestOzoneFsHAURLs\r\n[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 104.905 s - in org.apache.hadoop.fs.ozone.TestOzoneFsHAURLs\r\n{code}\r\n\r\nReusing the mini-cluster across all the tests can reduce this time.",
+    "commits": [
+      {
+        "sha": "8ea0a533b27f74d3996ba59e1d16409c617aaf30",
+        "message": "HDDS-5749. Reuse mini-clusters in TestOzoneFsHAURLs",
+        "author": "S O'Donnell",
+        "date": "2021-09-15T11:25:40Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/fs/ozone/TestOzoneFsHAURLs.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/fs/ozone/TestOzoneFsHAURLs.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 339,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "da18617764e1c2513d65b05a285f5df90d6891be",
+    "sha_after": "ed30752158e6f40c027cdf08cb25f5d147db3805",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/fs/ozone/TestOzoneFsHAURLs.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/fs/ozone/TestOzoneFsHAURLs.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 13,
+        "PARENT_LOC": 339,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 11,
+    "refactorings": {
+      "Add Attribute Modifier": 7,
+      "Extract Fixture": 1,
+      "Add Method Annotation": 1,
+      "Remove Method Annotation": 1,
+      "Add Method Modifier": 1
+    }
+  },
+  "HDDS-5751": {
+    "jira_id": "HDDS-5751",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Use Mini Cluster Provider to speed up TestHDDSUpgrade",
+    "description": "TestHDDSUpgrade is one of the longest running test suits as it creates many mini-clusters:\r\n\r\n{code}\r\n[INFO] Running org.apache.hadoop.hdds.upgrade.TestHDDSUpgrade\r\nWarning:  Tests run: 13, Failures: 0, Errors: 0, Skipped: 4, Time elapsed: 694.753 s - in org.apache.hadoop.hdds.upgrade.TestHDDSUpgrade\r\n{code}\r\n\r\nIt is not possible to reuse the same clusters across multiple tests here, so we can use the MiniClusterProvider to create the clusters in the background and speed things up.\r\n\r\nOn my laptop the test runtime went from 9min 14s to 5min 12s.",
+    "commits": [
+      {
+        "sha": "8f219e355a157e0d4b2bdd2ecdde2d34647eeb51",
+        "message": "HDDS-5751. Use Mini Cluster Provider to speed up TestHDDSUpgrade",
+        "author": "S O'Donnell",
+        "date": "2021-09-16T10:49:42Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/hdds/upgrade/TestHDDSUpgrade.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/hdds/upgrade/TestHDDSUpgrade.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 1081,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "fab8a120067b11c258e9af01840f3bdc907d96c4",
+    "sha_after": "f2c20ce47196e5099d3e841a73e406bf7e3b326e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/hdds/upgrade/TestHDDSUpgrade.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/hdds/upgrade/TestHDDSUpgrade.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 29,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 1081,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Fixture": 2,
+      "Add Thrown Exception Type": 2
+    }
+  },
+  "HDDS-5758": {
+    "jira_id": "HDDS-5758",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Speed up TestKeyInputStream and TestChunkInputStream by combining some tests",
+    "description": "TestKeyInputStream takes over 900 seconds to run:\r\n\r\n[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 964.773 s - in org.apache.hadoop.ozone.client.rpc.read.TestKeyInputStream\r\n[INFO] Running org.apache.hadoop.ozone.client.rpc.Test2WayCommitInRatis\r\n\r\nTestChunkInputStream also takes about:\r\n\r\n[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 292.226 s - in org.apache.hadoop.ozone.client.rpc.read.TestChunkInputStream\r\n[INFO] Running org.apache.hadoop.ozone.client.rpc.read.TestKeyInputStream\r\n\r\nSome of the tests stop and start nodes in the mini-cluster, so its hard to use the same cluster for all tests, but we can combine the \"non-destructive\" tests into a single test method in each of these class easily saving significant time.\r\n\r\nAlso in TestInputStreamBase there is a single test, which is executed by both the extending classes, needless repeating it. I have moved in up into one of the extending classes instead.",
+    "commits": [
+      {
+        "sha": "c1d0c2fb05f0968e4b4acce41f3b885398bd643a",
+        "message": "HDDS-5758. Speed up TestKeyInputStream by combining some tests",
+        "author": "S O'Donnell",
+        "date": "2021-09-17T08:37:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestKeyInputStream.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestKeyInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 407,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "422dcf53739c8f577fb31a74971524ea453aceb8",
+        "message": "Further improvements to TestChunkInputStream",
+        "author": "S O'Donnell",
+        "date": "2021-09-17T08:56:48Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestChunkInputStream.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestChunkInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 207,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestInputStreamBase.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestInputStreamBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 39,
+            "PARENT_LOC": 249,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestKeyInputStream.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestKeyInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 415,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "a5e55492757a4af7ef62f099232e2e8d290c78bd",
+        "message": "Fix style issues",
+        "author": "S O'Donnell",
+        "date": "2021-09-17T09:04:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestInputStreamBase.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestInputStreamBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 210,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "779fbad40a27408b2c25c1e5b5cf67aa735ec757",
+        "message": "Address review comment - danging javadoc comment in TestKeyInputStream.java",
+        "author": "S O'Donnell",
+        "date": "2021-09-20T09:47:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestKeyInputStream.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestKeyInputStream.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 457,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "0b9e23ee7eb13ce1c6b7be79192c35c3b3240095",
+    "sha_after": "2d589331cf22251eb06d1dce0787709101fc8428",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestChunkInputStream.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestChunkInputStream.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 207,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestInputStreamBase.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestInputStreamBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 44,
+        "PARENT_LOC": 249,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestKeyInputStream.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/client/rpc/read/TestKeyInputStream.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 54,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 407,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 9,
+    "refactorings": {
+      "Remove Method Annotation": 8,
+      "Push Down Method": 1
+    }
+  },
+  "HDDS-5766": {
+    "jira_id": "HDDS-5766",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Speed up some OM tests by skipping SCM safemode check",
+    "description": "Many of the OzoneManager integration tests do not really use SCM or the datanodes. Therefore we can skip the safemode check in SCM and start zero datanodes to make the mini-cluster come up faster.\r\n\r\nWith just this change, on my laptop:\r\n\r\n{code}\r\nTestOzoneManagerConfiguration went from 6min -> 3min 40s.\r\nTestOzoneManagerHAMetadataOnly went from 4min 19s -> 1min 9s.\r\nTestOzoneManagerListVolumes went from 40s -> 20s\r\nTestOMMetrics went from 2min 6 -> 39s 55s\r\n{code}\r\n\r\nThe runtime for these tests on Github is:\r\n\r\n{code}\r\n[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 273.591 s - in org.apache.hadoop.ozone.om.TestOzoneManagerConfiguration\r\n\r\nWarning:  Tests run: 10, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 363.67 s - in org.apache.hadoop.ozone.om.TestOzoneManagerHAMetadataOnly\r\n\r\n[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 181.937 s - in org.apache.hadoop.ozone.om.TestOmMetrics\r\n\r\n[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 50.156 s - in org.apache.hadoop.ozone.om.TestOzoneManagerListVolumes\r\n{code}",
+    "commits": [
+      {
+        "sha": "770e1964c0e3e8caaa8623a93d8383267b76af61",
+        "message": "HDDS-5766. Speed up some OM tests by skipping SCM safemode check",
+        "author": "S O'Donnell",
+        "date": "2021-09-20T12:22:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOmMetrics.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOmMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 542,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerConfiguration.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 489,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerHA.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerHA.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 329,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerHAMetadataOnly.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerHAMetadataOnly.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 478,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerListVolumes.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerListVolumes.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 325,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1f3ed26d69d18d1d5fe3bddf1f1e0e93695ace33",
+        "message": "Address review comment",
+        "author": "S O'Donnell",
+        "date": "2021-09-20T15:06:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOmMetrics.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOmMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 558,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c68468c59839bbf84db0de344eb8ce9301bd4f5b",
+    "sha_after": "79da6b70172f8b09140cd150d1c9940ca7b7a03f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOmMetrics.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOmMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 542,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerConfiguration.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 489,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerHA.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerHA.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 329,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerHAMetadataOnly.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerHAMetadataOnly.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 478,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerListVolumes.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/om/TestOzoneManagerListVolumes.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 325,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Change Thrown Exception Type": 4,
+      "Extract Method": 1
+    }
+  }
+}
