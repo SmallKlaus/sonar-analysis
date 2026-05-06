@@ -704,6 +704,48 @@ def fetch_issues(project_key: str, **filters) -> list:
     
     return all_issues
 
+#PRE-BUILD STEP FOR HADOOP
+
+def build_hadoop_thirdparty(repo_path: str, toolchain: dict) -> bool:
+    """
+    Clone and install hadoop-thirdparty locally so SNAPSHOT deps resolve.
+    Only needed for Hadoop commits that depend on unreleased thirdparty artifacts.
+    """
+    logger.info("Building hadoop-thirdparty from source...")
+    
+    thirdparty_path = os.path.join(os.path.dirname(repo_path), "hadoop-thirdparty")
+    
+    # Clone if not already present
+    if not os.path.isdir(thirdparty_path):
+        result = subprocess.run(
+            ["git", "clone", "--depth=1",
+             "https://github.com/apache/hadoop-thirdparty.git",
+             thirdparty_path],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=120
+        )
+        if result.returncode != 0:
+            logger.error(f"✗ Failed to clone hadoop-thirdparty")
+            return False
+    
+    java_home = CONFIG["java_homes"].get(toolchain["java_major"])
+    env = os.environ.copy()
+    env["JAVA_HOME"] = java_home
+    env["PATH"] = f"{java_home}/bin:{env['PATH']}"
+    
+    result = subprocess.run(
+        ["mvn", "install", "-DskipTests", "--batch-mode", "--no-transfer-progress"],
+        cwd=thirdparty_path, env=env,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        timeout=600
+    )
+    
+    if result.returncode == 0:
+        logger.info("✓ hadoop-thirdparty installed to local Maven repo")
+        return True
+    else:
+        logger.error("✗ hadoop-thirdparty build failed")
+        logger.error(result.stdout.decode("utf-8", errors="replace")[-2000:])
+        return False
 
 # ============================================================================
 # MAIN ANALYSIS LOOP
@@ -760,6 +802,11 @@ def main():
             
             project_key = f"{PROJECT_NAME}:{issue_id}"
             create_public_project(project_key)
+
+            # Before the BEFORE scan, inside the issue loop:
+            if PROJECT_CONFIG.get("requires_thirdparty_build"):
+                if not build_hadoop_thirdparty(CONFIG["repo_path"], before_toolchain):
+                    raise RuntimeError("hadoop-thirdparty pre-build failed")
             
             # ── BEFORE scan ───────────────────────────────────────────────
             logger.info("\n▶ BEFORE SCAN")
