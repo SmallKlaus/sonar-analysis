@@ -726,46 +726,68 @@ def fetch_issues(project_key: str, **filters) -> list:
 
 #PRE-BUILD STEP FOR HADOOP
 
+def get_thirdparty_version(year: int) -> str:
+    """Maps commit year to the required hadoop-thirdparty version tag."""
+    if year <= 2020:
+        return None           # No thirdparty dependency before 3.3.x
+    elif year <= 2022:
+        return "rel/1.0.0"    # hadoop-shaded-*:1.0.0-SNAPSHOT → tag rel/1.0.0
+    elif year <= 2023:
+        return "rel/1.1.0"    # hadoop-shaded-*:1.1.0-SNAPSHOT → tag rel/1.1.0
+    else:
+        return "master"       # Latest
+
+
 def build_hadoop_thirdparty(repo_path: str, toolchain: dict) -> bool:
     """
-    Clone and install hadoop-thirdparty locally so SNAPSHOT deps resolve.
-    Only needed for Hadoop commits that depend on unreleased thirdparty artifacts.
+    Clone hadoop-thirdparty at the correct tag and install it to the
+    local Maven cache so SNAPSHOT deps resolve.
     """
-    logger.info("Building hadoop-thirdparty from source...")
-    
+    year = toolchain.get("year", 2021)
+    tag  = get_thirdparty_version(year)
+
+    if tag is None:
+        logger.info("  No hadoop-thirdparty needed for this commit year — skipping")
+        return True
+
+    logger.info(f"  Building hadoop-thirdparty @ {tag}...")
+
     thirdparty_path = os.path.join(os.path.dirname(repo_path), "hadoop-thirdparty")
-    
-    # Clone if not already present
-    if not os.path.isdir(thirdparty_path):
-        result = subprocess.run(
-            ["git", "clone", "--depth=1",
-             "https://github.com/apache/hadoop-thirdparty.git",
-             thirdparty_path],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=120
-        )
-        if result.returncode != 0:
-            logger.error(f"✗ Failed to clone hadoop-thirdparty")
-            return False
-    
+
+    # Remove stale clone if it exists (different tag may be needed per batch)
+    if os.path.isdir(thirdparty_path):
+        shutil.rmtree(thirdparty_path)
+
+    result = subprocess.run(
+        ["git", "clone", "--depth=1", "--branch", tag,
+         "https://github.com/apache/hadoop-thirdparty.git", thirdparty_path],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=120
+    )
+    if result.returncode != 0:
+        logger.error(f"✗ Failed to clone hadoop-thirdparty @ {tag}")
+        logger.error(result.stderr.decode("utf-8", errors="replace")[-1000:])
+        return False
+
     java_home = CONFIG["java_homes"].get(toolchain["java_major"])
     env = os.environ.copy()
     env["JAVA_HOME"] = java_home
     env["PATH"] = f"{java_home}/bin:{env['PATH']}"
-    
+
     result = subprocess.run(
-        ["mvn", "install", "-DskipTests", "--batch-mode", "--no-transfer-progress"],
+        ["mvn", "install", "-Dmaven.test.skip=true",
+         "--batch-mode", "--no-transfer-progress"],
         cwd=thirdparty_path, env=env,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
         timeout=600
     )
-    
+
     if result.returncode == 0:
-        logger.info("✓ hadoop-thirdparty installed to local Maven repo")
+        logger.info(f"✓ hadoop-thirdparty @ {tag} installed to local Maven repo")
         return True
-    else:
-        logger.error("✗ hadoop-thirdparty build failed")
-        logger.error(result.stdout.decode("utf-8", errors="replace")[-2000:])
-        return False
+
+    logger.error("✗ hadoop-thirdparty build failed")
+    logger.error(result.stdout.decode("utf-8", errors="replace")[-2000:])
+    return False
 
 # ============================================================================
 # MAIN ANALYSIS LOOP
@@ -782,13 +804,6 @@ def main():
 
     logger.info(f"✓ Loaded {len(issues)} issues from batch {BATCH_NUMBER}")
 
-    # ── One-time pre-requisites ───────────────────────────────────────────
-    if PROJECT_CONFIG.get("requires_thirdparty_build"):
-        # Use any toolchain — thirdparty build doesn't vary per issue
-        sample_year = year_from_iso(list(issues.values())[0]["commits"][0].get("date", ""))
-        if not build_hadoop_thirdparty(CONFIG["repo_path"], get_toolchain(sample_year)):
-            logger.error("✗ hadoop-thirdparty pre-build failed — aborting batch")
-            return
     
     successes, failures, restored = [], [], []
 
@@ -827,6 +842,16 @@ def main():
                 before_toolchain["java_source"] = forced_java
                 after_toolchain["java_major"] = forced_java
                 after_toolchain["java_source"] = forced_java
+
+            # Build thirdparty only if needed and not already built for this tag
+            if PROJECT_CONFIG.get("requires_thirdparty_build"):
+                tag = get_thirdparty_version(before_toolchain.get("year", 2021))
+                if tag and tag not in built_thirdparty_tags:
+                    if not build_hadoop_thirdparty(CONFIG["repo_path"], before_toolchain):
+                        raise RuntimeError("hadoop-thirdparty pre-build failed")
+                    built_thirdparty_tags.add(tag)
+                else:
+                    logger.info(f"  ✓ hadoop-thirdparty @ {tag} already in Maven cache")
             
             project_key = f"{PROJECT_NAME}:{issue_id}"
             create_public_project(project_key)
