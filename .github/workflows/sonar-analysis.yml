@@ -146,6 +146,26 @@ jobs:
           
           echo "✓ Processing ${PROJECT} batch ${BATCH}"
           ls -lh scripts/${PROJECT}_issues_batch_${BATCH}.json
+
+      - name: Install protoc (required for Hadoop)
+        if: github.event.inputs.project == 'hadoop_common' || github.event.inputs.project == 'hdfs' || github.event.inputs.project == 'mapreduce' || github.event.inputs.project == 'yarn'
+        run: |
+          sudo apt-get install -y protobuf-compiler
+          protoc --version
+          echo "✓ protoc installed"
+
+      - name: Install protoc 3.7.1 (required for Hadoop 3.x)
+        if: github.event.inputs.project == 'hadoop_common' || github.event.inputs.project == 'hdfs' || github.event.inputs.project == 'mapreduce' || github.event.inputs.project == 'yarn'
+        run: |
+          # Install exact version Hadoop 3.x expects
+          PROTOC_VERSION=3.7.1
+          wget -q https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip
+          unzip -q protoc-${PROTOC_VERSION}-linux-x86_64.zip -d protoc-${PROTOC_VERSION}
+          sudo cp protoc-${PROTOC_VERSION}/bin/protoc /usr/local/bin/
+          sudo chmod +x /usr/local/bin/protoc
+          rm -rf protoc-${PROTOC_VERSION} protoc-${PROTOC_VERSION}-linux-x86_64.zip
+          protoc --version
+          echo "✓ protoc ${PROTOC_VERSION} installed"
       
       - name: Run analysis
         env:
