@@ -408,7 +408,7 @@ class MavenBuildSystem(BuildSystem):
         
         cmd = [
             "mvn", "clean", "install",
-            "-DskipTests",
+            "-Dmaven.test.skip=true",
             "-Dmaven.javadoc.skip=true",
             "-Dcheckstyle.skip=true",
             "-Denforcer.skip=true",
