@@ -307,20 +307,29 @@ def restore_from_checkpoint(issue_id: str) -> bool:
 # VERSION SELECTION
 # ============================================================================
 def get_toolchain(year: int) -> dict:
-    """Returns appropriate Java/build tool versions for the year"""
     if year <= 2017:
-        return {"java_major": "8", "maven": "3.0.5", "gradle": "4.10", "java_source": "1.8"}
+        return {"java_major": "8", "maven": "3.0.5", "gradle": "4.10", "java_source": "1.8", "year": year}
     elif year <= 2019:
-        return {"java_major": "8", "maven": "3.5.4", "gradle": "5.6", "java_source": "1.8"}
+        return {"java_major": "8", "maven": "3.5.4", "gradle": "5.6",  "java_source": "1.8", "year": year}
     elif year <= 2021:
-        return {"java_major": "8", "maven": "3.8.1", "gradle": "6.9", "java_source": "1.8"}
+        return {"java_major": "8", "maven": "3.8.1", "gradle": "6.9",  "java_source": "1.8", "year": year}
     elif year <= 2023:
-        return {"java_major": "11", "maven": "3.8.6", "gradle": "7.6", "java_source": "11"}
+        return {"java_major": "11", "maven": "3.8.6", "gradle": "7.6", "java_source": "11",  "year": year}
     elif year <= 2024:
-        return {"java_major": "11", "maven": "3.9.9", "gradle": "8.5", "java_source": "11"}
+        return {"java_major": "11", "maven": "3.9.9", "gradle": "8.5", "java_source": "11",  "year": year}
     else:
-        return {"java_major": "17", "maven": "3.9.9", "gradle": "8.7", "java_source": "17"}
+        return {"java_major": "17", "maven": "3.9.9", "gradle": "8.7", "java_source": "17",  "year": year}
 
+def get_protoc_bin(year: int) -> str:
+    """
+    Returns the path to the correct protoc binary for the given commit year.
+    Hadoop 2.x and early 3.x used protobuf 2.5.0.
+    Hadoop 3.3.x switched to protobuf 3.7.1.
+    """
+    if year <= 2020:
+        return "/usr/local/bin/protoc-2.5.0"
+    else:
+        return "/usr/local/bin/protoc-3.7.1"
 
 def year_from_iso(date_str: str) -> int:
     try:
@@ -390,6 +399,12 @@ class MavenBuildSystem(BuildSystem):
             " -Dmaven.wagon.http.retryHandler.count=5"
             " -Dmaven.wagon.http.connectionTimeout=60000"
         )
+
+        # Select correct protoc version for Hadoop projects
+        if PROJECT_CONFIG.get("requires_protoc"):
+            protoc_bin = get_protoc_bin(self.toolchain.get("year", 2021))
+            env["HADOOP_PROTOC_PATH"] = protoc_bin
+            logger.info(f"  Using protoc: {protoc_bin}")
         
         cmd = [
             "mvn", "clean", "install",
@@ -406,6 +421,11 @@ class MavenBuildSystem(BuildSystem):
         
         # Add project-specific skip flags
         cmd.extend(CONFIG["maven_skip_flags"])
+
+        # Also pass protoc path as a Maven property (some Hadoop versions use this instead)
+        if PROJECT_CONFIG.get("requires_protoc"):
+            protoc_bin = get_protoc_bin(self.toolchain.get("year", 2021))
+            cmd.append(f"-Dprotoc.path={protoc_bin}")
         
         return self._execute_build(cmd, env)
     
