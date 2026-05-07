@@ -408,7 +408,7 @@ class MavenBuildSystem(BuildSystem):
         
         cmd = [
             "mvn", "clean", "install",
-            "-Dmaven.test.skip=true",
+            "-DskipTests",
             "-Dmaven.javadoc.skip=true",
             "-Dcheckstyle.skip=true",
             "-Denforcer.skip=true",
@@ -726,35 +726,56 @@ def fetch_issues(project_key: str, **filters) -> list:
 
 #PRE-BUILD STEP FOR HADOOP
 
-def get_thirdparty_version(year: int) -> str:
-    """Maps commit year to the required hadoop-thirdparty version tag."""
-    if year <= 2020:
-        return None           # No thirdparty dependency before 3.3.x
-    elif year <= 2022:
-        return "rel/1.0.0"    # hadoop-shaded-*:1.0.0-SNAPSHOT → tag rel/1.0.0
-    elif year <= 2023:
-        return "rel/1.1.0"    # hadoop-shaded-*:1.1.0-SNAPSHOT → tag rel/1.1.0
-    else:
-        return "master"       # Latest
+def get_required_thirdparty_version(repo_path: str) -> str | None:
+    """
+    Read the exact hadoop-thirdparty version Hadoop expects directly
+    from the root pom.xml, then map it to the correct release tag.
+    Returns None if no thirdparty dependency is found (pre-3.3.x commits).
+    """
+    pom_path = os.path.join(repo_path, "pom.xml")
+    if not os.path.exists(pom_path):
+        return None
+
+    try:
+        with open(pom_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # Hadoop declares thirdparty version in a property like:
+        # <hadoop-thirdparty.version>1.0.0-SNAPSHOT</hadoop-thirdparty.version>
+        import re
+        match = re.search(
+            r"<hadoop-thirdparty\.version>([\d.\-A-Z]+)</hadoop-thirdparty\.version>",
+            content
+        )
+        if not match:
+            logger.info("  No hadoop-thirdparty version found in pom.xml — not needed")
+            return None
+
+        snapshot_version = match.group(1)  # e.g. "1.0.0-SNAPSHOT"
+        logger.info(f"  pom.xml requires hadoop-thirdparty: {snapshot_version}")
+
+        # Strip -SNAPSHOT suffix and map to the release tag
+        base_version = snapshot_version.replace("-SNAPSHOT", "")  # e.g. "1.0.0"
+        tag = f"rel/release-{base_version}"                        # e.g. "rel/release-1.0.0"
+        logger.info(f"  Mapped to tag: {tag}")
+        return tag
+
+    except Exception as e:
+        logger.warning(f"  Could not parse pom.xml for thirdparty version: {e}")
+        return None
 
 
 def build_hadoop_thirdparty(repo_path: str, toolchain: dict) -> bool:
-    """
-    Clone hadoop-thirdparty at the correct tag and install it to the
-    local Maven cache so SNAPSHOT deps resolve.
-    """
-    year = toolchain.get("year", 2021)
-    tag  = get_thirdparty_version(year)
+    tag = get_required_thirdparty_version(repo_path)
 
     if tag is None:
-        logger.info("  No hadoop-thirdparty needed for this commit year — skipping")
+        logger.info("  No hadoop-thirdparty needed — skipping")
         return True
 
     logger.info(f"  Building hadoop-thirdparty @ {tag}...")
 
     thirdparty_path = os.path.join(os.path.dirname(repo_path), "hadoop-thirdparty")
 
-    # Remove stale clone if it exists (different tag may be needed per batch)
     if os.path.isdir(thirdparty_path):
         shutil.rmtree(thirdparty_path)
 
@@ -764,8 +785,8 @@ def build_hadoop_thirdparty(repo_path: str, toolchain: dict) -> bool:
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=120
     )
     if result.returncode != 0:
-        logger.error(f"✗ Failed to clone hadoop-thirdparty @ {tag}")
-        logger.error(result.stderr.decode("utf-8", errors="replace")[-1000:])
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        logger.error(f"✗ Failed to clone hadoop-thirdparty @ {tag}: {stderr}")
         return False
 
     java_home = CONFIG["java_homes"].get(toolchain["java_major"])
@@ -774,7 +795,7 @@ def build_hadoop_thirdparty(repo_path: str, toolchain: dict) -> bool:
     env["PATH"] = f"{java_home}/bin:{env['PATH']}"
 
     result = subprocess.run(
-        ["mvn", "install", "-Dmaven.test.skip=true",
+        ["mvn", "install", "-DskipTests",
          "--batch-mode", "--no-transfer-progress"],
         cwd=thirdparty_path, env=env,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -782,7 +803,7 @@ def build_hadoop_thirdparty(repo_path: str, toolchain: dict) -> bool:
     )
 
     if result.returncode == 0:
-        logger.info(f"✓ hadoop-thirdparty @ {tag} installed to local Maven repo")
+        logger.info(f"✓ hadoop-thirdparty @ {tag} installed to local Maven cache")
         return True
 
     logger.error("✗ hadoop-thirdparty build failed")
@@ -806,7 +827,7 @@ def main():
 
     
     successes, failures, restored = [], [], []
-
+    built_thirdparty_tags = set()
     for idx, (issue_id, item) in enumerate(issues.items(), 1):
         logger.info(f"\n{'='*70}")
         logger.info(f"[{idx}/{len(issues)}] {issue_id}")
@@ -845,16 +866,16 @@ def main():
 
             # Build thirdparty only if needed and not already built for this tag
             if PROJECT_CONFIG.get("requires_thirdparty_build"):
-                tag = get_thirdparty_version(before_toolchain.get("year", 2021))
+                tag = get_required_thirdparty_version(CONFIG["repo_path"])
                 if tag and tag not in built_thirdparty_tags:
                     if not build_hadoop_thirdparty(CONFIG["repo_path"], before_toolchain):
                         raise RuntimeError("hadoop-thirdparty pre-build failed")
                     built_thirdparty_tags.add(tag)
-                else:
-                    logger.info(f"  ✓ hadoop-thirdparty @ {tag} already in Maven cache")
-            
-            project_key = f"{PROJECT_NAME}:{issue_id}"
-            create_public_project(project_key)
+                elif tag:
+                    logger.info(f"  ✓ hadoop-thirdparty @ {tag} already cached")
+                
+                project_key = f"{PROJECT_NAME}:{issue_id}"
+                create_public_project(project_key)
 
             # ── BEFORE scan ───────────────────────────────────────────────
             logger.info("\n▶ BEFORE SCAN")
