@@ -727,43 +727,38 @@ def fetch_issues(project_key: str, **filters) -> list:
 #PRE-BUILD STEP FOR HADOOP
 
 def get_required_thirdparty_version(repo_path: str) -> str | None:
-    """
-    Read the exact hadoop-thirdparty version Hadoop expects directly
-    from the root pom.xml, then map it to the correct release tag.
-    Returns None if no thirdparty dependency is found (pre-3.3.x commits).
-    """
     pom_path = os.path.join(repo_path, "pom.xml")
     if not os.path.exists(pom_path):
         return None
-
     try:
         with open(pom_path, "r", encoding="utf-8") as f:
             content = f.read()
-
-        # Hadoop declares thirdparty version in a property like:
-        # <hadoop-thirdparty.version>1.0.0-SNAPSHOT</hadoop-thirdparty.version>
         import re
-        match = re.search(
+        # Try both common property names Hadoop uses
+        for pattern in [
             r"<hadoop-thirdparty\.version>([\d.\-A-Z]+)</hadoop-thirdparty\.version>",
-            content
-        )
-        if not match:
-            logger.info("  No hadoop-thirdparty version found in pom.xml — not needed")
-            return None
+            r"<hadoop\.thirdparty\.version>([\d.\-A-Z]+)</hadoop\.thirdparty\.version>",
+        ]:
+            match = re.search(pattern, content)
+            if match:
+                base = match.group(1).replace("-SNAPSHOT", "")
+                tag = f"rel/release-{base}"
+                logger.info(f"  pom.xml requires hadoop-thirdparty: {match.group(1)} → {tag}")
+                return tag
 
-        snapshot_version = match.group(1)  # e.g. "1.0.0-SNAPSHOT"
-        logger.info(f"  pom.xml requires hadoop-thirdparty: {snapshot_version}")
+        # Also check the hadoop-common submodule pom directly
+        common_pom = os.path.join(repo_path, "hadoop-common-project", "hadoop-common", "pom.xml")
+        if os.path.exists(common_pom):
+            with open(common_pom, "r", encoding="utf-8") as f:
+                content = f.read()
+            if "hadoop-shaded-protobuf" in content or "hadoop-thirdparty" in content:
+                # Dependency exists but version inherited from parent — use root pom version
+                logger.warning("  hadoop-thirdparty dependency found in submodule but version not in root pom")
 
-        # Strip -SNAPSHOT suffix and map to the release tag
-        base_version = snapshot_version.replace("-SNAPSHOT", "")  # e.g. "1.0.0"
-        tag = f"rel/release-{base_version}"                        # e.g. "rel/release-1.0.0"
-        logger.info(f"  Mapped to tag: {tag}")
-        return tag
-
-    except Exception as e:
-        logger.warning(f"  Could not parse pom.xml for thirdparty version: {e}")
         return None
-
+    except Exception as e:
+        logger.warning(f"  Could not parse pom.xml: {e}")
+        return None
 
 def build_hadoop_thirdparty(repo_path: str, toolchain: dict) -> bool:
     tag = get_required_thirdparty_version(repo_path)
