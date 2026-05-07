@@ -859,8 +859,8 @@ def main():
                 after_toolchain["java_major"] = forced_java
                 after_toolchain["java_source"] = forced_java
                 
-                project_key = f"{PROJECT_NAME}:{issue_id}"
-                create_public_project(project_key)
+            project_key = f"{PROJECT_NAME}:{issue_id}"
+            create_public_project(project_key)
 
             # ── BEFORE scan ───────────────────────────────────────────────
             logger.info("\n▶ BEFORE SCAN")
