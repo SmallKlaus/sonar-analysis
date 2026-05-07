@@ -822,7 +822,7 @@ def main():
 
     
     successes, failures, restored = [], [], []
-    built_thirdparty_tags = set()
+    
     for idx, (issue_id, item) in enumerate(issues.items(), 1):
         logger.info(f"\n{'='*70}")
         logger.info(f"[{idx}/{len(issues)}] {issue_id}")
@@ -858,16 +858,6 @@ def main():
                 before_toolchain["java_source"] = forced_java
                 after_toolchain["java_major"] = forced_java
                 after_toolchain["java_source"] = forced_java
-
-            # Build thirdparty only if needed and not already built for this tag
-            if PROJECT_CONFIG.get("requires_thirdparty_build"):
-                tag = get_required_thirdparty_version(CONFIG["repo_path"])
-                if tag and tag not in built_thirdparty_tags:
-                    if not build_hadoop_thirdparty(CONFIG["repo_path"], before_toolchain):
-                        raise RuntimeError("hadoop-thirdparty pre-build failed")
-                    built_thirdparty_tags.add(tag)
-                elif tag:
-                    logger.info(f"  ✓ hadoop-thirdparty @ {tag} already cached")
                 
                 project_key = f"{PROJECT_NAME}:{issue_id}"
                 create_public_project(project_key)
