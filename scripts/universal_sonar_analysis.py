@@ -495,15 +495,25 @@ class GradleBuildSystem(BuildSystem):
         return self._execute_build(cmd, env)
 
     def _set_gradle_wrapper_version(self, version: str):
-        wrapper_props = os.path.join(
-            self.repo_path,
-            "gradle", "wrapper", "gradle-wrapper.properties"
-        )
-
-        if not os.path.exists(wrapper_props):
-            logger.warning("  gradle-wrapper.properties not found — skipping version override")
+        # Search for gradle-wrapper.properties anywhere in the repo
+        # instead of assuming a fixed path (structure varies across projects/commits)
+        wrapper_props = None
+        for root, dirs, files in os.walk(self.repo_path):
+            # Don't search inside build output directories
+            dirs[:] = [d for d in dirs if d not in ["build", ".gradle", "node_modules"]]
+            if "gradle-wrapper.properties" in files:
+                wrapper_props = os.path.join(root, "gradle-wrapper.properties")
+                break
+    
+        if wrapper_props is None:
+            logger.warning("  gradle-wrapper.properties not found anywhere in repo")
+            # Log what IS at the top level to help diagnose
+            top_level = os.listdir(self.repo_path)
+            logger.warning(f"  Repo top-level contents: {top_level}")
             return
-
+    
+        logger.info(f"  Found wrapper at: {os.path.relpath(wrapper_props, self.repo_path)}")
+    
         props_content = (
             "distributionBase=GRADLE_USER_HOME\n"
             "distributionPath=wrapper/dists\n"
@@ -511,10 +521,10 @@ class GradleBuildSystem(BuildSystem):
             "zipStoreBase=GRADLE_USER_HOME\n"
             "zipStorePath=wrapper/dists\n"
         )
-
+    
         with open(wrapper_props, "w") as f:
             f.write(props_content)
-
+    
         logger.info(f"  ✓ Gradle wrapper set to version {version}")
     
     def get_source_dirs(self) -> list:
