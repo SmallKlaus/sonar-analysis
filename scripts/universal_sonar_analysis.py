@@ -495,30 +495,26 @@ class GradleBuildSystem(BuildSystem):
         return self._execute_build(cmd, env)
 
     def _set_gradle_wrapper_version(self, version: str):
-        """
-        Overwrite gradle-wrapper.properties to force a specific Gradle version.
-        This ensures old commits use a compatible Gradle version rather than
-        whatever the wrapper happened to specify (which may have been removed
-        from distribution servers) or defaulting to a too-new version.
-        """
         wrapper_props = os.path.join(
             self.repo_path,
             "gradle", "wrapper", "gradle-wrapper.properties"
         )
-    
+
         if not os.path.exists(wrapper_props):
-            logger.warning(f"  gradle-wrapper.properties not found — skipping version override")
+            logger.warning("  gradle-wrapper.properties not found — skipping version override")
             return
-    
-        props_content = f"""distributionBase=GRADLE_USER_HOME
-    distributionPath=wrapper/dists
-    distributionUrl=https\\://services.gradle.org/distributions/gradle-{version}-bin.zip
-    zipStoreBase=GRADLE_USER_HOME
-    zipStorePath=wrapper/dists
-    """
+
+        props_content = (
+            "distributionBase=GRADLE_USER_HOME\n"
+            "distributionPath=wrapper/dists\n"
+            f"distributionUrl=https\\://services.gradle.org/distributions/gradle-{version}-bin.zip\n"
+            "zipStoreBase=GRADLE_USER_HOME\n"
+            "zipStorePath=wrapper/dists\n"
+        )
+
         with open(wrapper_props, "w") as f:
             f.write(props_content)
-    
+
         logger.info(f"  ✓ Gradle wrapper set to version {version}")
     
     def get_source_dirs(self) -> list:
