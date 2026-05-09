@@ -36,6 +36,12 @@ fixed_repos = [
         "snapshots": "false",
         "releases":  "true",
     },
+    {
+        "id": "apache-group-snapshots",
+        "url": "https://repository.apache.org/content/groups/snapshots/",
+        "snapshots": "true",
+        "releases": "false"
+    },
 ]
 
 def repo_xml(repo: dict) -> str:
