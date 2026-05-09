@@ -306,19 +306,20 @@ def restore_from_checkpoint(issue_id: str) -> bool:
 # ============================================================================
 # VERSION SELECTION
 # ============================================================================
+
 def get_toolchain(year: int) -> dict:
     if year <= 2017:
-        return {"java_major": "8", "maven": "3.0.5", "gradle": "4.10", "java_source": "1.8", "year": year}
+        return {"java_major": "8",  "java_source": "1.8", "gradle": "4.10.3", "maven": "3.0.5", "year": year}
     elif year <= 2019:
-        return {"java_major": "8", "maven": "3.5.4", "gradle": "5.6",  "java_source": "1.8", "year": year}
+        return {"java_major": "8",  "java_source": "1.8", "gradle": "5.6.4",  "maven": "3.5.4", "year": year}
     elif year <= 2021:
-        return {"java_major": "8", "maven": "3.8.1", "gradle": "6.9",  "java_source": "1.8", "year": year}
+        return {"java_major": "8",  "java_source": "1.8", "gradle": "6.9.4",  "maven": "3.8.1", "year": year}
     elif year <= 2023:
-        return {"java_major": "11", "maven": "3.8.6", "gradle": "7.6", "java_source": "11",  "year": year}
+        return {"java_major": "11", "java_source": "11",  "gradle": "7.6.4",  "maven": "3.8.6", "year": year}
     elif year <= 2024:
-        return {"java_major": "11", "maven": "3.9.9", "gradle": "8.5", "java_source": "11",  "year": year}
+        return {"java_major": "11", "java_source": "11",  "gradle": "8.5", "maven": "3.9.9", "year": year}
     else:
-        return {"java_major": "17", "maven": "3.9.9", "gradle": "8.7", "java_source": "17",  "year": year}
+        return {"java_major": "17", "java_source": "17",  "gradle": "8.7",  "maven": "3.9.9",  "year": year}
 
 def get_protoc_bin(year: int) -> str:
     """
@@ -476,17 +477,49 @@ class GradleBuildSystem(BuildSystem):
 
     def build(self) -> bool:
         logger.info(f"Gradle Build - Java {self.toolchain['java_major']}")
-        
+    
         env = os.environ.copy()
         env["JAVA_HOME"] = self.java_home
         env["PATH"] = f"{self.java_home}/bin:{env.get('PATH', '')}"
-        
-        # Use gradlew if it exists, otherwise gradle
-        gradle_cmd = "./gradlew" if os.path.exists(os.path.join(self.repo_path, "gradlew")) else "gradle"
-        
+    
+        # Override the Gradle wrapper version to match the commit year
+        # This avoids jcenter()/compile() removal issues in Gradle 7+
+        gradle_version = self.toolchain.get("gradle", "6.9")
+        self._set_gradle_wrapper_version(gradle_version)
+    
+        gradle_cmd = "./gradlew" if os.path.exists(
+            os.path.join(self.repo_path, "gradlew")) else "gradle"
+    
         cmd = [gradle_cmd] + CONFIG["gradle_tasks"] + CONFIG["gradle_skip_flags"]
-        
+    
         return self._execute_build(cmd, env)
+
+    def _set_gradle_wrapper_version(self, version: str):
+        """
+        Overwrite gradle-wrapper.properties to force a specific Gradle version.
+        This ensures old commits use a compatible Gradle version rather than
+        whatever the wrapper happened to specify (which may have been removed
+        from distribution servers) or defaulting to a too-new version.
+        """
+        wrapper_props = os.path.join(
+            self.repo_path,
+            "gradle", "wrapper", "gradle-wrapper.properties"
+        )
+    
+        if not os.path.exists(wrapper_props):
+            logger.warning(f"  gradle-wrapper.properties not found — skipping version override")
+            return
+    
+        props_content = f"""distributionBase=GRADLE_USER_HOME
+    distributionPath=wrapper/dists
+    distributionUrl=https\\://services.gradle.org/distributions/gradle-{version}-bin.zip
+    zipStoreBase=GRADLE_USER_HOME
+    zipStorePath=wrapper/dists
+    """
+        with open(wrapper_props, "w") as f:
+            f.write(props_content)
+    
+        logger.info(f"  ✓ Gradle wrapper set to version {version}")
     
     def get_source_dirs(self) -> list:
         sources = []
