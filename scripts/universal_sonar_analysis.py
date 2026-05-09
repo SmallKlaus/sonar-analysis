@@ -482,37 +482,97 @@ class GradleBuildSystem(BuildSystem):
         env["JAVA_HOME"] = self.java_home
         env["PATH"] = f"{self.java_home}/bin:{env.get('PATH', '')}"
     
-        # Override the Gradle wrapper version to match the commit year
-        # This avoids jcenter()/compile() removal issues in Gradle 7+
-        gradle_version = self.toolchain.get("gradle", "6.9")
-        self._set_gradle_wrapper_version(gradle_version)
+        gradle_version = self.toolchain.get("gradle", "6.9.4")
+        gradle_cmd = self._resolve_gradle_executable(gradle_version, env)
     
-        gradle_cmd = "./gradlew" if os.path.exists(
-            os.path.join(self.repo_path, "gradlew")) else "gradle"
+        if gradle_cmd is None:
+            logger.error("✗ Could not obtain a Gradle executable")
+            return False
     
         cmd = [gradle_cmd] + CONFIG["gradle_tasks"] + CONFIG["gradle_skip_flags"]
-    
         return self._execute_build(cmd, env)
-
+    
+    
+    def _resolve_gradle_executable(self, version: str, env: dict) -> str | None:
+        """
+        Returns the path to a gradle executable at the correct version.
+        
+        Strategy:
+          1. If gradlew exists → override wrapper properties → return './gradlew'
+          2. If no gradlew → download the correct Gradle binary → return its path
+        """
+        gradlew = os.path.join(self.repo_path, "gradlew")
+    
+        if os.path.exists(gradlew):
+            self._set_gradle_wrapper_version(version)
+            # Make sure gradlew is executable
+            os.chmod(gradlew, 0o755)
+            return "./gradlew"
+    
+        # No gradlew — download Gradle directly
+        logger.info(f"  No gradlew found — downloading Gradle {version} directly")
+        return self._download_gradle(version)
+    
+    
+    def _download_gradle(self, version: str) -> str | None:
+        """
+        Downloads a specific Gradle version to ~/.gradle-installs/ if not
+        already present, and returns the path to its bin/gradle executable.
+        """
+        install_dir = os.path.expanduser(f"~/.gradle-installs/gradle-{version}")
+        gradle_bin  = os.path.join(install_dir, "bin", "gradle")
+    
+        if os.path.exists(gradle_bin):
+            logger.info(f"  ✓ Gradle {version} already downloaded at {gradle_bin}")
+            return gradle_bin
+    
+        zip_url  = f"https://services.gradle.org/distributions/gradle-{version}-bin.zip"
+        zip_path = f"/tmp/gradle-{version}-bin.zip"
+        parent   = os.path.expanduser("~/.gradle-installs")
+        os.makedirs(parent, exist_ok=True)
+    
+        logger.info(f"  Downloading {zip_url} ...")
+        try:
+            result = subprocess.run(
+                ["wget", "-q", zip_url, "-O", zip_path],
+                check=True, timeout=120
+            )
+            subprocess.run(
+                ["unzip", "-q", zip_path, "-d", parent],
+                check=True, timeout=60
+            )
+            os.remove(zip_path)
+    
+            # The zip extracts to gradle-{version}/ inside parent
+            extracted = os.path.join(parent, f"gradle-{version}")
+            if not os.path.isdir(extracted):
+                logger.error(f"  ✗ Expected extracted dir not found: {extracted}")
+                return None
+    
+            # Rename to our canonical install_dir if different
+            if extracted != install_dir:
+                os.rename(extracted, install_dir)
+    
+            os.chmod(gradle_bin, 0o755)
+            logger.info(f"  ✓ Gradle {version} installed at {gradle_bin}")
+            return gradle_bin
+    
+        except Exception as e:
+            logger.error(f"  ✗ Failed to download Gradle {version}: {e}")
+            return None
+    
+    
     def _set_gradle_wrapper_version(self, version: str):
-        # Search for gradle-wrapper.properties anywhere in the repo
-        # instead of assuming a fixed path (structure varies across projects/commits)
         wrapper_props = None
         for root, dirs, files in os.walk(self.repo_path):
-            # Don't search inside build output directories
             dirs[:] = [d for d in dirs if d not in ["build", ".gradle", "node_modules"]]
             if "gradle-wrapper.properties" in files:
                 wrapper_props = os.path.join(root, "gradle-wrapper.properties")
                 break
     
         if wrapper_props is None:
-            logger.warning("  gradle-wrapper.properties not found anywhere in repo")
-            # Log what IS at the top level to help diagnose
-            top_level = os.listdir(self.repo_path)
-            logger.warning(f"  Repo top-level contents: {top_level}")
+            logger.warning("  gradle-wrapper.properties not found — wrapper override skipped")
             return
-    
-        logger.info(f"  Found wrapper at: {os.path.relpath(wrapper_props, self.repo_path)}")
     
         props_content = (
             "distributionBase=GRADLE_USER_HOME\n"
@@ -521,11 +581,11 @@ class GradleBuildSystem(BuildSystem):
             "zipStoreBase=GRADLE_USER_HOME\n"
             "zipStorePath=wrapper/dists\n"
         )
-    
         with open(wrapper_props, "w") as f:
             f.write(props_content)
     
-        logger.info(f"  ✓ Gradle wrapper set to version {version}")
+        logger.info(f"  ✓ Gradle wrapper overridden → {version} "
+                    f"({os.path.relpath(wrapper_props, self.repo_path)})")
     
     def get_source_dirs(self) -> list:
         sources = []
