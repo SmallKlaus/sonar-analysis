@@ -489,8 +489,69 @@ class GradleBuildSystem(BuildSystem):
             logger.error("✗ Could not obtain a Gradle executable")
             return False
     
+        # Inject init script to redirect dead repositories
+        self._inject_init_script()
+    
         cmd = [gradle_cmd] + CONFIG["gradle_tasks"] + CONFIG["gradle_skip_flags"]
         return self._execute_build(cmd, env)
+    
+    
+    def _inject_init_script(self):
+        """
+        Write a Gradle init script that redirects dead repositories
+        (JCenter/Bintray) to Maven Central and other live mirrors.
+        Gradle automatically picks up init scripts from ~/.gradle/init.d/
+        """
+        init_dir = os.path.expanduser("~/.gradle/init.d")
+        os.makedirs(init_dir, exist_ok=True)
+    
+        init_script = os.path.join(init_dir, "redirect-dead-repos.gradle")
+    
+        # Only write once per runner session
+        if os.path.exists(init_script):
+            return
+    
+        script_content = """
+    allprojects {
+        buildscript {
+            repositories {
+                // Replace dead JCenter/Bintray URLs with Maven Central
+                all { ArtifactRepository repo ->
+                    if (repo instanceof MavenArtifactRepository) {
+                        def url = repo.url.toString()
+                        if (url.contains('jcenter.bintray.com') ||
+                            url.contains('dl.bintray.com') ||
+                            url.contains('plugins.gradle.org') == false &&
+                            url.contains('bintray.com')) {
+                            logger.lifecycle("Redirecting dead repo ${url} → Maven Central")
+                            remove repo
+                        }
+                    }
+                }
+                maven { url 'https://repo.maven.apache.org/maven2' }
+                maven { url 'https://plugins.gradle.org/m2/' }
+            }
+        }
+        repositories {
+            all { ArtifactRepository repo ->
+                if (repo instanceof MavenArtifactRepository) {
+                    def url = repo.url.toString()
+                    if (url.contains('jcenter.bintray.com') ||
+                        url.contains('dl.bintray.com')) {
+                        logger.lifecycle("Redirecting dead repo ${url} → Maven Central")
+                        remove repo
+                    }
+                }
+            }
+            maven { url 'https://repo.maven.apache.org/maven2' }
+            maven { url 'https://plugins.gradle.org/m2/' }
+        }
+    }
+    """
+        with open(init_script, "w") as f:
+            f.write(script_content)
+    
+        logger.info(f"  ✓ Gradle init script injected → {init_script}")
     
     
     def _resolve_gradle_executable(self, version: str, env: dict) -> str | None:
