@@ -1,0 +1,610 @@
+{
+  "HDDS-9306": {
+    "jira_id": "HDDS-9306",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Freon ockrw should have default values for reads and list keys distribution",
+    "description": "{code:java}\r\nozone freon ockrw\r\n{code}\r\nThis command requires specifying the percentage of reads and list operations. This makes the CLI invocation long when one wants to create a few keys. This issue is to track making the reads and list to default to 0 and the command to run a pure create workload unless specified to do reads and or list keys.",
+    "commits": [
+      {
+        "sha": "495ae028d57e79815a076e794813be273137496e",
+        "message": "HDDS-9306: Default reads/lists to 0 (freon ockrw)",
+        "author": "kerneltime",
+        "date": "2023-09-18T16:19:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OzoneClientKeyReadWriteListOps.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OzoneClientKeyReadWriteListOps.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 269,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "58981fd5e12a40441bf607520813ae98c6e6aefe",
+    "sha_after": "ac391aa0ce2e377c9533f259a965f7e9bec97ea7",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OzoneClientKeyReadWriteListOps.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OzoneClientKeyReadWriteListOps.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 280,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Modify Attribute Annotation": 2
+    }
+  },
+  "HDDS-9289": {
+    "jira_id": "HDDS-9289",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "LOG improvement when downloading container fails from DN",
+    "description": "When downloading container, if SimpleContainerDownloader fails to get container data from one datanodes and it'll try other datanodes, LOG message should print that out.",
+    "commits": [
+      {
+        "sha": "06cd0f3be6c84ee1e9a00c035acfd352c1bdbbf5",
+        "message": "HDDS-9289.LOG improvement when downloading container fails from DN",
+        "author": "DaveTeng0",
+        "date": "2023-09-14T22:35:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/SimpleContainerDownloader.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/SimpleContainerDownloader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "59ec64a86d7b91a715d038f1951cad2c27d25bfe",
+        "message": "fix checkstyle error",
+        "author": "DaveTeng0",
+        "date": "2023-09-15T05:26:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/SimpleContainerDownloader.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/SimpleContainerDownloader.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 141,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ac391aa0ce2e377c9533f259a965f7e9bec97ea7",
+    "sha_after": "33146d5d62ee20258a35e10506be1e70a67e2df4",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/SimpleContainerDownloader.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/SimpleContainerDownloader.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 135,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Parameter": 2
+    }
+  },
+  "HDDS-9305": {
+    "jira_id": "HDDS-9305",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "ozone admin om roles --service-id improvement",
+    "description": "Currently, for ozone admin om roles command, we need to specify the om service ID as its a mandatory parameter.\r\n{noformat}\r\nbash-4.2$ ozone admin om roles\r\nMissing required option: '--service-id=<omServiceId>'\r\nUsage: ozone admin om roles [-hV] [--json] -id=<omServiceId>\r\nList all OMs and their respective Ratis server roles\r\n  -h, --help      Show this help message and exit.\r\n      -id, --service-id=<omServiceId>\r\n                  OM Service ID\r\n      --json      Format output as JSON\r\n  -V, --version   Print version information and exit.\r\n{noformat}\r\nThe aim is to pick the default om service ID when explicilty not specified. ",
+    "commits": [
+      {
+        "sha": "72661b35b5cd647aa349f0f9f8293576ea10dc4c",
+        "message": "HDDS-9305. ozone admin om roles --service-id improvement",
+        "author": "LZD-PratyushBhatt",
+        "date": "2023-09-18T14:50:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/GetServiceRolesSubcommand.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/GetServiceRolesSubcommand.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 113,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "0562709827c1f3f991767828873e177790c0fca9",
+        "message": "HDDS-9305. Indentation and jq fix",
+        "author": "LZD-PratyushBhatt",
+        "date": "2023-09-18T17:30:05Z",
+        "files": []
+      },
+      {
+        "sha": "33bd067b9e41e92f8b5f9e109e4563c217803670",
+        "message": "HDDS-9305. Added keywords, and separated the functionality into more tests",
+        "author": "LZD-PratyushBhatt",
+        "date": "2023-09-19T14:50:25Z",
+        "files": []
+      },
+      {
+        "sha": "48a31fa7572d550395ee3f48c8927d7a7360e304",
+        "message": "Added case for multiple service ID",
+        "author": "LZD-PratyushBhatt",
+        "date": "2023-09-20T12:26:13Z",
+        "files": []
+      },
+      {
+        "sha": "0d353816565058c9c5856b882670756f661673b9",
+        "message": "Renamed variable and removed finalized part from message",
+        "author": "LZD-PratyushBhatt",
+        "date": "2023-09-21T02:40:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/OMAdmin.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/OMAdmin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "ca151a4f61a3e81f22f0e9e0f86faf504e526e1c",
+    "sha_after": "0026c6f5579b8006db2e546249ba6e84313afafd",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/GetServiceRolesSubcommand.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/GetServiceRolesSubcommand.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 113,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/OMAdmin.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/OMAdmin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 153,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Modify Attribute Annotation": 1
+    }
+  },
+  "HDDS-9313": {
+    "jira_id": "HDDS-9313",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Make OM service ID optional for `ozone admin om fetch-key` if only one is defined in config",
+    "description": "Currently, for ozone admin om fetch-key command, we need to specify the om service ID as its a mandatory parameter.\r\n{noformat}\r\nozone admin om fetch-key\r\nMissing required option: '--service-id=<omServiceId>'\r\nUsage: ozone admin om fetch-key [-hV] -id=<omServiceId>\r\nCLI command to force OM to fetch the latest secret key from SCM.\r\n  -h, --help      Show this help message and exit.\r\n      -id, --service-id=<omServiceId>\r\n                  Ozone Manager Service ID\r\n  -V, --version   Print version information and exit. {noformat}\r\nThe aim is to pick the default om service ID when explicilty not specified. ",
+    "commits": [
+      {
+        "sha": "3525f559f77f0b552709575d3d5f2325eec3d672",
+        "message": "HDDS-9313. ozone admin om fetch-key improvement",
+        "author": "LZD-PratyushBhatt",
+        "date": "2023-09-21T11:40:18Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/FetchKeySubCommand.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/FetchKeySubCommand.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 55,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "456d8259a30bbd85c0522c227e64784adb9a217d",
+        "message": "HDDS-9313. SPlitted scenarios into multiple test cases.",
+        "author": "LZD-PratyushBhatt",
+        "date": "2023-09-22T03:38:44Z",
+        "files": []
+      },
+      {
+        "sha": "aa2d8e599b869fe36ed584cab56a90caa290e5eb",
+        "message": "HDDS-9313. Added execution for acceptance test.",
+        "author": "LZD-PratyushBhatt",
+        "date": "2023-09-22T12:17:47Z",
+        "files": []
+      }
+    ],
+    "sha_before": "836b687adc579ddc508e611246f6009b4417925f",
+    "sha_after": "baf82d8380439be467e2612ef500f25d655fd931",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/FetchKeySubCommand.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/admin/om/FetchKeySubCommand.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 55,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Modify Attribute Annotation": 1
+    }
+  },
+  "HDDS-9294": {
+    "jira_id": "HDDS-9294",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Avoid creating Managed objects per get request.",
+    "description": "Avoid creating Managed objects per request to avoid the finalizer cost",
+    "commits": [
+      {
+        "sha": "6b078cdf1d95b6d36a6cbe6d53927fdecee0786b",
+        "message": "HDDS-9294. Avoid creating Managed objects per get request.",
+        "author": "duongkame",
+        "date": "2023-09-15T23:47:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/db/RocksDatabase.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/db/RocksDatabase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1017,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "4b43f158b8b5f9e0d1a58ffe81d3411729337c66",
+    "sha_after": "8af522bff5563923a0631e5c3a6c9eb7c36e46a0",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/db/RocksDatabase.java",
+        "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/db/RocksDatabase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1017,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Replace Variable With Attribute": 1
+    }
+  },
+  "HDDS-9348": {
+    "jira_id": "HDDS-9348",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Improving parsing speed of DB Scanner ",
+    "description": "",
+    "commits": [
+      {
+        "sha": "3ad6b6bab22a7aa81fe681985161b9e7c8989760",
+        "message": "Improving parsing speed of DB Scanner",
+        "author": "xichen01",
+        "date": "2023-09-25T12:07:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/debug/TestLDBCli.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/debug/TestLDBCli.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 331,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 359,
+            "LINES_DELETED": 72,
+            "PARENT_LOC": 367,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4cc59ebef17bf24a69d6e86632c9b6bf3114c132",
+        "message": "findbugs",
+        "author": "xichen01",
+        "date": "2023-09-25T15:41:40Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 654,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f58202cb28ed9335d33331dce9a26327983e9b70",
+        "message": "Fix some issue",
+        "author": "xichen01",
+        "date": "2023-09-26T12:38:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 29,
+            "PARENT_LOC": 667,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "607a4ebe53c86757b8c86cdbf339e6df66028a1f",
+        "message": "Make BATCH_SIZE and THREAD_COUNT parameterized",
+        "author": "xichen01",
+        "date": "2023-10-03T12:17:23Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 654,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "75b7d6df0451b38a632e27464338f7b0ffc7c0b5",
+        "message": "Avoid close the system out; locked when drainRemainingMessages",
+        "author": "xichen01",
+        "date": "2023-10-05T16:52:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 662,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4937ba6254ee0c6d22b42bd0bf183f8ceb57f746",
+        "message": "Fix unit test",
+        "author": "xichen01",
+        "date": "2023-10-08T07:19:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 665,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "fac68c3675734e4db8dcd596f5b63fea70898739",
+        "message": "refactor displayTable",
+        "author": "xichen01",
+        "date": "2023-10-09T16:58:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 666,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "31823e2d7fc05259713cca98960f992dcacedb1f",
+        "message": "remove unused import",
+        "author": "xichen01",
+        "date": "2023-10-09T17:00:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 661,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3aa50b69c62a5a3ca6ef24c4f67d8a4ab55ee0b9",
+        "message": "trigger new CI check",
+        "author": "adoroszlai",
+        "date": "2023-10-10T20:38:31Z",
+        "files": []
+      }
+    ],
+    "sha_before": "5635e5e4e689ea0fcee978812dffb6e227fabfd5",
+    "sha_after": "41c70162179f6ff93c81ec59a8033f4e518fea28",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/debug/TestLDBCli.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/debug/TestLDBCli.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 331,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/DBScanner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 358,
+        "LINES_DELETED": 65,
+        "PARENT_LOC": 367,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 15,
+    "refactorings": {
+      "Replace Conditional With Ternary": 6,
+      "Add Attribute Modifier": 3,
+      "Add Method Modifier": 2,
+      "Rename Attribute": 1,
+      "Extract Method": 1,
+      "Rename Parameter": 1,
+      "Remove Thrown Exception Type": 1
+    }
+  },
+  "HDDS-9424": {
+    "jira_id": "HDDS-9424",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Add a metric to indicate how many concurrent requests an RPC Server (OM, SCM) is handling",
+    "description": "The new metric shows how many threads are really working in an RPC server.",
+    "commits": [
+      {
+        "sha": "9352b2b288fa1f582c49002f8e16a06fe8bb8c5b",
+        "message": "HDDS-9424. Add a metric to indicate how many concurrent requests an RPC Server (OM, SCM) is handling",
+        "author": "duongkame",
+        "date": "2023-10-10T17:12:20Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/server/OzoneProtocolMessageDispatcher.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/server/OzoneProtocolMessageDispatcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 110,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 115,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "62eb47ffbb6198a87d2de361566711d1c3071bdc",
+        "message": "fix checkstyle",
+        "author": "duongkame",
+        "date": "2023-10-11T02:03:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 129,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2c09916344b38f01288de992ed34b46b2e571df5",
+        "message": "address pr comments.",
+        "author": "duongkame",
+        "date": "2023-10-13T18:20:05Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/server/OzoneProtocolMessageDispatcher.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/server/OzoneProtocolMessageDispatcher.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 129,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "158e71cc77e813d6de5fe4330c37d020b392b7b9",
+        "message": "remove unused methods.",
+        "author": "duongkame",
+        "date": "2023-10-13T18:21:41Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+            "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 140,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "607122cc4a7790eb5119f0888b3ac9062df90e2a",
+    "sha_after": "1f2f21e363621a5b2d05f8c235aa709774e8d1f1",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/server/OzoneProtocolMessageDispatcher.java",
+        "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/server/OzoneProtocolMessageDispatcher.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 110,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+        "CHILD_PATH": "hadoop-hdds/framework/src/main/java/org/apache/hadoop/hdds/utils/ProtocolMessageMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 115,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Add Attribute Modifier": 6,
+      "Try With Resources": 1
+    }
+  }
+}

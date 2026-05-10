@@ -1,0 +1,840 @@
+{
+  "KAFKA-6586": {
+    "jira_id": "KAFKA-6586",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "Refactor Connect executables",
+    "description": "The main methods in {{ConnectDistributed}} and {{ConnectStandalone}} have a lot of duplication, and it'd be good to refactor to centralize the logic. We can pull most of this logic into an abstract class that {{ConnectStandalone}} and {{ConnectDistributed}} both extend. At a glance, the differences between the two are different config and Herder implementations and some different initialization logic.",
+    "commits": [
+      {
+        "sha": "5f97dd0b77588684009e3f48fe7d32e772ba4273",
+        "message": "Minor Javadoc cleanups",
+        "author": "yashmayya",
+        "date": "2022-12-07T17:18:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/AbstractConnectCli.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/AbstractConnectCli.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 123,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "86df7c561029f44f7c2a1292f6eaba17e5d7d8d7",
+        "message": "Refactor Connect CLI classes",
+        "author": "yashmayya",
+        "date": "2022-12-12T08:31:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/AbstractConnectCli.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/AbstractConnectCli.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 59,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 120,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectDistributed.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectDistributed.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 25,
+            "PARENT_LOC": 126,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectStandalone.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectStandalone.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 24,
+            "PARENT_LOC": 91,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "6d8e13603f33f67c07a93259f9b594d3a75f01c0",
+        "message": "Update ConnectStandalone Javadoc",
+        "author": "yashmayya",
+        "date": "2022-12-13T16:38:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectStandalone.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectStandalone.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 98,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b12909419f479aa33b4151ac56b2136fb3063ac0",
+        "message": "Revert error message wording",
+        "author": "yashmayya",
+        "date": "2022-12-15T07:33:31Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectStandalone.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectStandalone.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 110,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "2dcf306ef839ada65ba021e0a9c0a046b754adf3",
+    "sha_after": "a2868915664be4ab58ae5b11e4d955a6263223eb",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/AbstractConnectCli.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/AbstractConnectCli.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 153,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectDistributed.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectDistributed.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 29,
+        "LINES_DELETED": 76,
+        "PARENT_LOC": 159,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectStandalone.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/cli/ConnectStandalone.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 52,
+        "LINES_DELETED": 76,
+        "PARENT_LOC": 134,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 8,
+    "refactorings": {
+      "Rename Method": 1,
+      "Change Return Type": 1,
+      "Add Method Annotation": 1,
+      "Change Method Access Modifier": 1,
+      "Change Variable Type": 1,
+      "Rename Variable": 1,
+      "Pull Up Attribute": 1,
+      "Extract Superclass": 1
+    }
+  },
+  "KAFKA-14610": {
+    "jira_id": "KAFKA-14610",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Publish Mirror Maker 2 offset syncs in task commit method",
+    "description": "Mirror Maker 2 periodically publishes offset sync messages to a Kafka topic that contains the corresponding upstream and downstream offsets for a replicated topic partition.\r\n\r\n \r\n\r\nCurrently, this publishing takes place inside the [commitRecord method|https://github.com/apache/kafka/blob/e38526e375389868664c8977c7a2125e5da2388c/connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java#L192], which is invoked by the Kafka Connect framework after a source record has been successfully sent by its producer (i.e., ack'd by the requested number of brokers).\r\n\r\n \r\n\r\nMirror Maker 2 also has logic to limit the number of in-flight offset sync messages. Once ten messages have been dispatched to the producer used for offset syncs (which is a separate producer from the one that the Kafka Connect framework uses for sending records received from the [poll method|https://github.com/apache/kafka/blob/e38526e375389868664c8977c7a2125e5da2388c/connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java#L134]) that have not yet been ack'd by the requested number of brokers, Mirror Maker 2 begins to skip sending offset sync messages, and will only resume sending messages once the number of in-flight offset syncs goes below 10, and new calls to the {{commitRecord}} method take place.\r\n\r\n \r\n\r\nWhen bursts of throughput occur in replicated topic partitions, this can cause offset syncs to be dropped for long periods of time if an offset sync is skipped for some topic partition due to a high number of in-flight messages and then no further messages are read from that same topic partition for a while.\r\n\r\n \r\n\r\nInstead, the task should cache offset syncs in its {{{}commitRecord method{}}}, and only actually send offset sync messages in its [commit method|https://github.com/apache/kafka/blob/e38526e375389868664c8977c7a2125e5da2388c/connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java#L108], which is invoked periodically by the Kafka Connect framework. Any offset syncs that are skipped due to too many in-flight messages will then be automatically retried later when {{commit}} is re-invoked, regardless of whether any more records are read from the corresponding topic partition.",
+    "commits": [
+      {
+        "sha": "a4c78deca11f16786b7dbfd64db0b818ef41ae97",
+        "message": "KAFKA-14610: Publish Mirror Maker 2 offset syncs in task commit() method",
+        "author": "C0urante",
+        "date": "2023-01-13T16:09:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 45,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 310,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceTaskTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceTaskTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 341,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1b685c943c0c628a0b71f718b7a0d130f0aeef69",
+        "message": "Demote frequent log messages to TRACE",
+        "author": "C0urante",
+        "date": "2023-02-01T15:47:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 338,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "4a7fedd46a7fc1eff5411a0f4329781c9474f8e8",
+    "sha_after": "9ab689f7d45458e92883019f54fdcf9a2d9ce456",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 45,
+        "LINES_DELETED": 17,
+        "PARENT_LOC": 310,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceTaskTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceTaskTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 341,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Rename Method": 1,
+      "Parameterize Variable": 1,
+      "Merge Parameter": 1,
+      "Change Return Type": 1
+    }
+  },
+  "KAFKA-14742": {
+    "jira_id": "KAFKA-14742",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Flaky ExactlyOnceSourceIntegrationTest.testConnectorBoundary OOMs",
+    "description": "The ExactlyOnceSourceIntegrationTest appears to occasionally throw the following exception in my local test runs:\r\n{noformat}\r\njava.lang.OutOfMemoryError: GC overhead limit exceeded\r\n\tat java.base/java.util.HashMap.newNode(HashMap.java:1901)\r\n\tat java.base/java.util.HashMap.putVal(HashMap.java:629)\r\n\tat java.base/java.util.HashMap.put(HashMap.java:610)\r\n\tat java.base/java.util.HashSet.add(HashSet.java:221)\r\n\tat java.base/java.util.stream.Collectors$$Lambda$6/0x800000011.accept(Unknown Source)\r\n\tat java.base/java.util.stream.ReduceOps$3ReducingSink.accept(ReduceOps.java:169)\r\n\tat java.base/java.util.stream.LongPipeline$1$1.accept(LongPipeline.java:177)\r\n\tat java.base/java.util.stream.Streams$RangeLongSpliterator.forEachRemaining(Streams.java:228)\r\n\tat java.base/java.util.Spliterator$OfLong.forEachRemaining(Spliterator.java:775)\r\n\tat java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)\r\n\tat java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)\r\n\tat java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)\r\n\tat java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)\r\n\tat java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)\r\n\tat org.apache.kafka.connect.integration.ExactlyOnceSourceIntegrationTest.lambda$assertSeqnos$9(ExactlyOnceSourceIntegrationTest.java:964)\r\n\tat org.apache.kafka.connect.integration.ExactlyOnceSourceIntegrationTest$$Lambda$2500/0x00000008015a1908.accept(Unknown Source)\r\n\tat java.base/java.util.HashMap.forEach(HashMap.java:1421)\r\n\tat org.apache.kafka.connect.integration.ExactlyOnceSourceIntegrationTest.assertSeqnos(ExactlyOnceSourceIntegrationTest.java:961)\r\n\tat org.apache.kafka.connect.integration.ExactlyOnceSourceIntegrationTest.assertExactlyOnceSeqnos(ExactlyOnceSourceIntegrationTest.java:939)\r\n\tat org.apache.kafka.connect.integration.ExactlyOnceSourceIntegrationTest.testIntervalBoundary(ExactlyOnceSourceIntegrationTest.java:358)\r\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\r\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\r\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\r\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:568)\r\n\tat org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)\r\n\tat org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)\r\n\tat org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)\r\n\tat org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)\r\n\tat org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)\r\n\tat org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)\r\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\r\n\tat org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100){noformat}\r\nIt appears that the data produced by the connectors under test is too large to be asserted on with the current assertions' memory overhead. We should try to optimize the assertions' overhead and or reduce the number of records being asserted on.",
+    "commits": [
+      {
+        "sha": "312b56cb6989d913086f8fec0ddaae65056f99f3",
+        "message": "KAFKA-14742: Throttle connectors in ExactlyOnceSourceIntegrationTest to fix flakey OOMEs",
+        "author": "gharris1727",
+        "date": "2023-02-22T20:12:26Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/ExactlyOnceSourceIntegrationTest.java",
+            "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/ExactlyOnceSourceIntegrationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1222,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/MonitorableSourceConnector.java",
+            "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/MonitorableSourceConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 277,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "47de1ba8bbba23bb8de960a78de0c33bd4643e63",
+        "message": "fixup: rename config constant, use meaningful constant names in EOSIT",
+        "author": "gharris1727",
+        "date": "2023-02-27T20:42:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/ExactlyOnceSourceIntegrationTest.java",
+            "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/ExactlyOnceSourceIntegrationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 54,
+            "LINES_DELETED": 60,
+            "PARENT_LOC": 1230,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/MonitorableSourceConnector.java",
+            "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/MonitorableSourceConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 278,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "30795674615180af43377c79d106c559102e2522",
+    "sha_after": "867fb295d0b4e91d650d21594eeb515bd9accc54",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/ExactlyOnceSourceIntegrationTest.java",
+        "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/ExactlyOnceSourceIntegrationTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 54,
+        "LINES_DELETED": 52,
+        "PARENT_LOC": 1222,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/MonitorableSourceConnector.java",
+        "CHILD_PATH": "connect/runtime/src/test/java/org/apache/kafka/connect/integration/MonitorableSourceConnector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 277,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 8,
+    "refactorings": {
+      "Replace Variable With Attribute": 6,
+      "Extract Attribute": 2
+    }
+  },
+  "KAFKA-14770": {
+    "jira_id": "KAFKA-14770",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Allow dynamic keystore update for brokers if string representation of DN matches even if canonical DNs don't match",
+    "description": "To avoid mistakes during dynamic broker config updates that could potentially affect clients, we restrict changes that can be performed dynamically without broker restart. For broker keystore updates, we require the DN to be the same for the old and new certificates since this could potentially contain host names used for host name verification by clients. DNs are compared using standard Java implementation of X500Principal.equals() which compares canonical names. If tags of fields change from one with a printable string representation and one without or vice-versa, canonical name check fails even if the actual name is the same since canonical representation converts to hex for some tags only. We can relax the verification to allow dynamic updates in this case by enabling dynamic update if either the canonical name or the RFC2253 string representation of the DN matches.",
+    "commits": [
+      {
+        "sha": "20ce0706cb0826d8829d07c4e15f84a4212faf4b",
+        "message": "KAFKA-14770: Allow dynamic keystore update for brokers if string representation of DN matches even if canonical DNs don't match",
+        "author": "rajinisivaram",
+        "date": "2023-03-06T09:39:06Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/security/ssl/SslFactory.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/security/ssl/SslFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 482,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/security/ssl/SslFactoryTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/security/ssl/SslFactoryTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 38,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 547,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/test/TestSslUtils.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/test/TestSslUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 623,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6d37b0f07ff56ede7b4e066cf873f8b67ca449d1",
+    "sha_after": "4d43abf1e09e01fc5e7af52f65e3fbae02cf9771",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/security/ssl/SslFactory.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/security/ssl/SslFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 482,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/security/ssl/SslFactoryTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/security/ssl/SslFactoryTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 38,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 547,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/test/TestSslUtils.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/test/TestSslUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 623,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Variable": 2,
+      "Extract Method": 1,
+      "Inline Variable": 1
+    }
+  },
+  "KAFKA-14021": {
+    "jira_id": "KAFKA-14021",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "MirrorMaker 2 should implement KIP-618 APIs",
+    "description": "The {{MirrorSourceConnector}} class should implement the new APIs added by KIP-618.\r\n\r\nThis includes the [SourceConnector::exactlyOnceSupport|https://github.com/apache/kafka/blob/025e47b8334eb7125c7fdd2f725a2fef3c98344c/connect/api/src/main/java/org/apache/kafka/connect/source/SourceConnector.java#L34-L54] method and, potentially, the [SourceConnector::canDefineTransactionBoundaries|https://github.com/apache/kafka/blob/025e47b8334eb7125c7fdd2f725a2fef3c98344c/connect/api/src/main/java/org/apache/kafka/connect/source/SourceConnector.java#L56-L73] method.",
+    "commits": [
+      {
+        "sha": "6be3cf652329b92736a4ed4e92a5ee1d0704b575",
+        "message": "KAFKA-14021: Require MM2 source cluster consumers to use 'read_committed' isolation level for exactly-once support",
+        "author": "C0urante",
+        "date": "2022-07-24T05:29:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 523,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConnectorTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConnectorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 91,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 342,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "70ab525f24d26e366777d98dc2a944a1315078cf",
+        "message": "Add integration test for exactly-once support in MirrorMaker 2, update README",
+        "author": "C0urante",
+        "date": "2022-10-27T15:12:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/IdentityReplicationIntegrationTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/IdentityReplicationIntegrationTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 272,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/MirrorConnectorsIntegrationBaseTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/MirrorConnectorsIntegrationBaseTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 836,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/MirrorConnectorsIntegrationExactlyOnceTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/MirrorConnectorsIntegrationExactlyOnceTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 52,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/DistributedConfig.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/DistributedConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 686,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b091b36f8d7be7a9c670894fa19b860fd5b8fc21",
+        "message": "KAFKA-14021: Improve README wording and config validation error message",
+        "author": "C0urante",
+        "date": "2022-12-01T16:04:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 566,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "77f10aa1f2485d1735370597b4ed7a74de66fac8",
+        "message": "Improve resilience of exactly-once support validation to invalid configs",
+        "author": "C0urante",
+        "date": "2023-02-09T20:23:21Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/config/AbstractConfig.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/config/AbstractConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 680,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/Utils.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/Utils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 38,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1523,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/UtilsTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/UtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 939,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 284,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMakerConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMakerConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 325,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 566,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConnectorTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConnectorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 432,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "959756ae9d14f434109525aa43513358a27bf75c",
+    "sha_after": "8cfafba2794562840b0f1c537e304f084b9359cf",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/config/AbstractConfig.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/config/AbstractConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 680,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/Utils.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/Utils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 38,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1523,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/UtilsTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/UtilsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 939,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 284,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMakerConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMakerConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 325,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 49,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 517,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConnectorTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConnectorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 124,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 337,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/DedicatedMirrorIntegrationTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/DedicatedMirrorIntegrationTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 290,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/IdentityReplicationIntegrationTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/IdentityReplicationIntegrationTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 272,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/MirrorConnectorsIntegrationBaseTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/MirrorConnectorsIntegrationBaseTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 836,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/MirrorConnectorsIntegrationExactlyOnceTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/integration/MirrorConnectorsIntegrationExactlyOnceTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 52,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/DistributedConfig.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/DistributedConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 686,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 9,
+    "refactorings": {
+      "Extract And Move Method": 2,
+      "Change Variable Type": 2,
+      "Extract Method": 1,
+      "Rename Variable": 1,
+      "Extract Variable": 1,
+      "Add Parameter": 1,
+      "Change Class Access Modifier": 1
+    }
+  },
+  "KAFKA-14740": {
+    "jira_id": "KAFKA-14740",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Missing source tag on MirrorSource metrics",
+    "description": "The metrics defined in MirrorSourceMetrics have the following tags \"target\", \"topic\", \"partition\". It would be good to also have a \"source\" tag with the source cluster alias.",
+    "commits": [
+      {
+        "sha": "265f4e5a4b39f2643399f38640e17e6f33649cf5",
+        "message": "KAFKA-14740: Add source tag to MirrorSourceMetrics - KIP-911",
+        "author": "mimaison",
+        "date": "2023-03-10T17:25:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 308,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceMetrics.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 66,
+            "LINES_DELETED": 49,
+            "PARENT_LOC": 163,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceMetricsTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceMetricsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 110,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "1b278c4e555c14d93b13c92a8ab633094820dde1",
+    "sha_after": "1d8f79964e9578f3769fd13c2535988bfc803696",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 308,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceMetrics.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 66,
+        "LINES_DELETED": 49,
+        "PARENT_LOC": 163,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceMetricsTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceMetricsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 110,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 24,
+    "refactorings": {
+      "Rename Attribute": 12,
+      "Remove Attribute Modifier": 12
+    }
+  },
+  "KAFKA-13999": {
+    "jira_id": "KAFKA-13999",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Add ProducerCount metrics (KIP-847)",
+    "description": "See https://cwiki.apache.org/confluence/display/KAFKA/KIP-847%3A+Add+ProducerCount+metrics",
+    "commits": [
+      {
+        "sha": "2b7089c750e91ac60e2db16cf96a2a540b7cda16",
+        "message": "KAFKA-13999: Add ProducerCount metrics (KIP-847)",
+        "author": "artemlivshits",
+        "date": "2022-08-29T21:23:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "storage/src/main/java/org/apache/kafka/storage/internals/log/ProducerStateManager.java",
+            "CHILD_PATH": "storage/src/main/java/org/apache/kafka/storage/internals/log/ProducerStateManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 27,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 678,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "dbfca48eca7bfa6fcc11352f3a69281242e005b5",
+        "message": "couple producers map and metric value",
+        "author": "anatasiavela",
+        "date": "2023-01-06T23:42:10Z",
+        "files": []
+      },
+      {
+        "sha": "f82db897a49601f45c7dfbb724b8909ccf5f0824",
+        "message": "update docs/ops.html",
+        "author": "anatasiavela",
+        "date": "2023-01-07T00:08:17Z",
+        "files": []
+      },
+      {
+        "sha": "a7af0a66b29084beb9104c06902dbc8e16ec80a7",
+        "message": "add detail to metric description",
+        "author": "anatasiavela",
+        "date": "2023-01-31T00:14:47Z",
+        "files": []
+      },
+      {
+        "sha": "bd1b4adb91dd2122fbc13a96e7f55c8caa00c97d",
+        "message": "fix checkstyle",
+        "author": "anatasiavela",
+        "date": "2023-02-15T02:12:57Z",
+        "files": [
+          {
+            "PARENT_PATH": "storage/src/main/java/org/apache/kafka/storage/internals/log/ProducerStateManager.java",
+            "CHILD_PATH": "storage/src/main/java/org/apache/kafka/storage/internals/log/ProducerStateManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 700,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "98d84b17f74b0bfe65163d0ddf88976746de5f7e",
+    "sha_after": "d479d129e0b24f2c2173f2bfd1fb261ec2be757b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "storage/src/main/java/org/apache/kafka/storage/internals/log/ProducerStateManager.java",
+        "CHILD_PATH": "storage/src/main/java/org/apache/kafka/storage/internals/log/ProducerStateManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 678,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 6,
+    "refactorings": {
+      "Extract Method": 5,
+      "Parameterize Variable": 1
+    }
+  }
+}

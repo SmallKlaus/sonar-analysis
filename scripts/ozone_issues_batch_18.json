@@ -1,0 +1,1425 @@
+{
+  "HDDS-10183": {
+    "jira_id": "HDDS-10183",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Dynamic reconfiguration of replication server thread pool",
+    "description": "Dynamic reconfiguration replication stream limit",
+    "commits": [
+      {
+        "sha": "06fa27f4510699bf4ebd94ef6f27a3d5c82d2c27",
+        "message": "HDDS-10183. Dynamic reconfiguration replication stream limit",
+        "author": "guohao-rosicky",
+        "date": "2024-01-22T10:44:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/HddsDatanodeService.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/HddsDatanodeService.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 670,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/ozoneimpl/OzoneContainer.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/ozoneimpl/OzoneContainer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 587,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationServer.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 29,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 278,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/reconfig/TestDatanodeReconfiguration.java",
+            "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/reconfig/TestDatanodeReconfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 98,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3c21466fca07d004f605712600fed6e321713ae3",
+        "message": "remove ReconfigurableConfig",
+        "author": "guohao-rosicky",
+        "date": "2024-01-23T06:17:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationServer.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 306,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "b90d1090388d956145d281bff6a35861bb54a0b6",
+    "sha_after": "fc99132a8657c97751fb2223b11845d09b182975",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/HddsDatanodeService.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/HddsDatanodeService.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 670,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/ozoneimpl/OzoneContainer.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/ozoneimpl/OzoneContainer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 587,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationServer.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 278,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/reconfig/TestDatanodeReconfiguration.java",
+        "CHILD_PATH": "hadoop-ozone/integration-test/src/test/java/org/apache/hadoop/ozone/reconfig/TestDatanodeReconfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 98,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Encapsulate Attribute": 2
+    }
+  },
+  "HDDS-10160": {
+    "jira_id": "HDDS-10160",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Cache sort results in ContainerBalancerSelectionCriteria",
+    "description": "The sort of all the containers is very time consuming, this patch is to cache the sort result and improve the balancer speed.",
+    "commits": [
+      {
+        "sha": "63b257a5cef600c2cdee2b1669339fd0717e8fb2",
+        "message": "HDDS-10160. Cache sort results in ContainerBalancerSelectionCriteria",
+        "author": "symious",
+        "date": "2024-01-19T08:08:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 245,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "e18496afbbf74a9674fd415f1e6ef3d8dbd1aee3",
+        "message": "HDDS-10160. Sort out the code",
+        "author": "symious",
+        "date": "2024-01-22T08:55:25Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 265,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1147,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "968cde76979cf2773853edcb68c78a3822912913",
+        "message": "HDDS-10160. Filter selected and excluded containers",
+        "author": "symious",
+        "date": "2024-01-22T09:02:05Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 264,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2f4ec855f36eb7982412997d1dfaed2dedc85d11",
+        "message": "HDDS-10160. check on iteration",
+        "author": "symious",
+        "date": "2024-01-23T07:25:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/AbstractFindTargetGreedy.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/AbstractFindTargetGreedy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 281,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 25,
+            "PARENT_LOC": 271,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 1146,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/FindTargetStrategy.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/FindTargetStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 72,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "05c5a056e6bf6f4be9b3635e53df23fd1387d163",
+        "message": "Remove containers from candidationContainerSet",
+        "author": "symious",
+        "date": "2024-01-23T23:27:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1155,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "54d336f99457e7b066b30342093b7b3204f1b18b",
+        "message": "Remove containerId from candidateContainerSet",
+        "author": "symious",
+        "date": "2024-01-23T23:28:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1158,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7f3b0853189e0f4b9a54a745328d78c6a4c92e8b",
+        "message": "HDDS-10160. Add comment",
+        "author": "symious",
+        "date": "2024-01-24T06:36:49Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1158,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "92c7ba08a5dbdb1c10b336de62c6923b4a91d8b7",
+        "message": "HDDS-10160. Use isNodeRegistered",
+        "author": "symious",
+        "date": "2024-01-26T06:49:02Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 270,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7b590d2a89d173a6f154be5180d3d3e2d05b0ef6",
+        "message": "HDDS-10160. Implement MockNodeManager's isNodeRegistered()",
+        "author": "symious",
+        "date": "2024-01-26T08:45:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/MockNodeManager.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/MockNodeManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1003,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b2c3bcbd96b50e01d7472c30e94ea7308ca96dab",
+        "message": "HDDS-10160. Code cleaning",
+        "author": "symious",
+        "date": "2024-01-26T16:09:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 30,
+            "PARENT_LOC": 279,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8c00ae7b2464a56d6567888dc35e89e18dff3921",
+        "message": "HDDS-10160. Update comments",
+        "author": "symious",
+        "date": "2024-01-30T07:28:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 267,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "86bbdfc33e762f3018188ca740690d8bfa6851e5",
+    "sha_after": "95666ebee7c9944ae03f9c528b9aa04d43c29bb0",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/AbstractFindTargetGreedy.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/AbstractFindTargetGreedy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 20,
+        "PARENT_LOC": 284,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerSelectionCriteria.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 52,
+        "LINES_DELETED": 32,
+        "PARENT_LOC": 245,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/ContainerBalancerTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 1147,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/FindTargetStrategy.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/balancer/FindTargetStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 72,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/MockNodeManager.java",
+        "CHILD_PATH": "hadoop-hdds/server-scm/src/test/java/org/apache/hadoop/hdds/scm/container/MockNodeManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1003,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Parameterize Variable": 1,
+      "Remove Parameter": 1,
+      "Change Method Access Modifier": 1,
+      "Rename Parameter": 1,
+      "Change Parameter Type": 1
+    }
+  },
+  "HDDS-10025": {
+    "jira_id": "HDDS-10025",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Add more function for freon OmMetadataGenerator (ommg) Test",
+    "description": "",
+    "commits": [
+      {
+        "sha": "e68dc66a59e65fddda77c09d22c6e7b4accc9dec",
+        "message": "HDDS-10025. Add more function for freon OmMetadataGenerator",
+        "author": "xichen01",
+        "date": "2023-12-29T11:38:18Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OmMetadataGenerator.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OmMetadataGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 73,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 458,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b4b07f5ff7a108635a72f396da347e51c2b75df0",
+        "message": "Simplified Code",
+        "author": "xichen01",
+        "date": "2024-01-21T10:50:14Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OmMetadataGenerator.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OmMetadataGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 58,
+            "LINES_DELETED": 128,
+            "PARENT_LOC": 528,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "161597df4276c2c0110eb7de466f0ffa69549025",
+        "message": "remove EMPTY_RPC_WRITE_RATIS and EMPTY_RPC",
+        "author": "xichen01",
+        "date": "2024-01-24T15:45:23Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OmMetadataGenerator.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OmMetadataGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 458,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c9847df2bc4c175f13d1ea52f97afed5122ddcc3",
+    "sha_after": "d2314a5762cbad4bc81b4e97e4d50f1ec1597eeb",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OmMetadataGenerator.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/freon/OmMetadataGenerator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 91,
+        "LINES_DELETED": 85,
+        "PARENT_LOC": 458,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 6,
+    "refactorings": {
+      "Extract Method": 2,
+      "Add Variable Modifier": 2,
+      "Remove Method Annotation": 1,
+      "Parameterize Attribute": 1
+    }
+  },
+  "HDDS-10398": {
+    "jira_id": "HDDS-10398",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Remove deleted_blocks table in container schema V2 and V3 definition",
+    "description": "deleted_blocks table is only used in container schema V1. It's replaced with \r\n\r\n{color:#6a8759}delete_txns table in schema V2 and V3. But currently deleted_blocks table is still defined and kept in {color}\r\n\r\nDatanodeSchemaThreeDBDefinition and \r\n\r\nDatanodeSchemaTwoDBDefinition, which will confuse the code readers who don't know this background.\r\n\r\n{color:#6a8759} {color}",
+    "commits": [
+      {
+        "sha": "18ae2608b3292c48876532c71a49dd8afbb19be3",
+        "message": "HDDS-10398. Remove deleted_blocks table in container schema V2 and V3 definition",
+        "author": "ChenSammi",
+        "date": "2024-02-20T08:34:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/AbstractDatanodeDBDefinition.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/AbstractDatanodeDBDefinition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 76,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/AbstractDatanodeStore.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/AbstractDatanodeStore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 368,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaOneDBDefinition.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaOneDBDefinition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaThreeDBDefinition.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaThreeDBDefinition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 18,
+            "PARENT_LOC": 188,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaTwoDBDefinition.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaTwoDBDefinition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 17,
+            "PARENT_LOC": 117,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeStoreSchemaOneImpl.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeStoreSchemaOneImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 49,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeStoreSchemaThreeImpl.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeStoreSchemaThreeImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 220,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "3a01fea4caa4ae1db938a5d3cfdaf90e82584de1",
+    "sha_after": "9c187df7df65ea581f66dd97e44aabd1817cd35d",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/AbstractDatanodeDBDefinition.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/AbstractDatanodeDBDefinition.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 76,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/AbstractDatanodeStore.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/AbstractDatanodeStore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 368,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaOneDBDefinition.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaOneDBDefinition.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaThreeDBDefinition.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaThreeDBDefinition.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 18,
+        "PARENT_LOC": 188,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaTwoDBDefinition.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeSchemaTwoDBDefinition.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 17,
+        "PARENT_LOC": 117,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeStoreSchemaOneImpl.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeStoreSchemaOneImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 49,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeStoreSchemaThreeImpl.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/metadata/DatanodeStoreSchemaThreeImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 220,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Change Method Access Modifier": 1,
+      "Remove Method Annotation": 1,
+      "Push Down Attribute": 1
+    }
+  },
+  "HDDS-10293": {
+    "jira_id": "HDDS-10293",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "IllegalArgumentException: containerSize Negative",
+    "description": "Encounter an error in recon log \"{_}*IllegalArgumentExpection: containerSize Negative - Container ID #3979*{_}\" :-\r\n\r\n \r\n{code:java}\r\n2024-02-01 19:50:21,727 ERROR [ContainerSizeCountTask]-org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask: FIXME: Failed to process ContainerInfo{id=#3979, state=DELETED, stateEnterTime=2024-02-01T02:45:43.506025Z, pipelineID=PipelineID=0ea98cdd-adf9-4ffa-b7f8-15a3052b155a, owner=om1546336125}\r\njava.lang.IllegalArgumentException: containerSize = -63 < 0\r\n    at com.google.common.base.Preconditions.checkArgument(Preconditions.java:204)\r\n    at org.apache.hadoop.ozone.recon.ReconUtils.getContainerSizeBinIndex(ReconUtils.java:329)\r\n    at org.apache.hadoop.ozone.recon.ReconUtils.getContainerSizeUpperBound(ReconUtils.java:309)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.getContainerSizeCountKey(ContainerSizeCountTask.java:333)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.updateContainerSizeCount(ContainerSizeCountTask.java:313)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.decrementContainerSizeCount(ContainerSizeCountTask.java:308)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.process(ContainerSizeCountTask.java:127)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.process(ContainerSizeCountTask.java:168)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.run(ContainerSizeCountTask.java:106)\r\n    at java.base/java.lang.Thread.run(Thread.java:834)\r\n2024-02-01 19:50:21,728 ERROR [ContainerSizeCountTask]-org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask: FIXME: Failed to process ContainerInfo{id=#3985, state=DELETED, stateEnterTime=2024-02-01T02:45:43.509864Z, pipelineID=PipelineID=4c92a12e-7c4d-457a-ab61-0bddd1a23711, owner=om1546336125}\r\njava.lang.IllegalArgumentException: containerSize = -63 < 0\r\n    at com.google.common.base.Preconditions.checkArgument(Preconditions.java:204)\r\n    at org.apache.hadoop.ozone.recon.ReconUtils.getContainerSizeBinIndex(ReconUtils.java:329)\r\n    at org.apache.hadoop.ozone.recon.ReconUtils.getContainerSizeUpperBound(ReconUtils.java:309)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.getContainerSizeCountKey(ContainerSizeCountTask.java:333)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.updateContainerSizeCount(ContainerSizeCountTask.java:313)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.decrementContainerSizeCount(ContainerSizeCountTask.java:308)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.process(ContainerSizeCountTask.java:127)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.process(ContainerSizeCountTask.java:168)\r\n    at org.apache.hadoop.ozone.recon.tasks.ContainerSizeCountTask.run(ContainerSizeCountTask.java:106)\r\n    at java.base/java.lang.Thread.run(Thread.java:834)  {code}\r\n \r\n\r\n ",
+    "commits": [
+      {
+        "sha": "ff5fff2a8625eb498fa32e356d59febb659f25ab",
+        "message": "HDDS-10293. IllegalArgumentException: containerSize Negative - Container ID #3979.",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-06T05:29:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 20,
+            "PARENT_LOC": 368,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 77,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 167,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2ec77259269d12553b0b492b5793e274b5702bcb",
+        "message": "Merge both the added test methods together",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-06T05:40:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 23,
+            "PARENT_LOC": 242,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b3f862003e9e7bce832a92f1e0c5187c4ec2a803",
+        "message": "Fixed checkstyle issues",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-06T05:47:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 383,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 227,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b4bb56e055a47dba66378778c70585d201ec29de",
+        "message": "Fixed failing UT",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-06T07:05:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/api/TestEndpoints.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/api/TestEndpoints.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1182,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "63ef581dfdee641c6609558da7f3727e70e73b3f",
+        "message": "Fixed review comments",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-08T07:53:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 381,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b4e2408d6f9a29590bbaa9e319f273ceecc1d668",
+        "message": "Persisting the containers with negative sizes in the UnhealthyContainerTable",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-12T08:25:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon-codegen/src/main/java/org/hadoop/ozone/recon/schema/ContainerSchemaDefinition.java",
+            "CHILD_PATH": "hadoop-ozone/recon-codegen/src/main/java/org/hadoop/ozone/recon/schema/ContainerSchemaDefinition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/api/types/UnhealthyContainersResponse.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/api/types/UnhealthyContainersResponse.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 102,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/fsck/ContainerHealthTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/fsck/ContainerHealthTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 614,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 381,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "edeea8acf91517cb01f2c0b1ccbc348a4323770a",
+        "message": "Finished unit tests for identifying containers with negative size.",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-12T21:45:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon-codegen/src/main/java/org/hadoop/ozone/recon/schema/ContainerSchemaDefinition.java",
+            "CHILD_PATH": "hadoop-ozone/recon-codegen/src/main/java/org/hadoop/ozone/recon/schema/ContainerSchemaDefinition.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 100,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/fsck/ContainerHealthTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/fsck/ContainerHealthTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 629,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 381,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/fsck/TestContainerHealthTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/fsck/TestContainerHealthTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 59,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 447,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "345b2aa1fdec48af2ecc179117a4dfbfdabe7127",
+        "message": "Made review chages",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-12T22:05:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 384,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "75e66daac2a8c3992da979dacbcbc2866b8a9bf6",
+        "message": "Treating negative container sizes and zero",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-21T18:41:54Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 385,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "3757c65acc2fa5a8076a22c620250d8006ad24de",
+        "message": "Fixed failing UT",
+        "author": "ArafatKhan2198",
+        "date": "2024-02-22T07:07:44Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 390,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+            "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 231,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "5f6306dd1dde3c9c982ed933aa1fa8f4fa7a9301",
+    "sha_after": "45d420ab7c5d95e8c95cf6f650732681437856ef",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/recon-codegen/src/main/java/org/hadoop/ozone/recon/schema/ContainerSchemaDefinition.java",
+        "CHILD_PATH": "hadoop-ozone/recon-codegen/src/main/java/org/hadoop/ozone/recon/schema/ContainerSchemaDefinition.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 99,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/api/types/UnhealthyContainersResponse.java",
+        "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/api/types/UnhealthyContainersResponse.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 102,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/fsck/ContainerHealthTask.java",
+        "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/fsck/ContainerHealthTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 37,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 614,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+        "CHILD_PATH": "hadoop-ozone/recon/src/main/java/org/apache/hadoop/ozone/recon/tasks/ContainerSizeCountTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 54,
+        "LINES_DELETED": 25,
+        "PARENT_LOC": 368,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/api/TestEndpoints.java",
+        "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/api/TestEndpoints.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1183,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/fsck/TestContainerHealthTask.java",
+        "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/fsck/TestContainerHealthTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 59,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 447,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+        "CHILD_PATH": "hadoop-ozone/recon/src/test/java/org/apache/hadoop/ozone/recon/tasks/TestContainerSizeCountTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 69,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 167,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Remove Variable Modifier": 1
+    }
+  },
+  "HDDS-10396": {
+    "jira_id": "HDDS-10396",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Encapsulate fields in WithMetadata and subclasses",
+    "description": "",
+    "commits": [
+      {
+        "sha": "6f22a5aba2928d8dc143973462a09fbe6362dac5",
+        "message": "HDDS-10396. Encapsulate fields in WithMetadata and subclasses",
+        "author": "adoroszlai",
+        "date": "2024-02-20T09:55:11Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/OzoneBucket.java",
+            "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/OzoneBucket.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1807,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/OzoneVolume.java",
+            "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/OzoneVolume.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 556,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmBucketArgs.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmBucketArgs.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 395,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmBucketInfo.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmBucketInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 783,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmDirectoryInfo.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmDirectoryInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 22,
+            "PARENT_LOC": 283,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmKeyInfo.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmKeyInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 30,
+            "PARENT_LOC": 880,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmMultipartKeyInfo.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmMultipartKeyInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 368,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmVolumeArgs.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmVolumeArgs.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 493,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithMetadata.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithMetadata.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 45,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithObjectID.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithObjectID.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 27,
+            "PARENT_LOC": 123,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithParentObjectId.java",
+            "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithParentObjectId.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 55,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/interface-storage/src/main/java/org/apache/hadoop/ozone/om/helpers/OmPrefixInfo.java",
+            "CHILD_PATH": "hadoop-ozone/interface-storage/src/main/java/org/apache/hadoop/ozone/om/helpers/OmPrefixInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 249,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6dfd7d46d1404b3ccb981db9af44a0b0f2fcda66",
+    "sha_after": "b537a6a710e83a413cfba87c02e0357c0365d114",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/OzoneBucket.java",
+        "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/OzoneBucket.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1807,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/OzoneVolume.java",
+        "CHILD_PATH": "hadoop-ozone/client/src/main/java/org/apache/hadoop/ozone/client/OzoneVolume.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 556,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmBucketArgs.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmBucketArgs.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 395,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmBucketInfo.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmBucketInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 16,
+        "PARENT_LOC": 783,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmDirectoryInfo.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmDirectoryInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 22,
+        "PARENT_LOC": 283,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmKeyInfo.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmKeyInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 30,
+        "PARENT_LOC": 880,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmMultipartKeyInfo.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmMultipartKeyInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 368,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmVolumeArgs.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/OmVolumeArgs.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 493,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithMetadata.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithMetadata.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 45,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithObjectID.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithObjectID.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 18,
+        "LINES_DELETED": 27,
+        "PARENT_LOC": 123,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithParentObjectId.java",
+        "CHILD_PATH": "hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/helpers/WithParentObjectId.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 55,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/interface-storage/src/main/java/org/apache/hadoop/ozone/om/helpers/OmPrefixInfo.java",
+        "CHILD_PATH": "hadoop-ozone/interface-storage/src/main/java/org/apache/hadoop/ozone/om/helpers/OmPrefixInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 16,
+        "PARENT_LOC": 249,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 22,
+    "refactorings": {
+      "Add Method Modifier": 8,
+      "Change Attribute Access Modifier": 4,
+      "Remove Attribute Annotation": 4,
+      "Add Class Modifier": 2,
+      "Encapsulate Attribute": 2,
+      "Extract Method": 1,
+      "Pull Up Method": 1
+    }
+  },
+  "HDDS-10410": {
+    "jira_id": "HDDS-10410",
+    "issue_type": "Improvement",
+    "resolution": "Implemented",
+    "title": "Avoid creating ChunkInfo",
+    "description": "In the container-service code, it often creates a ChunkInfo object from a proto in order to get length/name.  It should get length/name directly from the proto.\r\n ",
+    "commits": [
+      {
+        "sha": "cf74015f337283e7cdf2edda28166f1fd9215575",
+        "message": "HDDS-10410. Avoid creating ChunkInfo.",
+        "author": "szetszwo",
+        "date": "2024-02-22T21:39:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/impl/ContainerLayoutVersion.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/impl/ContainerLayoutVersion.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 134,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/KeyValueContainerCheck.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/KeyValueContainerCheck.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 467,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/helpers/KeyValueContainerUtil.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/helpers/KeyValueContainerUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 48,
+            "PARENT_LOC": 518,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/impl/FilePerBlockStrategy.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/impl/FilePerBlockStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 348,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/impl/FilePerChunkStrategy.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/impl/FilePerChunkStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 380,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/TestKeyValueContainerCheck.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/TestKeyValueContainerCheck.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 230,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/impl/CommonChunkManagerTestCases.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/impl/CommonChunkManagerTestCases.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 225,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/impl/TestFilePerChunkStrategy.java",
+            "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/impl/TestFilePerChunkStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 128,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/ChunkKeyHandler.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/ChunkKeyHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 220,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "7cd9c9ab3d2b2ad126535aa00c2dce51cae5eca7",
+        "message": "Remove unused import.",
+        "author": "szetszwo",
+        "date": "2024-02-22T22:06:14Z",
+        "files": [
+          {
+            "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/ChunkKeyHandler.java",
+            "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/ChunkKeyHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 220,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "83cb2b7d1d294158f55b106a2d61e2c878d74d72",
+    "sha_after": "13b635c580592d198b9389e182f123ea24b5e49c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/impl/ContainerLayoutVersion.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/common/impl/ContainerLayoutVersion.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 134,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/KeyValueContainerCheck.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/KeyValueContainerCheck.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 467,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/helpers/KeyValueContainerUtil.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/helpers/KeyValueContainerUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 48,
+        "PARENT_LOC": 518,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/impl/FilePerBlockStrategy.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/impl/FilePerBlockStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 348,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/impl/FilePerChunkStrategy.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/keyvalue/impl/FilePerChunkStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 380,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/TestKeyValueContainerCheck.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/TestKeyValueContainerCheck.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 230,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/impl/CommonChunkManagerTestCases.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/impl/CommonChunkManagerTestCases.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 225,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/impl/TestFilePerChunkStrategy.java",
+        "CHILD_PATH": "hadoop-hdds/container-service/src/test/java/org/apache/hadoop/ozone/container/keyvalue/impl/TestFilePerChunkStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 128,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/ChunkKeyHandler.java",
+        "CHILD_PATH": "hadoop-ozone/tools/src/main/java/org/apache/hadoop/ozone/debug/ChunkKeyHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 220,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 11,
+    "refactorings": {
+      "Add Variable Modifier": 6,
+      "Remove Parameter": 1,
+      "Add Method Modifier": 1,
+      "Inline Variable": 1,
+      "Change Parameter Type": 1,
+      "Rename Parameter": 1
+    }
+  }
+}

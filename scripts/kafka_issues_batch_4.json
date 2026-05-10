@@ -1,0 +1,1332 @@
+{
+  "KAFKA-14842": {
+    "jira_id": "KAFKA-14842",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "MirrorCheckpointTask can reduce the rpc calls of \"listConsumerGroupOffsets(group)\" of irrelevant groups at each poll",
+    "description": "sorry, wrong related.",
+    "commits": [
+      {
+        "sha": "e7ad4368cb5f0a9c1ca5b5e40e5f3033e5796818",
+        "message": "KAFKA-14837/14842:Avoid the rebalance caused by the addition and deletion of irrelevant groups for MirrorCheckPointConnector",
+        "author": "Deqi Hu",
+        "date": "2023-03-24T08:28:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 349,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnectorTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnectorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c14f56b48461f01743146d58987bc8661ba0d459",
+    "sha_after": "f7ea9cfb50cbd0d2f295df9ec07240581aa1046f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 40,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 175,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 349,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnectorTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnectorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 135,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Method": 1
+    }
+  },
+  "KAFKA-14837": {
+    "jira_id": "KAFKA-14837",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "The MirrorCheckPointConnector of MM2 will rebalance frequently, when the source cluster group is many more and changes frequently (but the list of configured synchronous group does not change)",
+    "description": "In practice, I found that when I configure a mirror checkpoint connector, because the source cluster has a large number of group or the number of group under a topic changes frequently, the connector will frequently rebalance between its tasks, although there is no change in the synchronized group list of the configuration. \r\nI don't think connector should rebalance frequently in this case to affect  group synchronization tasks without any group changes.",
+    "commits": [
+      {
+        "sha": "e7ad4368cb5f0a9c1ca5b5e40e5f3033e5796818",
+        "message": "KAFKA-14837/14842:Avoid the rebalance caused by the addition and deletion of irrelevant groups for MirrorCheckPointConnector",
+        "author": "Deqi Hu",
+        "date": "2023-03-24T08:28:32Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 349,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnectorTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnectorTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "c14f56b48461f01743146d58987bc8661ba0d459",
+    "sha_after": "f7ea9cfb50cbd0d2f295df9ec07240581aa1046f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 40,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 175,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 349,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnectorTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnectorTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 135,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Method": 1
+    }
+  },
+  "KAFKA-14838": {
+    "jira_id": "KAFKA-14838",
+    "issue_type": "Improvement",
+    "resolution": "Done",
+    "title": "MM2 Worker/Connector/Task clients should specify client ID based on flow and role",
+    "description": "MM2 code creates a lot of Kafka clients internally. These clients generate a lot of logs, but since the client.id is not properly specified, connecting the dots between a specific Connector/Task and its internal client is close to impossible. This is even more complex when MM2 is running in distributed mode, in which multiple Connect workers are running inside the same process.\r\n\r\nFor Connector/Task created clients, the client.id  clients should specify the flow, the Connector name/Task ID and the role of the client. E.g. MirrorSourceConnector uses multiple admin clients, and their client.id should reflect the difference between them.\r\n\r\nFor Worker created clients, the client.id should refer to the flow.\r\n\r\nThis will help log analysis significantly, especially in MM2 mode.",
+    "commits": [
+      {
+        "sha": "d0e8960d5ce8e833fc7d2be801eb1afecd559301",
+        "message": "KAFKA-14838: Add flow/connector/task/role information to MM2 Kafka client.id configs",
+        "author": "urbandan",
+        "date": "2023-01-24T16:46:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 253,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 175,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 349,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTaskConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTaskConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 56,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 291,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorHeartbeatConnector.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorHeartbeatConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMaker.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMaker.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 366,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMakerConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMakerConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 324,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 324,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 600,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 338,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTaskConfig.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTaskConfig.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 59,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/Scheduler.java",
+            "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/Scheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 114,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConfigTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConfigTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 84,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorConnectorConfigTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorConnectorConfigTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 193,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorMakerConfigTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorMakerConfigTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 421,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConfigTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConfigTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 167,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceMetricsTest.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceMetricsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 110,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/TestUtils.java",
+            "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/TestUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 46,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/DistributedHerder.java",
+            "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/DistributedHerder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 2669,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "3c4472d701a7e9d9b8714a0b9d87ae190d1679fb",
+    "sha_after": "0aa365add881428815c3d71fd5ce575fb8fb8089",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 253,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointConnector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 8,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 211,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 349,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTaskConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTaskConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 56,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorConnectorConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 291,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorHeartbeatConnector.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorHeartbeatConnector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 95,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMaker.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMaker.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 366,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMakerConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorMakerConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 324,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 324,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceConnector.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 600,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTask.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 338,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTaskConfig.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorSourceTaskConfig.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 59,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/Scheduler.java",
+        "CHILD_PATH": "connect/mirror/src/main/java/org/apache/kafka/connect/mirror/Scheduler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 114,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConfigTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorCheckpointConfigTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 84,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorConnectorConfigTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorConnectorConfigTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 17,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 193,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorMakerConfigTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorMakerConfigTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 421,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConfigTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceConfigTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 26,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 167,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceMetricsTest.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/MirrorSourceMetricsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 110,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/TestUtils.java",
+        "CHILD_PATH": "connect/mirror/src/test/java/org/apache/kafka/connect/mirror/TestUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 46,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/DistributedHerder.java",
+        "CHILD_PATH": "connect/runtime/src/main/java/org/apache/kafka/connect/runtime/distributed/DistributedHerder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 2669,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 24,
+    "refactorings": {
+      "Extract Variable": 15,
+      "Add Parameter": 9
+    }
+  },
+  "KAFKA-14771": {
+    "jira_id": "KAFKA-14771",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Include current thread ids in ConcurrentModificationException message",
+    "description": "In the KafkaConsumer.acquire method a ConcurrentModificationException exception is thrown when\r\n\r\n \r\n{code:java}\r\nthreadId != currentThread.get() && !currentThread.compareAndSet(NO_CURRENT_THREAD, threadId){code}\r\nhowever, the exception message doesn't include:\r\n\r\n \r\n * Thread.currentThread().getId()\r\n\r\n\r\n * currentThread.get() \r\n\r\n \r\n\r\nI think including the aforementioned variables is very useful for debugging the issue.",
+    "commits": [
+      {
+        "sha": "7ecd07be292acf2c390fb8c32f9d3b38ddf7b927",
+        "message": "Use temp variable",
+        "author": "pierDipi",
+        "date": "2023-04-03T09:43:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 2593,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "1f0ae71fb328288152a938aa2a259f9646783f60",
+    "sha_after": "4e1fcf18475d44721d90de00c7ce8b345394d956",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 2585,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Extract Variable": 1,
+      "Add Variable Modifier": 1
+    }
+  },
+  "KAFKA-14766": {
+    "jira_id": "KAFKA-14766",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Improve performance of VarInt encoding/decoding",
+    "description": "Our current implementation in ByteUtils could be improved via loop unrolling and short circuiting scenarios such as 0. \r\n\r\nWith the changes in attached PR, we see upto 83% improvement in throughput for  writingVarInt.",
+    "commits": [
+      {
+        "sha": "699503aab6d7601ec6d5bd16c7545bb0734b07db",
+        "message": "Extract function for unit testing",
+        "author": "divijvaidya",
+        "date": "2023-04-25T14:27:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/ByteUtils.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/ByteUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 539,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d2dc7c2bb454ca311b4b3757cc49deb4c0b7445e",
+        "message": "access writeUnsignedVarlong for benchmarking",
+        "author": "divijvaidya",
+        "date": "2023-04-25T14:37:36Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/ByteUtils.java",
+            "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/ByteUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 550,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "70413149c2b50f334457865eee1712b08ee6ad6f",
+        "message": "Disable unsigned var long tests",
+        "author": "divijvaidya",
+        "date": "2023-05-05T08:17:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/ByteUtilsTest.java",
+            "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/ByteUtilsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 485,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "e34f88403159cc8381da23dafdf7e3d7403114a2",
+    "sha_after": "6bcc497c36a1aef19204b1bfe3b17a8c1c84c059",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "clients/src/main/java/org/apache/kafka/common/utils/ByteUtils.java",
+        "CHILD_PATH": "clients/src/main/java/org/apache/kafka/common/utils/ByteUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 123,
+        "LINES_DELETED": 33,
+        "PARENT_LOC": 460,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "clients/src/test/java/org/apache/kafka/common/utils/ByteUtilsTest.java",
+        "CHILD_PATH": "clients/src/test/java/org/apache/kafka/common/utils/ByteUtilsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 122,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 369,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "jmh-benchmarks/src/main/java/org/apache/kafka/jmh/util/ByteUtilsBenchmark.java",
+        "CHILD_PATH": "jmh-benchmarks/src/main/java/org/apache/kafka/jmh/util/ByteUtilsBenchmark.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 520,
+        "LINES_DELETED": 29,
+        "PARENT_LOC": 92,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 10,
+    "refactorings": {
+      "Modify Class Annotation": 3,
+      "Extract Method": 2,
+      "Rename Variable": 2,
+      "Remove Class Annotation": 1,
+      "Inline Variable": 1,
+      "Change Method Access Modifier": 1
+    }
+  },
+  "KAFKA-14859": {
+    "jira_id": "KAFKA-14859",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Support SCRAM ZK to KRaft Migration",
+    "description": "I want to allow existing ZK installations to be able to migrate to KRaft and support their existing SCRAM credentials.",
+    "commits": [
+      {
+        "sha": "31a6478194aea5e4f93daebfcfcdfe3117da237b",
+        "message": "Migration without dual write",
+        "author": "pprovenzano",
+        "date": "2023-04-07T12:29:28Z",
+        "files": []
+      },
+      {
+        "sha": "c6de035862c08de64f8867cd0623de07b6772e54",
+        "message": "Simple migration test for SCRAM",
+        "author": "pprovenzano",
+        "date": "2023-04-19T14:25:01Z",
+        "files": []
+      },
+      {
+        "sha": "ff6e498feb5c16060ded2f1b5e2c805bc60e4c60",
+        "message": "Remove extra line",
+        "author": "pprovenzano",
+        "date": "2023-04-19T14:26:45Z",
+        "files": []
+      },
+      {
+        "sha": "e3abb64856853e6052af8c62abbee43534595590",
+        "message": "Remove extra println",
+        "author": "pprovenzano",
+        "date": "2023-04-19T14:28:04Z",
+        "files": []
+      },
+      {
+        "sha": "efee0c45b5e0a4e5d808cae8bf39e6f9c271c629",
+        "message": "Basic SCRAM migration with dual write works.",
+        "author": "pprovenzano",
+        "date": "2023-04-24T02:16:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 68,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 753,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/MigrationClient.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/MigrationClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 126,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+            "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 536,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "1c9fc604c2adee0571186f064a730f07924094f5",
+        "message": "Fix EOF newline",
+        "author": "pprovenzano",
+        "date": "2023-04-24T02:37:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+            "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 537,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "a81570d3fa8afc2b8fc3219e6c7df54a082e7015",
+        "message": "Fixup checkstyle issues",
+        "author": "pprovenzano",
+        "date": "2023-04-27T18:07:47Z",
+        "files": []
+      },
+      {
+        "sha": "db1b1b138ab3e45f6e1d53bac0c69048cf70b55a",
+        "message": "Fixing merge conflict by rebasing file.",
+        "author": "pprovenzano",
+        "date": "2023-04-26T16:45:06Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+            "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 537,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "42ffa46b39a939a6e97b838a57284ee3e0f38733",
+        "message": "Fix noeol that caused a merge conflict",
+        "author": "pprovenzano",
+        "date": "2023-04-26T16:50:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+            "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 536,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "4663f259a1d680c4ed16debb6925b35b7d6c5de4",
+        "message": "Remove extra println",
+        "author": "pprovenzano",
+        "date": "2023-04-27T01:33:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 814,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8b5da1ceb261d9e2b0b8b8915dd9d8b033708165",
+        "message": "Fixup some PR nits",
+        "author": "pprovenzano",
+        "date": "2023-04-27T18:15:44Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 810,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "cfb64063ebc972bc1ecd1e91c09c2861e9622cb4",
+        "message": "Got logic backwards",
+        "author": "pprovenzano",
+        "date": "2023-04-28T01:57:51Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 810,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "64ebbc577de757830b2f26ee3c8c7b1ddf10f86c",
+    "sha_after": "e29942347acc70aa85d47e84e2021f9c24cd7c80",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/KRaftMigrationDriver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 63,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 753,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/MigrationClient.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/metadata/migration/MigrationClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 126,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+        "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/metadata/migration/KRaftMigrationDriverTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 536,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Parameter": 2
+    }
+  },
+  "KAFKA-14084": {
+    "jira_id": "KAFKA-14084",
+    "issue_type": "Improvement",
+    "resolution": "Fixed",
+    "title": "Support SCRAM when using KRaft mode",
+    "description": "Support SCRAM when using KRaft mode, as specified in KIP-631",
+    "commits": [
+      {
+        "sha": "c87e1f75cc2c0c0864403117abcc1695ccc914ef",
+        "message": "SCRAM support for KRaft but without bootstrap support.",
+        "author": "pprovenzano",
+        "date": "2022-12-09T02:25:10Z",
+        "files": [
+          {
+            "PARENT_PATH": "core/src/test/java/kafka/test/MockController.java",
+            "CHILD_PATH": "core/src/test/java/kafka/test/MockController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 457,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/Controller.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/Controller.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 356,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/ControllerMetricsManager.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/ControllerMetricsManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 319,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/QuorumController.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/QuorumController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2124,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/ScramControlManager.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/ScramControlManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 307,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/MetadataDelta.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/MetadataDelta.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 38,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 368,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/MetadataImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/MetadataImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 182,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramCredentialData.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramCredentialData.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 119,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramDelta.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramDelta.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 109,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 107,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/image/MetadataImageTest.java",
+            "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/image/MetadataImageTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 98,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/image/ScramImageTest.java",
+            "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/image/ScramImageTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 138,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "987ae9e3521259e6e86ed88d497eb85b33f7008a",
+        "message": "Some test configs that were added to the PR.",
+        "author": "pprovenzano",
+        "date": "2023-01-13T17:03:42Z",
+        "files": []
+      },
+      {
+        "sha": "0940834b3bf4732ab6652ce8f8feffbc129ba528",
+        "message": "Remove dead code originally from merge conflicts.",
+        "author": "pprovenzano",
+        "date": "2023-01-13T20:33:47Z",
+        "files": []
+      },
+      {
+        "sha": "076a645f9951b2a73ad256e58df5e064c2b34c35",
+        "message": "Cleanup one more set of dead code.",
+        "author": "pprovenzano",
+        "date": "2023-01-19T20:05:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 107,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d82ae34886420b0dea444aa7cbb9cd991185519b",
+        "message": "Updated test to work with KRaft.",
+        "author": "pprovenzano",
+        "date": "2023-01-31T20:27:24Z",
+        "files": []
+      },
+      {
+        "sha": "86968e859c3c43b8d5adddb17e52e9c58efcc572",
+        "message": "Fix some minor issues found during code review.",
+        "author": "pprovenzano",
+        "date": "2023-02-08T21:48:12Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/QuorumController.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/QuorumController.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 2155,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "172f1e224f560b94d28ffe60b746017224cf0f00",
+        "message": "More code review cleanup.",
+        "author": "pprovenzano",
+        "date": "2023-02-10T14:08:08Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/ScramControlManager.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/ScramControlManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 307,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramCredentialData.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramCredentialData.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 119,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 97,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "eb1c5ba2e3ed374e35a357d766552fcd029ec65b",
+        "message": "Describe with test now works",
+        "author": "pprovenzano",
+        "date": "2023-02-14T04:17:15Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 65,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "caa6943274048008b587ba7fa2ee5a240a8b13c1",
+        "message": "Fix a couple checkstyle issues and remove extra printf",
+        "author": "pprovenzano",
+        "date": "2023-02-14T18:24:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 160,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "0926cfaa8824220196ee4febab2c233afc04500a",
+        "message": "Fix up a few code review issues.",
+        "author": "pprovenzano",
+        "date": "2023-02-15T14:51:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 157,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "47ac6e8deeb4b617c52ffc5940045bd98e9af103",
+        "message": "Update another SCRAM test for KRaft.",
+        "author": "pprovenzano",
+        "date": "2023-02-15T16:04:09Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 159,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "82fce40f3a608b8535724234eefd1625b38d9080",
+        "message": "Fix Checkstyle issues",
+        "author": "pprovenzano",
+        "date": "2023-02-15T16:30:23Z",
+        "files": [
+          {
+            "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 159,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "47450ee064b3b421da1d2b8d9ddc5fd439cdce2a",
+    "sha_after": "38c409cf33cad1e18e4080f04ba21f127a0c4028",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "core/src/test/java/kafka/test/MockController.java",
+        "CHILD_PATH": "core/src/test/java/kafka/test/MockController.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 457,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/Controller.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/Controller.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 15,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 356,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/ControllerMetricsManager.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/ControllerMetricsManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 319,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/QuorumController.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/QuorumController.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 31,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2124,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/controller/ScramControlManager.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/controller/ScramControlManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 324,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/MetadataDelta.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/MetadataDelta.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 38,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 368,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/MetadataImage.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/MetadataImage.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 182,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramCredentialData.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramCredentialData.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 118,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramDelta.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramDelta.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 109,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+        "CHILD_PATH": "metadata/src/main/java/org/apache/kafka/image/ScramImage.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 178,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/image/MetadataImageTest.java",
+        "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/image/MetadataImageTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 98,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "metadata/src/test/java/org/apache/kafka/image/ScramImageTest.java",
+        "CHILD_PATH": "metadata/src/test/java/org/apache/kafka/image/ScramImageTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 161,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "server-common/src/main/java/org/apache/kafka/server/common/MetadataVersion.java",
+        "CHILD_PATH": "server-common/src/main/java/org/apache/kafka/server/common/MetadataVersion.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 483,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Parameter": 1,
+      "Extract And Move Method": 1
+    }
+  }
+}
