@@ -13,6 +13,7 @@ import time
 import requests
 import logging
 import traceback
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -363,6 +364,44 @@ def git_checkout(repo_path: str, sha: str) -> bool:
     except subprocess.CalledProcessError as e:
         logger.error(f"✗ Git checkout failed: {e}")
         return False
+
+
+def patch_antrun_tasks_to_target(repo_path: str) -> int:
+    """
+    Compatibility patch for historical Maven projects.
+
+    maven-antrun-plugin 3.x fails builds that still configure the run goal with
+    <tasks>. Older Ozone commits rely on those Ant steps for generated sources,
+    so skipping antrun is unsafe. Renaming <tasks> to <target> preserves the
+    Ant actions while making the POM compatible with modern antrun versions.
+    """
+    patched = 0
+    for pom_path in Path(repo_path).rglob("pom.xml"):
+        try:
+            content = pom_path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            content = pom_path.read_text(encoding="latin-1")
+
+        if "maven-antrun-plugin" not in content or "<tasks" not in content:
+            continue
+
+        updated = re.sub(r"<tasks(\s[^>]*)?>", r"<target\1>", content)
+        updated = updated.replace("</tasks>", "</target>")
+        if updated == content:
+            continue
+
+        pom_path.write_text(updated, encoding="utf-8")
+        patched += 1
+        logger.info(f"  Patched antrun <tasks> -> <target>: {pom_path.relative_to(repo_path)}")
+
+    if patched:
+        logger.info(f"✓ Applied antrun compatibility patch to {patched} POM(s)")
+    return patched
+
+
+def apply_project_compat_patches(repo_path: str):
+    if PROJECT_CONFIG.get("patch_antrun_tasks_to_target"):
+        patch_antrun_tasks_to_target(repo_path)
 
 # ============================================================================
 # BUILD SYSTEM ABSTRACTION
@@ -1036,6 +1075,7 @@ def main():
             logger.info("\n▶ BEFORE SCAN")
             if not git_checkout(CONFIG["repo_path"], sha_before):
                 raise RuntimeError("BEFORE git checkout failed")
+            apply_project_compat_patches(CONFIG["repo_path"])
 
             build_system = get_build_system(
                 CONFIG["build_system"], CONFIG["repo_path"], before_toolchain, log_file
@@ -1055,6 +1095,7 @@ def main():
             logger.info("\n▶ AFTER SCAN")
             if not git_checkout(CONFIG["repo_path"], sha_after):
                 raise RuntimeError("AFTER git checkout failed")
+            apply_project_compat_patches(CONFIG["repo_path"])
             
             build_system = get_build_system(
                 CONFIG["build_system"], CONFIG["repo_path"], after_toolchain, log_file
