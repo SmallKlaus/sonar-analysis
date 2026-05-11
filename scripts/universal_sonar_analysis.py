@@ -531,8 +531,36 @@ class GradleBuildSystem(BuildSystem):
         # Inject init script to redirect dead repositories
         self._inject_init_script()
     
-        cmd = [gradle_cmd] + CONFIG["gradle_tasks"] + CONFIG["gradle_skip_flags"]
+        cmd = (
+            [gradle_cmd]
+            + CONFIG["gradle_tasks"]
+            + self._normalize_skip_flags(CONFIG["gradle_skip_flags"])
+        )
         return self._execute_build(cmd, env)
+
+    @staticmethod
+    def _normalize_skip_flags(skip_flags: list) -> list:
+        """
+        Expand ambiguous Gradle task exclusions into concrete task names.
+
+        Kafka exposes checkstyleMain/checkstyleTest but no aggregate checkstyle
+        task, so `-x checkstyle` fails before compilation can produce classes
+        for Sonar analysis.
+        """
+        normalized = []
+        i = 0
+        while i < len(skip_flags):
+            if (
+                skip_flags[i] == "-x"
+                and i + 1 < len(skip_flags)
+                and skip_flags[i + 1] == "checkstyle"
+            ):
+                normalized.extend(["-x", "checkstyleMain", "-x", "checkstyleTest"])
+                i += 2
+                continue
+            normalized.append(skip_flags[i])
+            i += 1
+        return normalized
     
     
     def _inject_init_script(self):
