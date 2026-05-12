@@ -642,7 +642,10 @@ class GradleBuildSystem(BuildSystem):
         gradlew = os.path.join(self.repo_path, "gradlew")
     
         if os.path.exists(gradlew):
-            self._set_gradle_wrapper_version(version)
+            if PROJECT_CONFIG.get("use_existing_gradle_wrapper"):
+                logger.info("  Using repository Gradle wrapper version")
+            else:
+                self._set_gradle_wrapper_version(version)
             # Make sure gradlew is executable
             os.chmod(gradlew, 0o755)
             return "./gradlew"
