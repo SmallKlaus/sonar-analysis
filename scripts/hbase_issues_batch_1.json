@@ -1,0 +1,1170 @@
+{
+  "HBASE-22648": {
+    "jira_id": "HBASE-22648",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Snapshot TTL",
+    "description": "Snapshots have a lifecycle that is independent from the table from which they are created. Although data in a table may be stored with TTL the data files containing them become frozen by the snapshot. Space consumed by expired cells will not be reclaimed by normal table housekeeping like compaction. While this is expected it can be inconvenient at scale. When many snapshots are under management and the data in various tables is expired by TTL some notion of optional TTL (and optional default TTL) for snapshots could be useful. It will help prevent the accumulation of junk files by automatically dropping the snapshot after the assigned TTL, making their data files eligible for cleaning. More comprehensive snapshot lifecycle management may be considered in the future but this one case is expected to be immediately useful given TTls on data are commonly applied for similar convenience. ",
+    "commits": [
+      {
+        "sha": "a2b1895fe645b6361d5c98cb97fc809097fbbf02",
+        "message": "HBASE-22648 : Introducing Snapshot TTL",
+        "author": "virajjasani",
+        "date": "2019-07-21T09:29:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/Admin.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/Admin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 47,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 2188,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/SnapshotDescription.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/SnapshotDescription.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 59,
+            "LINES_DELETED": 13,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 3295,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/snapshot/ClientSnapshotDescriptionUtils.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/snapshot/ClientSnapshotDescriptionUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 68,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/HConstants.java",
+            "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/HConstants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1451,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/master/HMaster.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/master/HMaster.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 13,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 3746,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/master/cleaner/SnapshotCleanerChore.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/master/cleaner/SnapshotCleanerChore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 110,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 422,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/snapshot/SnapshotInfo.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/snapshot/SnapshotInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 709,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/client/TestSnapshotFromClient.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/client/TestSnapshotFromClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 468,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/client/TestSnapshotTemporaryDirectory.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/client/TestSnapshotTemporaryDirectory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 479,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/master/cleaner/TestSnapshotCleanerChore.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/master/cleaner/TestSnapshotCleanerChore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 199,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "7f68591767119abad079fb306b2b9b6970389132",
+    "sha_after": "9615c644f595b03cabd18bb0f1bf865ddf5aeb30",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/Admin.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/Admin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 47,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 2188,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/SnapshotDescription.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/SnapshotDescription.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 59,
+        "LINES_DELETED": 13,
+        "PARENT_LOC": 153,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 3295,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/snapshot/ClientSnapshotDescriptionUtils.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/snapshot/ClientSnapshotDescriptionUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 68,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/HConstants.java",
+        "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/HConstants.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1451,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/master/HMaster.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/master/HMaster.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 13,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 3746,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/master/cleaner/SnapshotCleanerChore.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/master/cleaner/SnapshotCleanerChore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 110,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 422,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/snapshot/SnapshotInfo.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/snapshot/SnapshotInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 709,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/client/TestSnapshotFromClient.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/client/TestSnapshotFromClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 468,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/client/TestSnapshotTemporaryDirectory.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/client/TestSnapshotTemporaryDirectory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 479,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/master/cleaner/TestSnapshotCleanerChore.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/master/cleaner/TestSnapshotCleanerChore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 199,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Parameter": 1,
+      "Inline Variable": 1
+    }
+  },
+  "HBASE-22313": {
+    "jira_id": "HBASE-22313",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Add a method to FsDelegationToken to accept token kind",
+    "description": "The acquireDelegationToken method [1] defaults to checking for delegation token of kind \"HDFS_DELEGATION_TOKEN\" before fetching it from the FileSystem. It would be helpful to have a method that accepts the token kind and fetches delegation token from UserProvider for that token kind.\r\n\r\n[1] - [https://github.com/apache/hbase/blob/rel/2.1.4/hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java#L67] ",
+    "commits": [
+      {
+        "sha": "0648f5e93a40f3a055cdf69c90338d10b88ab908",
+        "message": "Add method to FsDelegation token to accept token kind",
+        "author": "venki09",
+        "date": "2019-04-29T17:19:19Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 122,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 95,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "5620da847a3d9d48ec7bfa871d9143f730086645",
+        "message": "Adding Test categories and rules",
+        "author": "venki09",
+        "date": "2019-06-07T20:36:00Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 95,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "06603c5635892a5a0665bebca562ec7988c42d36",
+        "message": "Test changes",
+        "author": "venki09",
+        "date": "2019-06-07T21:35:06Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "8e53d8f33d2b84b584b7fae301f684dc3a2b1566",
+        "message": "Rebase with master and fix errors",
+        "author": "venki09",
+        "date": "2019-06-07T22:55:52Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 15,
+            "PARENT_LOC": 155,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 105,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b32a856142e96c329f9e751344f41a62e2a52511",
+        "message": "Adding license statements",
+        "author": "venki09",
+        "date": "2019-06-10T15:48:22Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 157,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 109,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "ddddcafade0d982e7e688b7ed36191f5f5e4de00",
+        "message": "Go back to renewer in tests",
+        "author": "venki09",
+        "date": "2019-06-10T21:23:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 126,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "41490e792ad7673dcba327b16b095f2355e4a863",
+    "sha_after": "11f30de2cf90f1be787fcfce9933053bc1139e2b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/security/token/FsDelegationToken.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 43,
+        "LINES_DELETED": 9,
+        "PARENT_LOC": 122,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/security/token/TestFsDelegationToken.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 126,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Method": 1
+    }
+  },
+  "HBASE-21874": {
+    "jira_id": "HBASE-21874",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Bucket cache on Persistent memory",
+    "description": "Non volatile persistent memory devices are byte addressable like DRAM (for eg. Intel DCPMM). Bucket cache implementation can take advantage of this new memory type and can make use of the existing offheap data structures to serve data directly from this memory area without having to bring the data to onheap.\r\n\r\nThe patch is a new IOEngine implementation that works with the persistent memory.\r\n\r\nNote : Here we don't make use of the persistence nature of the device and just make use of the big memory it provides.\r\n\r\nPerformance numbers to follow. ",
+    "commits": [
+      {
+        "sha": "1b6c5a9154b2f11d0e3beddf08c6d9ee429d323a",
+        "message": "HBASE-23734 Backport [HBASE-21874 Bucket cache on Persistent memory] to branch-2.2",
+        "author": "wchevreuil",
+        "date": "2020-01-24T18:32:31Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1684,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/ExclusiveMemoryMmapIOEngine.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/ExclusiveMemoryMmapIOEngine.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/FileMmapEngine.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/FileMmapIOEngine.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 34,
+            "LINES_DELETED": 39,
+            "PARENT_LOC": 160,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/SharedMemoryMmapIOEngine.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/SharedMemoryMmapIOEngine.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 64,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/io/hfile/bucket/TestFileMmapEngine.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/io/hfile/bucket/TestExclusiveMemoryMmapEngine.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 73,
+            "STATUS": "R"
+          }
+        ]
+      }
+    ],
+    "sha_before": "01adc245457ee53c27d6ffbd9957db8eece3e357",
+    "sha_after": "6485a22debd25c3a8a827538853b82f3fe816963",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1684,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/ExclusiveMemoryMmapIOEngine.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/ExclusiveMemoryMmapIOEngine.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/FileMmapEngine.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/FileMmapIOEngine.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 34,
+        "LINES_DELETED": 39,
+        "PARENT_LOC": 160,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/SharedMemoryMmapIOEngine.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/bucket/SharedMemoryMmapIOEngine.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 64,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/io/hfile/bucket/TestFileMmapEngine.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/io/hfile/bucket/TestExclusiveMemoryMmapEngine.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 73,
+        "STATUS": "R"
+      }
+    ],
+    "refactoring_count": 12,
+    "refactorings": {
+      "Change Attribute Access Modifier": 3,
+      "Rename Class": 2,
+      "Push Down Method": 2,
+      "Extract Subclass": 2,
+      "Change Variable Type": 1,
+      "Add Class Modifier": 1,
+      "Add Method Modifier": 1
+    }
+  },
+  "HBASE-23210": {
+    "jira_id": "HBASE-23210",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Backport HBASE-15519 (Add per-user metrics) to branch-1",
+    "description": "We will need HBASE-15519 in branch-1 for eventual backport of HBASE-23065.",
+    "commits": [
+      {
+        "sha": "5127c2e98dffcc1fd3a695d4a45e0f9795fabbb8",
+        "message": "HBASE-23210 Backport HBASE-15519 (Add per-user metrics) to branch-1",
+        "author": "apurtell",
+        "date": "2019-10-28T16:03:42Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServerSourceFactory.java",
+            "CHILD_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServerSourceFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 67,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateSource.java",
+            "CHILD_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 60,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSource.java",
+            "CHILD_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServerSourceFactoryImpl.java",
+            "CHILD_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServerSourceFactoryImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 22,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 75,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateSourceImpl.java",
+            "CHILD_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateSourceImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 110,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSourceImpl.java",
+            "CHILD_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSourceImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 206,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-hadoop2-compat/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsUserSourceImpl.java",
+            "CHILD_PATH": "hbase-hadoop2-compat/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsUserSourceImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 70,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/MetaTableMetrics.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/MetaTableMetrics.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 274,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServer.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 248,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregate.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateFactory.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 69,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateImpl.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 135,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/util/LossyCounting.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/util/LossyCounting.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 52,
+            "LINES_DELETED": 16,
+            "PARENT_LOC": 134,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsTableLatencies.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsTableLatencies.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 68,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsUserAggregate.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsUserAggregate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 147,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/util/TestLossyCounting.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/util/TestLossyCounting.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 83,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "db2ce23a9332cdd89af5025d4a9f18f37a202350",
+    "sha_after": "d16cbfe91d405731616b153b32fd6c9a34a67428",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServerSourceFactory.java",
+        "CHILD_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServerSourceFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 67,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateSource.java",
+        "CHILD_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateSource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 60,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSource.java",
+        "CHILD_PATH": "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 42,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServerSourceFactoryImpl.java",
+        "CHILD_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServerSourceFactoryImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 22,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 75,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateSourceImpl.java",
+        "CHILD_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateSourceImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 110,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSourceImpl.java",
+        "CHILD_PATH": "hbase-hadoop2-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSourceImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 206,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-hadoop2-compat/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsUserSourceImpl.java",
+        "CHILD_PATH": "hbase-hadoop2-compat/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsUserSourceImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 70,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/MetaTableMetrics.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/MetaTableMetrics.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 9,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 274,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServer.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsRegionServer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 7,
+        "PARENT_LOC": 248,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregate.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 39,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateFactory.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 69,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateImpl.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserAggregateImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 135,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/util/LossyCounting.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/util/LossyCounting.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 52,
+        "LINES_DELETED": 16,
+        "PARENT_LOC": 133,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsTableLatencies.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsTableLatencies.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 68,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsUserAggregate.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/TestMetricsUserAggregate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 147,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/util/TestLossyCounting.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/util/TestLossyCounting.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 23,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 83,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 22,
+    "refactorings": {
+      "Change Parameter Type": 4,
+      "Change Attribute Type": 3,
+      "Change Variable Type": 3,
+      "Add Attribute Modifier": 3,
+      "Add Parameter": 3,
+      "Rename Method": 1,
+      "Change Return Type": 1,
+      "Add Method Annotation": 1,
+      "Change Method Access Modifier": 1,
+      "Change Attribute Access Modifier": 1,
+      "Rename Attribute": 1
+    }
+  },
+  "HBASE-22280": {
+    "jira_id": "HBASE-22280",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Separate read/write handler for priority request(especially for meta).",
+    "description": "Client may give too many read pressure on meta, so blocking master write meta for region open.",
+    "commits": [
+      {
+        "sha": "92ced6ff35ee22b4dcb6c051a000757ceebf817d",
+        "message": "HBASE-22280 Separate read/write handler for priority request(especially for meta).",
+        "author": "binlijin",
+        "date": "2019-10-31T13:00:35Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/MetaRWQueueRpcExecutor.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/MetaRWQueueRpcExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 51,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 250,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/SimpleRpcScheduler.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/SimpleRpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 326,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/ipc/TestSimpleRpcScheduler.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/ipc/TestSimpleRpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 69,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 599,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "9b36578cb658013ab21f2f7564ecdd5cc73a39ed",
+        "message": "fix ut",
+        "author": "binlijin",
+        "date": "2019-11-21T12:38:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/MetaRWQueueRpcExecutor.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/MetaRWQueueRpcExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 51,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/SimpleRpcScheduler.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/SimpleRpcScheduler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 337,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/master/assignment/TestReportOnlineRegionsRace.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/master/assignment/TestReportOnlineRegionsRace.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 188,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "978546b2f247b29dd63bad55b17fdc2e7a31e55d",
+    "sha_after": "dff7fffe8537427cb9ed1c0dceefd2a1c30a1a85",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/MetaRWQueueRpcExecutor.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/MetaRWQueueRpcExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 52,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 250,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/SimpleRpcScheduler.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/SimpleRpcScheduler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 325,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/ipc/TestSimpleRpcScheduler.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/ipc/TestSimpleRpcScheduler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 69,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 599,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/master/assignment/TestReportOnlineRegionsRace.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/master/assignment/TestReportOnlineRegionsRace.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 188,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 3,
+    "refactorings": {
+      "Extract Method": 2,
+      "Change Method Access Modifier": 1
+    }
+  },
+  "HBASE-23710": {
+    "jira_id": "HBASE-23710",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Priority configuration for system coprocessors",
+    "description": "Currenty HBase allows operators to set system region coprocessors via hbase-site.xml to be loaded on each table in a cluster (or alternately, all tables but system tables). HBase assumes that the first loaded system coprocessor gets the first, or SYSTEM priority, with each subsequent system coproc getting incremented by 1. As a reminder, in HBase _lower_ priorities go first. \r\n\r\nIt can be useful for an operator to be able to define a coprocessor on each table that needs a different priority. For example, an operator might want a coproc to load on each table _last_, so that it can enforce some system invariant and know that no other coproc will interfere with it. \r\n\r\nI propose adding optional priority config to the hbase-site.xml configuration, separated from each coproc class in the comma-separated list by a special character (perhaps a pipe, such as table coprocs use) that's not used in class names. \r\n\r\nThe region coprocessor host will parse the priority if present and use it when instantiating the coproc. ",
+    "commits": [
+      {
+        "sha": "b63c6c70058588fdec52e091c90f00c53e4ae87e",
+        "message": "HBASE-23710 - Priority configuration for system coprocessors",
+        "author": "gjacoby126",
+        "date": "2020-01-21T00:37:43Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/CoprocessorHost.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/CoprocessorHost.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 683,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/coprocessor/TestCoprocessorHost.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/coprocessor/TestCoprocessorHost.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 118,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "7c61c3992aeed8d2f91ad10699fda3fc60cf8892",
+    "sha_after": "2d6bb81dff16abfbea13e83a2c30a69f719c2d0e",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/CoprocessorHost.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/CoprocessorHost.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 15,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 683,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/coprocessor/TestCoprocessorHost.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/coprocessor/TestCoprocessorHost.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 118,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Variable": 1
+    }
+  },
+  "HBASE-24267": {
+    "jira_id": "HBASE-24267",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Add limit support for scan in rest api",
+    "description": "rest scan api currently does not support limit.\r\n ",
+    "commits": [
+      {
+        "sha": "b5d78663c149bdcd681a9105dcd43d1ae6cc9f31",
+        "message": "HBASE-24267 add limit support for scan in rest api",
+        "author": "zhuqi",
+        "date": "2020-04-27T07:16:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/ScannerResource.java",
+            "CHILD_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/ScannerResource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 167,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/ScannerResultGenerator.java",
+            "CHILD_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/ScannerResultGenerator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 202,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/model/ScannerModel.java",
+            "CHILD_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/model/ScannerModel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 877,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-rest/src/test/java/org/apache/hadoop/hbase/rest/client/TestRemoteTable.java",
+            "CHILD_PATH": "hbase-rest/src/test/java/org/apache/hadoop/hbase/rest/client/TestRemoteTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 640,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-rest/src/test/java/org/apache/hadoop/hbase/rest/model/TestScannerModel.java",
+            "CHILD_PATH": "hbase-rest/src/test/java/org/apache/hadoop/hbase/rest/model/TestScannerModel.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "6eb5cafe34db7fd092566c98daaf24740d10b89d",
+    "sha_after": "7e9bd3606f9b89ff4d6959e3cc93518b0ca14046",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/ScannerResource.java",
+        "CHILD_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/ScannerResource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 167,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/ScannerResultGenerator.java",
+        "CHILD_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/ScannerResultGenerator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 202,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/model/ScannerModel.java",
+        "CHILD_PATH": "hbase-rest/src/main/java/org/apache/hadoop/hbase/rest/model/ScannerModel.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 877,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-rest/src/test/java/org/apache/hadoop/hbase/rest/client/TestRemoteTable.java",
+        "CHILD_PATH": "hbase-rest/src/test/java/org/apache/hadoop/hbase/rest/client/TestRemoteTable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 43,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 640,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-rest/src/test/java/org/apache/hadoop/hbase/rest/model/TestScannerModel.java",
+        "CHILD_PATH": "hbase-rest/src/test/java/org/apache/hadoop/hbase/rest/model/TestScannerModel.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 14,
+        "LINES_DELETED": 12,
+        "PARENT_LOC": 153,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Method": 1
+    }
+  }
+}

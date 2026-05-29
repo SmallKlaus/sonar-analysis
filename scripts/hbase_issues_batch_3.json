@@ -1,0 +1,2832 @@
+{
+  "HBASE-26141": {
+    "jira_id": "HBASE-26141",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Add tracing support for HTable and sync connection on branch-2",
+    "description": "Split from HBASE-25853, the original change of HBASE-22120 does not include tracing support for sync client, if we decide to support it in branch-2, we will need to come up our own solution. \r\n\r\nthis change should cover mainly the classes of HTable, ConnectionImplementation, and HRegionLocator\r\n\r\n    * RPC and IPC tracing supported by HBASE-26125\r\n    * WAL tracing supported by HBASE-26131",
+    "commits": [
+      {
+        "sha": "822c61664456fd360746bd6b067fc925456c57c1",
+        "message": "HBASE-26141 Add tracing support for HTable and sync connection on branch-2",
+        "author": "taklwu",
+        "date": "2021-09-21T05:39:13Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionFactory.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 20,
+            "LINES_DELETED": 19,
+            "PARENT_LOC": 312,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionImplementation.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionImplementation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 44,
+            "LINES_DELETED": 37,
+            "PARENT_LOC": 2198,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HRegionLocator.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HRegionLocator.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 117,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HTable.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 349,
+            "LINES_DELETED": 280,
+            "PARENT_LOC": 1368,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionFactoryTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionFactoryTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 71,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionImplementationTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionImplementationTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 72,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 348,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestRegionLocatorTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestRegionLocatorTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 82,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestTracingBase.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestTracingBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 88,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/trace/TraceUtil.java",
+            "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/trace/TraceUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 19,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 229,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "0d96e4470c4ab1709b16477f7c3c9b47c0b3c703",
+        "message": "fix javac and address comments for getHbck",
+        "author": "taklwu",
+        "date": "2021-09-23T09:08:56Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionImplementation.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionImplementation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 2205,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionFactoryTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionFactoryTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 71,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionImplementationTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionImplementationTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 72,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 348,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestRegionLocatorTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestRegionLocatorTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 82,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestTracingBase.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestTracingBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 88,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "b8fea34e2750bc56021491be0001e1cd60796f35",
+        "message": "more fix for checkstyle, javac and spotbugs",
+        "author": "taklwu",
+        "date": "2021-09-23T17:17:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionImplementation.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionImplementation.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 24,
+            "LINES_DELETED": 23,
+            "PARENT_LOC": 2204,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HTable.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 29,
+            "PARENT_LOC": 1437,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/Scan.java",
+            "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/Scan.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 1240,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 346,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "43a0319114a9c810881fa8e3a527059fbf3946db",
+        "message": "fix indentation",
+        "author": "taklwu",
+        "date": "2021-09-23T18:22:37Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 18,
+            "LINES_DELETED": 19,
+            "PARENT_LOC": 349,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "c96c6c6c1a583805cb22e21c4c01e209ec84e19c",
+        "message": "last checkstyle/indentation",
+        "author": "taklwu",
+        "date": "2021-09-23T19:14:03Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 348,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "404789adde26a5653a598913a046ad12b312dc5c",
+    "sha_after": "49ae6752752bc925d37e5ab8ca9824f75b46f93b",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionFactory.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 20,
+        "LINES_DELETED": 19,
+        "PARENT_LOC": 312,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionImplementation.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/ConnectionImplementation.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 61,
+        "LINES_DELETED": 54,
+        "PARENT_LOC": 2198,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HRegionLocator.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HRegionLocator.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 24,
+        "LINES_DELETED": 14,
+        "PARENT_LOC": 117,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HTable.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/HTable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 381,
+        "LINES_DELETED": 305,
+        "PARENT_LOC": 1368,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/Scan.java",
+        "CHILD_PATH": "hbase-client/src/main/java/org/apache/hadoop/hbase/client/Scan.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 1240,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionFactoryTracing.java",
+        "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionFactoryTracing.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 72,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionImplementationTracing.java",
+        "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestConnectionImplementationTracing.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 73,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+        "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestHTableTracing.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 348,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestRegionLocatorTracing.java",
+        "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestRegionLocatorTracing.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 83,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestTracingBase.java",
+        "CHILD_PATH": "hbase-client/src/test/java/org/apache/hadoop/hbase/client/TestTracingBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 103,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/trace/TraceUtil.java",
+        "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/trace/TraceUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 19,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 229,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 16,
+    "refactorings": {
+      "Inline Variable": 16
+    }
+  },
+  "HBASE-26703": {
+    "jira_id": "HBASE-26703",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Allow configuration of IPC queue balancer",
+    "description": "Currently we randomly assign IPC calls to queues using a RandomQueueBalancer, which relies on ThreadLocalRandom. I would like to make that configurable so that one can plug in their own queue balancer. This usefully combines with the existing ability to specify a pluggable queue type.",
+    "commits": [
+      {
+        "sha": "04d122a2ce66e0c5e6319b3d4cf280d059b9a095",
+        "message": "HBASE-26703 Allow configuration of IPC queue balancer",
+        "author": "bbeaudreault",
+        "date": "2022-01-22T15:31:38Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/BalancedQueueRpcExecutor.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/BalancedQueueRpcExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 64,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/QueueBalancer.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/QueueBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 269,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RandomQueueBalancer.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RandomQueueBalancer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 54,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RpcExecutor.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RpcExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 16,
+            "LINES_DELETED": 37,
+            "PARENT_LOC": 492,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/ipc/TestRWQueueRpcExecutor.java",
+            "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/ipc/TestRWQueueRpcExecutor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 109,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "b3b4405d61b906d77346947dfe69a9ac9f3243ed",
+    "sha_after": "8fb3d4666a8cc503b86504d8ccd6a2e34aa4050d",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/BalancedQueueRpcExecutor.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/BalancedQueueRpcExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 64,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/QueueBalancer.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/QueueBalancer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 35,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 39,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 269,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RandomQueueBalancer.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RandomQueueBalancer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 54,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RpcExecutor.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RpcExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 16,
+        "LINES_DELETED": 37,
+        "PARENT_LOC": 499,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/ipc/TestRWQueueRpcExecutor.java",
+        "CHILD_PATH": "hbase-server/src/test/java/org/apache/hadoop/hbase/ipc/TestRWQueueRpcExecutor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 109,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 25,
+    "refactorings": {
+      "Add Parameter": 9,
+      "Add Class Annotation": 4,
+      "Encapsulate Attribute": 3,
+      "Move Class": 2,
+      "Remove Parameter": 2,
+      "Remove Class Modifier": 2,
+      "Change Class Access Modifier": 1,
+      "Remove Method Modifier": 1,
+      "Change Type Declaration Kind": 1
+    }
+  },
+  "HBASE-26959": {
+    "jira_id": "HBASE-26959",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Brotli compression support",
+    "description": "I was about to document the compression improvements upcoming in 2.5.0 and realized we lacked support for one of the major compression formats in use today. (Arguably brotli is not often used to compress data at rest, but is widely supported among web browsers and HTTP servers and clients.) \r\n\r\nBrotli support for Java is provided by Apache 2 licensed [Brotli4j|https://github.com/hyperxpro/Brotli4j] available in Maven central.\r\n\r\nIt is not difficult to add it, so let's add it. There might be some advantage to opting for brotli compression when storing web data given the precomputed static dictionary of such content included in its specification.  ",
+    "commits": [
+      {
+        "sha": "0e3250985f1add399f1bc3416e89972dcc5628dd",
+        "message": "HBASE-26959 Brotli compression support",
+        "author": "apurtell",
+        "date": "2022-04-17T22:56:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/Compression.java",
+            "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/Compression.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 565,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 121,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 220,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliDecompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliDecompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 156,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestBrotliCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestBrotliCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestHFileCompressionBrotli.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestHFileCompressionBrotli.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestWALCompressionBrotli.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestWALCompressionBrotli.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 69,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "3533f07d1cc405fc1ebf23d4a176656242738353",
+        "message": "Missed the addition to hbase-assembly",
+        "author": "apurtell",
+        "date": "2022-04-18T00:25:31Z",
+        "files": []
+      },
+      {
+        "sha": "6a38bf91bf139ec0a8a14d633b9bfb96e7962b84",
+        "message": "Tidy comment",
+        "author": "apurtell",
+        "date": "2022-04-18T00:32:28Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 220,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "df312d91fd6b6c17cb95594e637914976b2b00fc",
+        "message": "Fix LICENSE.vm issues",
+        "author": "apurtell",
+        "date": "2022-04-18T16:48:40Z",
+        "files": []
+      },
+      {
+        "sha": "7d825e7f2f10292b3d42140349bf9c0dd807460a",
+        "message": "Support configurable LZ window size with hbase.io.compress.brotli.window",
+        "author": "apurtell",
+        "date": "2022-04-18T17:27:44Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 121,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 219,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "f8fa3bfe56856cebaec7f9f8e10d84226ae3e6d7",
+        "message": "Address review feedback",
+        "author": "apurtell",
+        "date": "2022-04-20T17:54:34Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/Compression.java",
+            "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/Compression.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 595,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/CompressionUtil.java",
+            "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/CompressionUtil.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 38,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/HadoopCompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/HadoopCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 213,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/HadoopDecompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/HadoopDecompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 148,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/Lz4Codec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/Lz4Codec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/LzoCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/LzoCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/SnappyCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/SnappyCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/ZstdCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/ZstdCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 164,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 127,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 215,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliDecompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliDecompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 156,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Codec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Codec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 118,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Compressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Compressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 204,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Decompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Decompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 142,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 118,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyCompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 183,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyDecompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyDecompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 135,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 119,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaCompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 241,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaDecompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaDecompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 166,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 8,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 157,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 223,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdDecompressor.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdDecompressor.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 185,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/test/java/org/apache/hadoop/hbase/io/compress/zstd/TestZstdDictionary.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/test/java/org/apache/hadoop/hbase/io/compress/zstd/TestZstdDictionary.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 98,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "acd63f4889d218f31cde49f12d25fd5779aac9a1",
+        "message": "Fix a checkstyle nit introduced by the last commit",
+        "author": "apurtell",
+        "date": "2022-04-20T19:08:24Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCodec.java",
+            "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCodec.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 160,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "6d2108c9423d69215bbcf381e849a875f981839f",
+        "message": "Revert \"Fix LICENSE.vm issues\"",
+        "author": "apurtell",
+        "date": "2022-04-21T20:50:13Z",
+        "files": []
+      },
+      {
+        "sha": "c98431ea0e16c47d921a53ecaeb72a1e7daf66a4",
+        "message": "Correct LICENSE.vm build issue by adding supplemental models for Brotli4j and its natives",
+        "author": "apurtell",
+        "date": "2022-04-21T21:04:09Z",
+        "files": []
+      }
+    ],
+    "sha_before": "9a88092817b054c95aeee66eec59dc0e25d07644",
+    "sha_after": "f5b10e0115c7e4d6b350476f9a60408579254d84",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/Compression.java",
+        "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/Compression.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 33,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 565,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/CompressionUtil.java",
+        "CHILD_PATH": "hbase-common/src/main/java/org/apache/hadoop/hbase/io/compress/CompressionUtil.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 38,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/HadoopCompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/HadoopCompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 213,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/HadoopDecompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/HadoopDecompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 148,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/Lz4Codec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/Lz4Codec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 156,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/LzoCodec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/LzoCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 156,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/SnappyCodec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/SnappyCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 156,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/ZstdCodec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-aircompressor/src/main/java/org/apache/hadoop/hbase/io/compress/aircompressor/ZstdCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 164,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCodec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 127,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliCompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 214,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliDecompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/main/java/org/apache/hadoop/hbase/io/compress/brotli/BrotliDecompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 154,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestBrotliCodec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestBrotliCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestHFileCompressionBrotli.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestHFileCompressionBrotli.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 57,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestWALCompressionBrotli.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-brotli/src/test/java/org/apache/hadoop/hbase/io/compress/brotli/TestWALCompressionBrotli.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 69,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Codec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Codec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 118,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Compressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Compressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 204,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Decompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-lz4/src/main/java/org/apache/hadoop/hbase/io/compress/lz4/Lz4Decompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 142,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyCodec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 4,
+        "PARENT_LOC": 118,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyCompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyCompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 183,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyDecompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-snappy/src/main/java/org/apache/hadoop/hbase/io/compress/xerial/SnappyDecompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 135,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaCodec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 119,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaCompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaCompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 241,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaDecompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-xz/src/main/java/org/apache/hadoop/hbase/io/compress/xz/LzmaDecompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 166,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCodec.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCodec.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 157,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdCompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 223,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdDecompressor.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/main/java/org/apache/hadoop/hbase/io/compress/zstd/ZstdDecompressor.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 185,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-compression/hbase-compression-zstd/src/test/java/org/apache/hadoop/hbase/io/compress/zstd/TestZstdDictionary.java",
+        "CHILD_PATH": "hbase-compression/hbase-compression-zstd/src/test/java/org/apache/hadoop/hbase/io/compress/zstd/TestZstdDictionary.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 98,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Extract And Move Method": 6,
+      "Add Class Annotation": 1
+    }
+  },
+  "HBASE-27238": {
+    "jira_id": "HBASE-27238",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Backport Backup/Restore to 2.x",
+    "description": "Backport backup/restore to 2.x branch. ",
+    "commits": [
+      {
+        "sha": "43e87645a4baa8486440a0c99dd81511b2e01fe8",
+        "message": "hbase backup backprot",
+        "author": "rda3mon",
+        "date": "2022-08-01T09:04:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupAdmin.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupAdmin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 134,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupClientFactory.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupClientFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 56,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupCopyJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupCopyJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 52,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupDriver.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 211,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupHFileCleaner.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupHFileCleaner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 180,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupInfo.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 580,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupMergeJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupMergeJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 37,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupObserver.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupObserver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 107,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRequest.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRequest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 151,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRestoreConstants.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRestoreConstants.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 140,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRestoreFactory.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRestoreFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 78,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupTableInfo.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupTableInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 79,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/HBackupFileSystem.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/HBackupFileSystem.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 158,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreDriver.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 270,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 43,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreRequest.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreRequest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 133,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupAdminImpl.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupAdminImpl.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 716,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupCommands.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupCommands.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1127,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupException.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 82,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManager.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 521,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManifest.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManifest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 666,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupSystemTable.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupSystemTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1866,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/ExclusiveOperationException.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/ExclusiveOperationException.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 31,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/FullTableBackupClient.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/FullTableBackupClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 226,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalBackupManager.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalBackupManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 283,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalTableBackupClient.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalTableBackupClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 435,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/RestoreTablesClient.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/RestoreTablesClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 258,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/TableBackupClient.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/TableBackupClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 423,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupCopyJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupCopyJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 429,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupMergeJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupMergeJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 398,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceHFileSplitterJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceHFileSplitterJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 169,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceRestoreJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceRestoreJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 119,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/master/BackupLogCleaner.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/master/BackupLogCleaner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 179,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/master/LogRollMasterProcedureManager.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/master/LogRollMasterProcedureManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 173,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedure.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedure.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 166,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedurePool.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedurePool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 137,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollRegionServerProcedureManager.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollRegionServerProcedureManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 175,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupSet.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupSet.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupUtils.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 745,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/RestoreTool.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/RestoreTool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 522,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBase.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 512,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBoundaryTests.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBoundaryTests.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 98,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupCommandLineTool.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupCommandLineTool.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 444,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDelete.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDelete.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 161,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDeleteRestore.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDeleteRestore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 81,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDeleteWithFailures.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDeleteWithFailures.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 199,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDescribe.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDescribe.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 110,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupHFileCleaner.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupHFileCleaner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 153,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupManager.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 136,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupMerge.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupMerge.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 127,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupMultipleDeletes.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupMultipleDeletes.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 162,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupRepair.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupRepair.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 92,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupShowHistory.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupShowHistory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 141,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSmallTests.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSmallTests.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 60,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupStatusProgress.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupStatusProgress.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 97,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSystemTable.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSystemTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 507,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupUtils.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 81,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackup.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 63,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupSet.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupSet.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 100,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupSetRestoreSet.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupSetRestoreSet.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 131,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupWithFailures.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupWithFailures.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 82,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullRestore.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullRestore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 337,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackup.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 219,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupDeleteTable.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupDeleteTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 129,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupMergeWithFailures.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupMergeWithFailures.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 350,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupWithFailures.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupWithFailures.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 165,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRemoteBackup.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRemoteBackup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 153,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRemoteRestore.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRemoteRestore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 75,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRepairAfterFailedDelete.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRepairAfterFailedDelete.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 95,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRestoreBoundaryTests.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRestoreBoundaryTests.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 82,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestSystemTableSnapshot.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestSystemTableSnapshot.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 58,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/master/TestBackupLogCleaner.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/master/TestBackupLogCleaner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 135,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-it/src/test/java/org/apache/hadoop/hbase/IntegrationTestBackupRestore.java",
+            "CHILD_PATH": "hbase-it/src/test/java/org/apache/hadoop/hbase/IntegrationTestBackupRestore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 440,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/HFileOutputFormat2.java",
+            "CHILD_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/HFileOutputFormat2.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 963,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/WALPlayer.java",
+            "CHILD_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/WALPlayer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 62,
+            "LINES_DELETED": 35,
+            "PARENT_LOC": 434,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestCellBasedHFileOutputFormat2.java",
+            "CHILD_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestCellBasedHFileOutputFormat2.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1436,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestHFileOutputFormat2.java",
+            "CHILD_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestHFileOutputFormat2.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 1698,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/procedure/ProcedureCoordinationManager.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/procedure/ProcedureCoordinationManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/procedure/ZKProcedureCoordinationManager.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/procedure/ZKProcedureCoordinationManager.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/util/FSTableDescriptors.java",
+            "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/util/FSTableDescriptors.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 637,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "758b07ee6fa21964a4ff81655ceb1917b6881b6f",
+        "message": "HBASE-27201 Clean up error-prone findings in hbase-backup (#4643)",
+        "author": "apurtell",
+        "date": "2022-08-11T07:02:17Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupInfo.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupInfo.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 6,
+            "PARENT_LOC": 580,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreDriver.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreDriver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 270,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupCommands.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupCommands.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 9,
+            "PARENT_LOC": 1127,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManifest.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManifest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 666,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupSystemTable.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupSystemTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 21,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 1866,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalTableBackupClient.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalTableBackupClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 435,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/RestoreTablesClient.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/RestoreTablesClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 258,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/TableBackupClient.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/TableBackupClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 423,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupCopyJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupCopyJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 429,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupMergeJob.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupMergeJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 398,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedure.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedure.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 166,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupUtils.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 14,
+            "PARENT_LOC": 745,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBase.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBase.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 512,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupHFileCleaner.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupHFileCleaner.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 153,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSystemTable.java",
+            "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSystemTable.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 42,
+            "PARENT_LOC": 507,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "5289e4c5f971fe0f52920544eb0b55d764b8c2fb",
+        "message": "fixes on top of patch",
+        "author": "rda3mon",
+        "date": "2022-09-13T03:16:47Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupUtils.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupUtils.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 743,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-it/src/test/java/org/apache/hadoop/hbase/IntegrationTestBackupRestore.java",
+            "CHILD_PATH": "hbase-it/src/test/java/org/apache/hadoop/hbase/IntegrationTestBackupRestore.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 440,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "2bf4f6a47432d8c1daa75f5b0367fb1af6c00011",
+        "message": "review enhancements",
+        "author": "rda3mon",
+        "date": "2023-01-19T13:50:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalTableBackupClient.java",
+            "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalTableBackupClient.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 434,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/HFileOutputFormat2.java",
+            "CHILD_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/HFileOutputFormat2.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 23,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 969,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/WALPlayer.java",
+            "CHILD_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/WALPlayer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 17,
+            "LINES_DELETED": 12,
+            "PARENT_LOC": 461,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestCellBasedHFileOutputFormat2.java",
+            "CHILD_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestCellBasedHFileOutputFormat2.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1441,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestHFileOutputFormat2.java",
+            "CHILD_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestHFileOutputFormat2.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 15,
+            "LINES_DELETED": 4,
+            "PARENT_LOC": 1702,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "40d0bd58162acdbf23fdf2fd19f2fbed94ca5772",
+    "sha_after": "fd11b9bfcf2074ff0910ca1278f8a2fb66f0ad58",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupAdmin.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupAdmin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 134,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupClientFactory.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupClientFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 56,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupCopyJob.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupCopyJob.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 52,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupDriver.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupDriver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 211,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupHFileCleaner.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupHFileCleaner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 180,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupInfo.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 578,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupMergeJob.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupMergeJob.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 37,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupObserver.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupObserver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 107,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRequest.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRequest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 151,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRestoreConstants.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRestoreConstants.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 140,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRestoreFactory.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupRestoreFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 78,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupTableInfo.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/BackupTableInfo.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 79,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/HBackupFileSystem.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/HBackupFileSystem.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 158,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreDriver.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreDriver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 270,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreJob.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreJob.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 43,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreRequest.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/RestoreRequest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 133,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupAdminImpl.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupAdminImpl.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 716,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupCommands.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupCommands.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1123,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupException.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 82,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManager.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 521,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManifest.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupManifest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 664,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupSystemTable.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/BackupSystemTable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1877,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/ExclusiveOperationException.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/ExclusiveOperationException.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 31,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/FullTableBackupClient.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/FullTableBackupClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 226,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalBackupManager.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalBackupManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 283,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalTableBackupClient.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/IncrementalTableBackupClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 436,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/RestoreTablesClient.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/RestoreTablesClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 258,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/TableBackupClient.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/impl/TableBackupClient.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 423,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupCopyJob.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupCopyJob.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 428,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupMergeJob.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceBackupMergeJob.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 399,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceHFileSplitterJob.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceHFileSplitterJob.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 169,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceRestoreJob.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/mapreduce/MapReduceRestoreJob.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 119,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/master/BackupLogCleaner.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/master/BackupLogCleaner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 179,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/master/LogRollMasterProcedureManager.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/master/LogRollMasterProcedureManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 173,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedure.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedure.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 167,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedurePool.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollBackupSubprocedurePool.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 137,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollRegionServerProcedureManager.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/regionserver/LogRollRegionServerProcedureManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 175,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupSet.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupSet.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 57,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupUtils.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/BackupUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 742,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/RestoreTool.java",
+        "CHILD_PATH": "hbase-backup/src/main/java/org/apache/hadoop/hbase/backup/util/RestoreTool.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 522,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBase.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBase.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 509,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBoundaryTests.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupBoundaryTests.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 98,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupCommandLineTool.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupCommandLineTool.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 444,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDelete.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDelete.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 161,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDeleteRestore.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDeleteRestore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 81,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDeleteWithFailures.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDeleteWithFailures.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 199,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDescribe.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupDescribe.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 110,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupHFileCleaner.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupHFileCleaner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 148,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupManager.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 136,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupMerge.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupMerge.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 127,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupMultipleDeletes.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupMultipleDeletes.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 162,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupRepair.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupRepair.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 92,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupShowHistory.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupShowHistory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 141,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSmallTests.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSmallTests.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 60,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupStatusProgress.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupStatusProgress.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 97,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSystemTable.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupSystemTable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 504,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupUtils.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestBackupUtils.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 81,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackup.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackup.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 63,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupSet.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupSet.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 100,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupSetRestoreSet.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupSetRestoreSet.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 131,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupWithFailures.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullBackupWithFailures.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 82,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullRestore.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestFullRestore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 337,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackup.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackup.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 219,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupDeleteTable.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupDeleteTable.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 129,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupMergeWithFailures.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupMergeWithFailures.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 350,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupWithFailures.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestIncrementalBackupWithFailures.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 165,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRemoteBackup.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRemoteBackup.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 153,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRemoteRestore.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRemoteRestore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 75,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRepairAfterFailedDelete.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRepairAfterFailedDelete.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 95,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRestoreBoundaryTests.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestRestoreBoundaryTests.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 82,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestSystemTableSnapshot.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/TestSystemTableSnapshot.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 58,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/master/TestBackupLogCleaner.java",
+        "CHILD_PATH": "hbase-backup/src/test/java/org/apache/hadoop/hbase/backup/master/TestBackupLogCleaner.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 135,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-it/src/test/java/org/apache/hadoop/hbase/IntegrationTestBackupRestore.java",
+        "CHILD_PATH": "hbase-it/src/test/java/org/apache/hadoop/hbase/IntegrationTestBackupRestore.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 439,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/HFileOutputFormat2.java",
+        "CHILD_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/HFileOutputFormat2.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 963,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/WALPlayer.java",
+        "CHILD_PATH": "hbase-mapreduce/src/main/java/org/apache/hadoop/hbase/mapreduce/WALPlayer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 66,
+        "LINES_DELETED": 34,
+        "PARENT_LOC": 434,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestCellBasedHFileOutputFormat2.java",
+        "CHILD_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestCellBasedHFileOutputFormat2.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 5,
+        "PARENT_LOC": 1436,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestHFileOutputFormat2.java",
+        "CHILD_PATH": "hbase-mapreduce/src/test/java/org/apache/hadoop/hbase/mapreduce/TestHFileOutputFormat2.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 21,
+        "LINES_DELETED": 6,
+        "PARENT_LOC": 1698,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/procedure/ProcedureCoordinationManager.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/procedure/ProcedureCoordinationManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 35,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/procedure/ZKProcedureCoordinationManager.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/procedure/ZKProcedureCoordinationManager.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 42,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/util/FSTableDescriptors.java",
+        "CHILD_PATH": "hbase-server/src/main/java/org/apache/hadoop/hbase/util/FSTableDescriptors.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 637,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 12,
+    "refactorings": {
+      "Extract Variable": 7,
+      "Add Parameter": 2,
+      "Merge Variable": 1,
+      "Rename Variable": 1,
+      "Change Attribute Access Modifier": 1
+    }
+  }
+}

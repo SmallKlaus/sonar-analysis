@@ -1,0 +1,1878 @@
+{
+  "CAMEL-20115": {
+    "jira_id": "CAMEL-20115",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Support for Start Date and End Date in camel-quartz",
+    "description": "The feature requirement is for the camel-quartz component to support a start date and an end date for a specific cron. This enhancement will allow users to set a specific time frame for the cron trigger, thereby enabling more precise scheduling and execution of jobs.\r\nh3. Current Behavior\r\n\r\nCurrently, Quartz's TriggerBuilder allows for the setting of a start date and end date for a trigger. However, it appears that CronTriggerImpl does not consider these values for scheduling. Additionally, the TriggerBuilder too does not seem to validate these dates.\r\nh3. Proposed Enhancement\r\n\r\nThe proposed enhancement is to enable the camel-quartz to support start and end date values. This can be achieved by allowing the following parameters in the URI: {_}trigger.startAt=<timeInUTCMillis>&trigger.endAt=<timeInUTCMillis>{_}.\r\nh3. Expected Behavior\r\n\r\nWith this enhancement, the camel-quartz will be able to skip the expired trigger based on the end date in QuartzEndpoint. It will also enable the system to avoid triggers that occur before the start date and after the end date in CamelJob.\r\nh3. Use Case\r\n\r\nThis feature will support the use case where users need to schedule jobs within a specific time frame, avoiding triggers that occur outside this specified period.\r\n\r\n \r\n\r\n[zulipchat camel-quartz startAt and endAt support for cron |https://camel.zulipchat.com/#narrow/stream/257298-camel/topic/camel-quartz.20startAt.20and.20endAt.20support.20for.20cron]",
+    "commits": [
+      {
+        "sha": "99da2b85fbd897c5c52cff86eb285aedbdfb9b5e",
+        "message": "CAMEL-20115: Support for Start Date and End Date in camel-quartz",
+        "author": "Prasanth Rao",
+        "date": "2023-11-20T07:42:55Z",
+        "files": [
+          {
+            "PARENT_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/CamelJob.java",
+            "CHILD_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/CamelJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 26,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 192,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/QuartzEndpoint.java",
+            "CHILD_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/QuartzEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 8,
+            "PARENT_LOC": 634,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-quartz/src/test/java/org/apache/camel/component/quartz/QuartzCronRouteWithStartDateEndDateTest.java",
+            "CHILD_PATH": "components/camel-quartz/src/test/java/org/apache/camel/component/quartz/QuartzCronRouteWithStartDateEndDateTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 53,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "09fba04a801ee2310d3edce05acbb12a79f48235",
+        "message": "Fix for exact match in CamelJob for fireTime",
+        "author": "Prasanth Rao",
+        "date": "2023-11-20T15:56:07Z",
+        "files": [
+          {
+            "PARENT_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/CamelJob.java",
+            "CHILD_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/CamelJob.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 9,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 218,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "78dafcaf7c4e5fc217ada17accffb32a95ae5a9f",
+        "message": "Move to Date with Timezone format",
+        "author": "Prasanth Rao",
+        "date": "2023-11-22T10:23:30Z",
+        "files": [
+          {
+            "PARENT_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/QuartzEndpoint.java",
+            "CHILD_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/QuartzEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 651,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-quartz/src/test/java/org/apache/camel/component/quartz/QuartzCronRouteWithStartDateEndDateTest.java",
+            "CHILD_PATH": "components/camel-quartz/src/test/java/org/apache/camel/component/quartz/QuartzCronRouteWithStartDateEndDateTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 14,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 53,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "27c4a23d2641ade2b4da205e566ee3ad701cdf43",
+        "message": "Updated adoc and removed string concatenation from Test",
+        "author": "Prasanth Rao",
+        "date": "2023-11-24T09:49:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "components/camel-quartz/src/test/java/org/apache/camel/component/quartz/QuartzCronRouteWithStartDateEndDateTest.java",
+            "CHILD_PATH": "components/camel-quartz/src/test/java/org/apache/camel/component/quartz/QuartzCronRouteWithStartDateEndDateTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 7,
+            "PARENT_LOC": 65,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "77c3b25dfb65f3e4289b483865db6b1577299952",
+    "sha_after": "2a90c1548615e8652996864a9993a896dd9e908f",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/CamelJob.java",
+        "CHILD_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/CamelJob.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 30,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 192,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/QuartzEndpoint.java",
+        "CHILD_PATH": "components/camel-quartz/src/main/java/org/apache/camel/component/quartz/QuartzEndpoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 27,
+        "LINES_DELETED": 8,
+        "PARENT_LOC": 634,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-quartz/src/test/java/org/apache/camel/component/quartz/QuartzCronRouteWithStartDateEndDateTest.java",
+        "CHILD_PATH": "components/camel-quartz/src/test/java/org/apache/camel/component/quartz/QuartzCronRouteWithStartDateEndDateTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 65,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Extract Method": 1
+    }
+  },
+  "CAMEL-20162": {
+    "jira_id": "CAMEL-20162",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Camel-AWS-Config: Add Describe Compliance By Config Rule operation",
+    "description": "",
+    "commits": [
+      {
+        "sha": "8a9f7155bbde2e0025092bb2cb002eb4945fe629",
+        "message": "CAMEL-20162 - Camel-AWS-Config: Add Describe Compliance By Config Rule operation",
+        "author": "oscerd",
+        "date": "2023-11-28T10:47:16Z",
+        "files": [
+          {
+            "PARENT_PATH": "components/camel-aws/camel-aws-config/src/main/java/org/apache/camel/component/aws/config/AWSConfigOperations.java",
+            "CHILD_PATH": "components/camel-aws/camel-aws-config/src/main/java/org/apache/camel/component/aws/config/AWSConfigOperations.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 0,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-aws/camel-aws-config/src/main/java/org/apache/camel/component/aws/config/AWSConfigProducer.java",
+            "CHILD_PATH": "components/camel-aws/camel-aws-config/src/main/java/org/apache/camel/component/aws/config/AWSConfigProducer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 201,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-aws/camel-aws-config/src/test/java/org/apache/camel/component/aws/config/integration/AWSConfigProducerManualIT.java",
+            "CHILD_PATH": "components/camel-aws/camel-aws-config/src/test/java/org/apache/camel/component/aws/config/integration/AWSConfigProducerManualIT.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 46,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 88,
+            "STATUS": "M"
+          }
+        ]
+      },
+      {
+        "sha": "d8c2acae815a31d2ad5faf8aed84f0688c3255df",
+        "message": "CAMEL-20162 - Camel-AWS-Config: Add Describe Compliance By Config Rule operation",
+        "author": "oscerd",
+        "date": "2023-11-28T10:51:52Z",
+        "files": []
+      }
+    ],
+    "sha_before": "a136e63e5eab5c9c479f6b4890bac9606bb9e67d",
+    "sha_after": "e8b1e2b211f3346bc4296b114a300fa4016f74ca",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "components/camel-aws/camel-aws-config/src/main/java/org/apache/camel/component/aws/config/AWSConfigOperations.java",
+        "CHILD_PATH": "components/camel-aws/camel-aws-config/src/main/java/org/apache/camel/component/aws/config/AWSConfigOperations.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 23,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-aws/camel-aws-config/src/main/java/org/apache/camel/component/aws/config/AWSConfigProducer.java",
+        "CHILD_PATH": "components/camel-aws/camel-aws-config/src/main/java/org/apache/camel/component/aws/config/AWSConfigProducer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 39,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 201,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-aws/camel-aws-config/src/test/java/org/apache/camel/component/aws/config/integration/AWSConfigProducerManualIT.java",
+        "CHILD_PATH": "components/camel-aws/camel-aws-config/src/test/java/org/apache/camel/component/aws/config/integration/AWSConfigProducerManualIT.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 46,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 88,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 1,
+    "refactorings": {
+      "Rename Method": 1
+    }
+  },
+  "CAMEL-20186": {
+    "jira_id": "CAMEL-20186",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "camel-jbang - Add option to camel dependencies to add jbang style //DEPS to source file",
+    "description": "So you can do\r\n\r\ncamel init foo.java\r\ncamel dependency update foo.java\r\n\r\nThen it will update the java source file. It can maybe also work for groovy and kotlin source files.\r\n\r\n",
+    "commits": [
+      {
+        "sha": "6890b74d203de1f9b90b6801027ba92a4c15adb6",
+        "message": "CAMEL-20186: camel-jbang - dependency update",
+        "author": "davsclaus",
+        "date": "2023-12-05T08:39:04Z",
+        "files": [
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 181,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyCopy.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyCopy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 99,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyList.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyList.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 238,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyUpdate.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyUpdate.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 125,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "84a67bba53eba46951094a88b46d3e5d09d4c5eb",
+    "sha_after": "792daa048f6d142e88a607135b77e06511e6b05a",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 181,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyCopy.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyCopy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 99,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyList.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyList.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 238,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyUpdate.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/DependencyUpdate.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 125,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 2,
+    "refactorings": {
+      "Add Parameter": 2
+    }
+  },
+  "CAMEL-18082": {
+    "jira_id": "CAMEL-18082",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "camel-jbang - Prompt mode for required values",
+    "description": "So you can run something where a set of required values have not been provided, such as username / passwords etc.\r\n\r\ncamel run foo.xml\r\n\r\nAnd then camel-jbang will prompt for missing values\r\n\r\nEnter value for s3-api-token: XXX\r\nEnter value for s3-secret-token: XXX\r\n...\r\n\r\nThen you can copy/paste those in the prompt.\r\n\r\n\r\n",
+    "commits": [
+      {
+        "sha": "d87234e83fc00fcdf7e098d104f8960ddf4177a8",
+        "message": "CAMEL-18082: camel-jbang - Camel run in prompt mode to ask for required values. Adjust properties component API to allow access to default value in custom properties lookup and sources.",
+        "author": "davsclaus",
+        "date": "2023-12-15T20:51:53Z",
+        "files": [
+          {
+            "PARENT_PATH": "components/camel-spring/src/main/java/org/apache/camel/spring/spi/BridgePropertyPlaceholderConfigurer.java",
+            "CHILD_PATH": "components/camel-spring/src/main/java/org/apache/camel/spring/spi/BridgePropertyPlaceholderConfigurer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 230,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "core/camel-api/src/main/java/org/apache/camel/spi/PropertiesSource.java",
+            "CHILD_PATH": "core/camel-api/src/main/java/org/apache/camel/spi/PropertiesSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 42,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/DefaultPropertiesLookup.java",
+            "CHILD_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/DefaultPropertiesLookup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 142,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/DefaultPropertiesParser.java",
+            "CHILD_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/DefaultPropertiesParser.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 10,
+            "LINES_DELETED": 10,
+            "PARENT_LOC": 546,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/PropertiesLookup.java",
+            "CHILD_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/PropertiesLookup.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 3,
+            "PARENT_LOC": 33,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/Run.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/Run.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 1521,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/KameletMain.java",
+            "CHILD_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/KameletMain.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 765,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/download/PromptPropertyPlaceholderSource.java",
+            "CHILD_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/download/PromptPropertyPlaceholderSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      },
+      {
+        "sha": "cfd563287b4ac8e1f7d229ba9c4f3b1824366856",
+        "message": "CAMEL-18082: camel-jbang - Camel run in prompt mode to ask for required values. Adjust properties component API to allow access to default value in custom properties lookup and sources.",
+        "author": "davsclaus",
+        "date": "2023-12-15T20:54:02Z",
+        "files": [
+          {
+            "PARENT_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/download/PromptPropertyPlaceholderSource.java",
+            "CHILD_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/download/PromptPropertyPlaceholderSource.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 5,
+            "PARENT_LOC": 55,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "7381d932865dfd3abafd081e1a72a9f106ebf856",
+    "sha_after": "2c8a27417712aceb9050e6c49d3ed91a8ad22a68",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "components/camel-spring/src/main/java/org/apache/camel/spring/spi/BridgePropertyPlaceholderConfigurer.java",
+        "CHILD_PATH": "components/camel-spring/src/main/java/org/apache/camel/spring/spi/BridgePropertyPlaceholderConfigurer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 230,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "core/camel-api/src/main/java/org/apache/camel/spi/PropertiesSource.java",
+        "CHILD_PATH": "core/camel-api/src/main/java/org/apache/camel/spi/PropertiesSource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 42,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/DefaultPropertiesLookup.java",
+        "CHILD_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/DefaultPropertiesLookup.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 142,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/DefaultPropertiesParser.java",
+        "CHILD_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/DefaultPropertiesParser.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 10,
+        "LINES_DELETED": 10,
+        "PARENT_LOC": 546,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/PropertiesLookup.java",
+        "CHILD_PATH": "core/camel-base/src/main/java/org/apache/camel/component/properties/PropertiesLookup.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 3,
+        "PARENT_LOC": 33,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/Run.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/Run.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 1521,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/KameletMain.java",
+        "CHILD_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/KameletMain.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 765,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/download/PromptPropertyPlaceholderSource.java",
+        "CHILD_PATH": "dsl/camel-kamelet-main/src/main/java/org/apache/camel/main/download/PromptPropertyPlaceholderSource.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 55,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 7,
+    "refactorings": {
+      "Add Parameter": 4,
+      "Rename Variable": 2,
+      "Extract And Move Method": 1
+    }
+  },
+  "CAMEL-20251": {
+    "jira_id": "CAMEL-20251",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Add Camel K commands to Camel JBang",
+    "description": "Camel JBang is the best way to start and develop with Apache Camel these days.\r\n\r\nWe should encourage users to further use this Camel JBang tooling also for 2nd day operations such as configuring and running the Camel routes on Kubernetes.\r\n\r\nBasically we should contribute the kamel CLI tooling functionality to Camel JBang in the long run so that users can use the very same tooling for all Camel developing. The kamel run command may be a good start for this.",
+    "commits": [
+      {
+        "sha": "499c807744ccc61435415f4ddc10a437a313aaea",
+        "message": "CAMEL-20251: Add Camel K commands to Camel JBang",
+        "author": "christophd",
+        "date": "2023-12-18T13:43:46Z",
+        "files": [
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelCommand.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelCommand.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 5,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 168,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 42,
+            "PARENT_LOC": 182,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/CompressionHelper.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/CompressionHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 55,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDelete.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDelete.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 66,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGet.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGet.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 96,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogs.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogs.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 107,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRun.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRun.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 571,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseCommand.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseCommand.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 108,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommand.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommand.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 40,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubernetesHelper.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubernetesHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 151,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/SourceScheme.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/SourceScheme.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 78,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitHelper.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 125,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitProfile.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitProfile.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 25,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/version/VersionGet.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/version/VersionGet.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 4,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 66,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/Printer.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/Printer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 39,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/StringPrinter.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/StringPrinter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 68,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDeleteTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDeleteTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 79,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGetTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGetTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 110,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogsTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogsTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 69,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRunTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRunTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 594,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 87,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommandMainTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommandMainTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 119,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          }
+        ]
+      }
+    ],
+    "sha_before": "36c0a9126b1aa4d75edeb0bb4949310bc3c17376",
+    "sha_after": "1b51e7a260d69896503bd0c0da7dc07ad63c771c",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelCommand.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelCommand.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 5,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 168,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 57,
+        "LINES_DELETED": 42,
+        "PARENT_LOC": 182,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/CompressionHelper.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/CompressionHelper.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 55,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDelete.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDelete.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 66,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGet.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGet.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 96,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogs.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogs.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 107,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRun.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRun.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 571,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseCommand.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseCommand.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 108,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommand.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommand.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 40,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubernetesHelper.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubernetesHelper.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 151,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/SourceScheme.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/SourceScheme.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 78,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitHelper.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitHelper.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 125,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitProfile.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitProfile.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 25,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/version/VersionGet.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/version/VersionGet.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 4,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 66,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/Printer.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/Printer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 39,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/StringPrinter.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/StringPrinter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 68,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDeleteTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDeleteTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 79,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGetTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGetTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 110,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogsTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogsTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 69,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRunTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRunTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 594,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 87,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommandMainTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommandMainTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 119,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      }
+    ],
+    "refactoring_count": 4,
+    "refactorings": {
+      "Extract Method": 2,
+      "Parameterize Variable": 1,
+      "Inline Variable": 1
+    }
+  },
+  "CAMEL-20270": {
+    "jira_id": "CAMEL-20270",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "Introduce plugins for Camel JBang",
+    "description": "Camel JBang continues to emerge and grow with new features. This is great but we need to find a way to modularize the capabilities. The module camel-jbang-core is quite huge already and more and more features add dependencies and complexity.\r\n\r\nWe should investigate in a plugin mechanism, where sub-commands are added on demand. Each plugin comes with a separate Maven module so the dependencies are not added to camel-jbang-core OOTB but when the user enables the plugin.\r\n\r\nPotential candidates as Camel JBang plugin are:\r\n * camel-k\r\n * hawtio\r\n * sbom\r\n * jolokia",
+    "commits": [
+      {
+        "sha": "55460fea98dbad987869cb54a8a27794cb748694",
+        "message": "CAMEL-20270: Introduce JBang plugins",
+        "author": "christophd",
+        "date": "2023-12-22T12:28:59Z",
+        "files": [
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 11,
+            "PARENT_LOC": 197,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginAdd.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginAdd.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 112,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginBaseCommand.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginBaseCommand.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 42,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginCommand.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginCommand.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginDelete.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginDelete.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 51,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginGet.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginGet.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 103,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/CamelJBangPlugin.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/CamelJBangPlugin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 35,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/Plugin.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/Plugin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 33,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/PluginHelper.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/PluginHelper.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 222,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/PluginType.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/PluginType.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 57,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginAddTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginAddTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 111,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginDeleteTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginDeleteTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 63,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginGetTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginGetTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 133,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/CompressionHelper.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/CompressionHelper.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 55,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDelete.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDelete.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 66,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGet.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGet.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 96,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogs.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogs.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 107,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRun.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRun.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 571,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseCommand.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseCommand.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 108,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommand.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommand.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 40,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubePlugin.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubePlugin.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 36,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubernetesHelper.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubernetesHelper.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 151,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/SourceScheme.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/SourceScheme.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 78,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitHelper.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitHelper.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 125,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitProfile.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitProfile.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 25,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/StringPrinter.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/StringPrinter.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 78,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDeleteTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDeleteTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 79,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGetTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGetTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 110,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogsTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogsTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 69,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRunTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRunTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 0,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 594,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 6,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 87,
+            "STATUS": "R"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommandMainTest.java",
+            "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommandMainTest.java",
+            "PATH_CHANGED": true,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 119,
+            "STATUS": "R"
+          }
+        ]
+      }
+    ],
+    "sha_before": "03f4cc03031250d19aced65138e864826b9b4f8a",
+    "sha_after": "d5c0ea0ee10b243c34ad5d12e4b718718992a88a",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/CamelJBangMain.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 11,
+        "PARENT_LOC": 197,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginAdd.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginAdd.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 112,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginBaseCommand.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginBaseCommand.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 42,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginCommand.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginCommand.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 36,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginDelete.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginDelete.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 51,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginGet.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginGet.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 103,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/CamelJBangPlugin.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/CamelJBangPlugin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 35,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/Plugin.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/Plugin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 33,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/PluginHelper.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/PluginHelper.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 222,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/PluginType.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/common/PluginType.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 57,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginAddTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginAddTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 111,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginDeleteTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginDeleteTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 63,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginGetTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/plugin/PluginGetTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 133,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/CompressionHelper.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/CompressionHelper.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 55,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDelete.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDelete.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 66,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGet.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGet.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 96,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogs.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogs.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 107,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRun.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRun.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 571,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseCommand.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseCommand.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 108,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommand.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommand.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 40,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubePlugin.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubePlugin.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 36,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubernetesHelper.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/KubernetesHelper.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 151,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/SourceScheme.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/SourceScheme.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 78,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitHelper.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitHelper.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 125,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitProfile.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/main/java/org/apache/camel/dsl/jbang/core/commands/k/TraitProfile.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 25,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/StringPrinter.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/StringPrinter.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 78,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDeleteTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationDeleteTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 79,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGetTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationGetTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 110,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogsTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationLogsTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 69,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRunTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/IntegrationRunTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 0,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 594,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeBaseTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 6,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 87,
+        "STATUS": "R"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-jbang/camel-jbang-core/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommandMainTest.java",
+        "CHILD_PATH": "dsl/camel-jbang/camel-jbang-plugin-k/src/test/java/org/apache/camel/dsl/jbang/core/commands/k/KubeCommandMainTest.java",
+        "PATH_CHANGED": true,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 119,
+        "STATUS": "R"
+      }
+    ],
+    "refactoring_count": 5,
+    "refactorings": {
+      "Move Source Folder": 2,
+      "Change Method Access Modifier": 2,
+      "Modify Class Annotation": 1
+    }
+  },
+  "CAMEL-20277": {
+    "jira_id": "CAMEL-20277",
+    "issue_type": "New Feature",
+    "resolution": "Fixed",
+    "title": "camel-grpc: gRPC proxy with streaming",
+    "description": "For now it is possible to create gRPC proxy using the following configuration:\r\n\r\n \r\n{code:java}\r\nfrom(\"grpc://localhost:1101\" +\r\n    \"/org.apache.camel.component.grpc.PingPong\"\r\n)\r\n    .toD(\"grpc://remotehost:1101\" +\r\n        \"/org.apache.camel.component.grpc.PingPong\" +\r\n        \"?method=${header.CamelGrpcMethodName}\"\r\n    ) {code}\r\nBut that approach has major drawback: for server-streaming methods response stream will be collected to list. It means that client of that proxy will start to see stream of responses only after server completed the stream. It may be unacceptable especially for proxy - stream may consists of small messages but be huge by itself.\r\n\r\n \r\n\r\nI started from investigation of streamRepliesTo parameter, but there is no option to connect route defined by that parameter with consumer's StreamObserver.",
+    "commits": [
+      {
+        "sha": "8bb86179a88a02b1d5b2e75b80dabeef6f7d0fe1",
+        "message": "CAMEL-20277 make gRPC proxy routes available for all streaming method types",
+        "author": "iMashtak",
+        "date": "2023-12-23T11:27:33Z",
+        "files": [
+          {
+            "PARENT_PATH": "components/camel-grpc/src/generated/java/org/apache/camel/component/grpc/GrpcEndpointConfigurer.java",
+            "CHILD_PATH": "components/camel-grpc/src/generated/java/org/apache/camel/component/grpc/GrpcEndpointConfigurer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 12,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 211,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/generated/java/org/apache/camel/component/grpc/GrpcEndpointUriFactory.java",
+            "CHILD_PATH": "components/camel-grpc/src/generated/java/org/apache/camel/component/grpc/GrpcEndpointUriFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 104,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConfiguration.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConfiguration.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 28,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 482,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConsumer.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConsumer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 1,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 206,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConsumerStrategy.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConsumerStrategy.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 34,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcEndpoint.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcEndpoint.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 3,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 89,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcProducer.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcProducer.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 7,
+            "LINES_DELETED": 21,
+            "PARENT_LOC": 190,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcProducerToRouteControlledStreamObserver.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcProducerToRouteControlledStreamObserver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 41,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcResponseRouterStreamObserver.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcResponseRouterStreamObserver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 50,
+            "LINES_DELETED": 27,
+            "PARENT_LOC": 87,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcStreamObserverFactory.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcStreamObserverFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 66,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcStreamingExchangeForwarder.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcStreamingExchangeForwarder.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 11,
+            "LINES_DELETED": 1,
+            "PARENT_LOC": 117,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/server/GrpcMethodHandler.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/server/GrpcMethodHandler.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 2,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 125,
+            "STATUS": "M"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/server/GrpcRequestDelegationStreamObserver.java",
+            "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/server/GrpcRequestDelegationStreamObserver.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 62,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxyAsyncAsyncTest.java",
+            "CHILD_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxyAsyncAsyncTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 167,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxyAsyncSyncTest.java",
+            "CHILD_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxyAsyncSyncTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 162,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxySyncAsyncTest.java",
+            "CHILD_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxySyncAsyncTest.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 148,
+            "LINES_DELETED": 0,
+            "PARENT_LOC": 0,
+            "STATUS": "A"
+          },
+          {
+            "PARENT_PATH": "dsl/camel-endpointdsl/src/generated/java/org/apache/camel/builder/endpoint/dsl/GrpcEndpointBuilderFactory.java",
+            "CHILD_PATH": "dsl/camel-endpointdsl/src/generated/java/org/apache/camel/builder/endpoint/dsl/GrpcEndpointBuilderFactory.java",
+            "PATH_CHANGED": false,
+            "LINES_ADDED": 82,
+            "LINES_DELETED": 2,
+            "PARENT_LOC": 1739,
+            "STATUS": "M"
+          }
+        ]
+      }
+    ],
+    "sha_before": "dfc70bce62d4aed9277f99c17ae40ab7e6bd044a",
+    "sha_after": "dae5983b720580c394216c9943934c4d92539151",
+    "IMPACTED_FILES": [
+      {
+        "PARENT_PATH": "components/camel-grpc/src/generated/java/org/apache/camel/component/grpc/GrpcEndpointConfigurer.java",
+        "CHILD_PATH": "components/camel-grpc/src/generated/java/org/apache/camel/component/grpc/GrpcEndpointConfigurer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 12,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 210,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/generated/java/org/apache/camel/component/grpc/GrpcEndpointUriFactory.java",
+        "CHILD_PATH": "components/camel-grpc/src/generated/java/org/apache/camel/component/grpc/GrpcEndpointUriFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 103,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConfiguration.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConfiguration.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 28,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 482,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConsumer.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConsumer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 1,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 206,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConsumerStrategy.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcConsumerStrategy.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 34,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcEndpoint.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcEndpoint.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 3,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 89,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcProducer.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcProducer.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 7,
+        "LINES_DELETED": 21,
+        "PARENT_LOC": 190,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcProducerToRouteControlledStreamObserver.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/GrpcProducerToRouteControlledStreamObserver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 41,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcResponseRouterStreamObserver.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcResponseRouterStreamObserver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 50,
+        "LINES_DELETED": 27,
+        "PARENT_LOC": 87,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcStreamObserverFactory.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcStreamObserverFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 66,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcStreamingExchangeForwarder.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/client/GrpcStreamingExchangeForwarder.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 11,
+        "LINES_DELETED": 1,
+        "PARENT_LOC": 117,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/server/GrpcMethodHandler.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/server/GrpcMethodHandler.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 2,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 125,
+        "STATUS": "M"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/server/GrpcRequestDelegationStreamObserver.java",
+        "CHILD_PATH": "components/camel-grpc/src/main/java/org/apache/camel/component/grpc/server/GrpcRequestDelegationStreamObserver.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 62,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxyAsyncAsyncTest.java",
+        "CHILD_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxyAsyncAsyncTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 167,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxyAsyncSyncTest.java",
+        "CHILD_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxyAsyncSyncTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 162,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxySyncAsyncTest.java",
+        "CHILD_PATH": "components/camel-grpc/src/test/java/org/apache/camel/component/grpc/GrpcProxySyncAsyncTest.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 148,
+        "LINES_DELETED": 0,
+        "PARENT_LOC": 0,
+        "STATUS": "A"
+      },
+      {
+        "PARENT_PATH": "dsl/camel-endpointdsl/src/generated/java/org/apache/camel/builder/endpoint/dsl/GrpcEndpointBuilderFactory.java",
+        "CHILD_PATH": "dsl/camel-endpointdsl/src/generated/java/org/apache/camel/builder/endpoint/dsl/GrpcEndpointBuilderFactory.java",
+        "PATH_CHANGED": false,
+        "LINES_ADDED": 82,
+        "LINES_DELETED": 2,
+        "PARENT_LOC": 1739,
+        "STATUS": "M"
+      }
+    ],
+    "refactoring_count": 15,
+    "refactorings": {
+      "Rename Variable": 3,
+      "Add Parameter": 3,
+      "Move Method": 2,
+      "Rename Attribute": 1,
+      "Change Attribute Type": 1,
+      "Add Attribute Modifier": 1,
+      "Rename Parameter": 1,
+      "Extract Variable": 1,
+      "Extract And Move Method": 1,
+      "Move Attribute": 1
+    }
+  }
+}
