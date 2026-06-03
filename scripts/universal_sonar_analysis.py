@@ -449,7 +449,7 @@ class MavenBuildSystem(BuildSystem):
         cmd = [
             "mvn", "clean", "install",
             "-DskipTests",
-            "-Dmaven.javadoc.skip=true",
+            f"-Dmaven.javadoc.skip={'true' if PROJECT_CONFIG.get('skip_javadoc', True) else 'false'}",
             "-Dcheckstyle.skip=true",
             "-Denforcer.skip=true",
             "-Drat.skip=true",
