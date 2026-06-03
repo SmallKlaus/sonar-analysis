@@ -339,6 +339,33 @@ def year_from_iso(date_str: str) -> int:
     except Exception:
         return datetime.now(timezone.utc).year
 
+def detect_required_java(repo_path: str) -> str | None:
+    """
+    Read the root pom.xml after checkout to determine the actual
+    minimum JDK this commit requires.  Camel uses <jdk.min.version>.
+    """
+    pom_path = os.path.join(repo_path, "pom.xml")
+    if not os.path.exists(pom_path):
+        return None
+    try:
+        with open(pom_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except Exception:
+        return None
+
+    for pattern in [
+        r"<jdk\.min\.version[^>]*>(\d+)",
+        r"<maven\.compiler\.release>(\d+)",
+    ]:
+        match = re.search(pattern, content)
+        if match:
+            ver = match.group(1)
+            if ver.startswith("1."):
+                ver = ver[2:]
+            if ver in ("8", "11", "17"):
+                return ver
+    return None
+
 
 # ============================================================================
 # GIT HELPERS
@@ -1098,13 +1125,6 @@ def main():
                 before_toolchain["java_source"] = forced_java
                 after_toolchain["java_major"] = forced_java
                 after_toolchain["java_source"] = forced_java
-
-            min_jdk = PROJECT_CONFIG.get("min_build_jdk")
-            if min_jdk:
-                jdk_order = ["8", "11", "17"]
-                for tc in [before_toolchain, after_toolchain]:
-                    if jdk_order.index(tc["java_major"]) < jdk_order.index(min_jdk):
-                        tc["java_major"] = min_jdk
                 
             project_key = f"{PROJECT_NAME}:{issue_id}"
             create_public_project(project_key)
@@ -1114,6 +1134,17 @@ def main():
             if not git_checkout(CONFIG["repo_path"], sha_before):
                 raise RuntimeError("BEFORE git checkout failed")
             apply_project_compat_patches(CONFIG["repo_path"])
+
+            # Detect JDK from this specific checkout
+            detected = detect_required_java(CONFIG["repo_path"])
+            if detected:
+                jdk_order = ["8", "11", "17"]
+                if jdk_order.index(before_toolchain["java_major"]) < jdk_order.index(detected):
+                    logger.info(f"  ↑ BEFORE JDK raised {before_toolchain['java_major']} → {detected} (from pom.xml)")
+                    before_toolchain["java_major"] = detected
+                elif jdk_order.index(before_toolchain["java_major"]) > jdk_order.index(detected):
+                    logger.info(f"  ↓ BEFORE JDK lowered {before_toolchain['java_major']} → {detected} (from pom.xml)")
+                    before_toolchain["java_major"] = detected
 
             build_system = get_build_system(
                 CONFIG["build_system"], CONFIG["repo_path"], before_toolchain, log_file
@@ -1134,6 +1165,16 @@ def main():
             if not git_checkout(CONFIG["repo_path"], sha_after):
                 raise RuntimeError("AFTER git checkout failed")
             apply_project_compat_patches(CONFIG["repo_path"])
+
+            detected = detect_required_java(CONFIG["repo_path"])
+            if detected:
+                jdk_order = ["8", "11", "17"]
+                if jdk_order.index(after_toolchain["java_major"]) < jdk_order.index(detected):
+                    logger.info(f"  ↑ AFTER JDK raised {after_toolchain['java_major']} → {detected} (from pom.xml)")
+                    after_toolchain["java_major"] = detected
+                elif jdk_order.index(after_toolchain["java_major"]) > jdk_order.index(detected):
+                    logger.info(f"  ↓ AFTER JDK lowered {after_toolchain['java_major']} → {detected} (from pom.xml)")
+                    after_toolchain["java_major"] = detected
             
             build_system = get_build_system(
                 CONFIG["build_system"], CONFIG["repo_path"], after_toolchain, log_file
