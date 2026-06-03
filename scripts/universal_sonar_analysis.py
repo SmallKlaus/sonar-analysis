@@ -1098,6 +1098,13 @@ def main():
                 before_toolchain["java_source"] = forced_java
                 after_toolchain["java_major"] = forced_java
                 after_toolchain["java_source"] = forced_java
+
+            min_jdk = PROJECT_CONFIG.get("min_build_jdk")
+            if min_jdk:
+                jdk_order = ["8", "11", "17"]
+                for tc in [before_toolchain, after_toolchain]:
+                    if jdk_order.index(tc["java_major"]) < jdk_order.index(min_jdk):
+                        tc["java_major"] = min_jdk
                 
             project_key = f"{PROJECT_NAME}:{issue_id}"
             create_public_project(project_key)
