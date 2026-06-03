@@ -308,6 +308,28 @@ def restore_from_checkpoint(issue_id: str) -> bool:
 # VERSION SELECTION
 # ============================================================================
 
+#test toolchain for CAMEL expectations
+def get_toolchain(year: int) -> dict:
+    if year <= 2017:
+        return {"java_major": "8", "java_source": "1.8", "gradle": "4.10.3", "maven": "3.3.9", "year": year}
+
+    elif year <= 2019:
+        return {"java_major": "8", "java_source": "1.8", "gradle": "5.6.4", "maven": "3.5.4", "year": year}
+
+    elif year <= 2021:
+        return {"java_major": "11", "java_source": "11", "gradle": "6.9.4", "maven": "3.6.3", "year": year}
+
+    elif year <= 2022:
+        return {"java_major": "11", "java_source": "11", "gradle": "7.6.4", "maven": "3.8.1", "year": year}
+
+    elif year <= 2024:
+        return {"java_major": "17", "java_source": "17", "gradle": "8.5", "maven": "3.8.6", "year": year}
+
+    else:
+        return {"java_major": "21", "java_source": "21", "gradle": "8.7", "maven": "3.9.9", "year": year}
+
+#standard tool_chain commented out
+'''
 def get_toolchain(year: int) -> dict:
     if year <= 2017:
         return {"java_major": "8",  "java_source": "1.8", "gradle": "4.10.3", "maven": "3.0.5", "year": year}
@@ -321,6 +343,7 @@ def get_toolchain(year: int) -> dict:
         return {"java_major": "11", "java_source": "11",  "gradle": "8.5", "maven": "3.9.9", "year": year}
     else:
         return {"java_major": "17", "java_source": "17",  "gradle": "8.7",  "maven": "3.9.9",  "year": year}
+'''
 
 def get_protoc_bin(year: int) -> str:
     """
