@@ -59,6 +59,7 @@ CONFIG = {
         "8":  os.getenv("JAVA_HOME_8_X64"),
         "11": os.getenv("JAVA_HOME_11_X64"),
         "17": os.getenv("JAVA_HOME_17_X64"),
+        "21": os.getenv("JAVA_HOME_21_X64")
     },
 }
 
