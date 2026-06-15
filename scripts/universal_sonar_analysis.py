@@ -30,6 +30,12 @@ BATCH_NUMBER = os.getenv("BATCH_NUMBER", "1")
 #   <SCRIPTS_REPO_PATH>/checkpoints/      ← persisted reports, logs, progress JSON
 SCRIPTS_REPO_PATH = os.getenv("SCRIPTS_REPO_PATH", os.path.join(os.path.dirname(__file__), ".."))
 
+
+def _resolve_repo_path(path: str) -> str:
+    if os.path.isabs(path):
+        return path
+    return os.path.abspath(os.path.join(SCRIPTS_REPO_PATH, path))
+
 # Load project-specific configuration
 with open(os.path.join(SCRIPTS_REPO_PATH, "scripts", "project_configs.json")) as f:
     PROJECT_CONFIGS = json.load(f)
@@ -38,9 +44,14 @@ PROJECT_CONFIG = PROJECT_CONFIGS.get(PROJECT_NAME, {})
 
 CONFIG = {
     "project_name": PROJECT_NAME,
-    "jira_json_path": os.path.join(
-        SCRIPTS_REPO_PATH, "scripts",
-        f"{PROJECT_NAME}_issues_batch_{BATCH_NUMBER}.json"
+    "jira_json_path": _resolve_repo_path(
+        os.getenv(
+            "JIRA_JSON_PATH",
+            os.path.join(
+                SCRIPTS_REPO_PATH, "scripts",
+                f"{PROJECT_NAME}_issues_batch_{BATCH_NUMBER}.json"
+            )
+        )
     ),
     "repo_path": os.getenv("PROJECT_REPO_PATH", "."),
     "output_dir": "output",
@@ -79,6 +90,8 @@ logger = logging.getLogger(__name__)
 logger.info("="*70)
 logger.info(f"Universal SonarCloud Analysis - {PROJECT_NAME}")
 logger.info(f"Build System: {CONFIG['build_system']}")
+if os.getenv("JIRA_JSON_PATH"):
+    logger.info(f"Using filtered issue batch from JIRA_JSON_PATH: {CONFIG['jira_json_path']}")
 logger.info("="*70)
 
 
@@ -1106,10 +1119,14 @@ def main():
     # Load the persisted progress map once at startup
     progress = load_progress()
 
-    with open(CONFIG["jira_json_path"]) as f:
+    with open(CONFIG["jira_json_path"], encoding="utf-8") as f:
         issues = json.load(f)
 
-    logger.info(f"✓ Loaded {len(issues)} issues from batch {BATCH_NUMBER}")
+    batch_label = "filtered noisy batch" if os.getenv("JIRA_JSON_PATH") else f"batch {BATCH_NUMBER}"
+    logger.info(f"Loaded {len(issues)} issues from {batch_label}")
+
+    if not issues:
+        logger.info("No issues matched the noisy-report filter; skipping builds and scans.")
 
     
     successes, failures, restored = [], [], []
