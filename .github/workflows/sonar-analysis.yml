@@ -88,8 +88,76 @@ jobs:
               fh.write(f"requires_bundle={str(config.get('requires_bundle', False)).lower()}\n")
               fh.write(f"bundle_url={config.get('bundle_url', '')}\n")
           EOF
+
+      - name: Prepare noisy batch data
+        id: noisy
+        env:
+          PROJECT: ${{ github.event.inputs.project }}
+          BATCH: ${{ github.event.inputs.batch_number }}
+        run: |
+          python3 << 'EOF'
+          import json
+          import os
+          from pathlib import Path
+
+          workspace = Path(os.environ["GITHUB_WORKSPACE"])
+          project = os.environ["PROJECT"]
+          batch = os.environ["BATCH"]
+
+          analytics_path = workspace / "checkpoints" / "sonar_analytics.json"
+          batch_path = workspace / "scripts" / f"{project}_issues_batch_{batch}.json"
+          filtered_dir = workspace / "checkpoints" / "filtered_batches"
+          filtered_dir.mkdir(parents=True, exist_ok=True)
+
+          if not analytics_path.exists():
+              raise FileNotFoundError(f"Missing analytics file: {analytics_path}")
+          if not batch_path.exists():
+              raise FileNotFoundError(f"Missing batch file: {batch_path}")
+
+          filtered_batch_path = filtered_dir / f"{project}_issues_batch_{batch}_noisy.json"
+          noisy_ids_path = filtered_dir / f"{project}_noisy_report_ids.json"
+
+          with analytics_path.open(encoding="utf-8") as fh:
+              analytics = json.load(fh)
+
+          project_analytics = analytics.get("projects", {}).get(project, {})
+          noisy_reports = set(project_analytics.get("noisy_reports", []))
+          noisy_batches = set(project_analytics.get("noisy_batches", []))
+
+          with batch_path.open(encoding="utf-8") as fh:
+              issues = json.load(fh)
+
+          filtered_issues = {
+              issue_id: issue
+              for issue_id, issue in issues.items()
+              if issue_id in noisy_reports
+          }
+
+          with filtered_batch_path.open("w", encoding="utf-8") as fh:
+              json.dump(filtered_issues, fh, indent=2, ensure_ascii=False)
+
+          with noisy_ids_path.open("w", encoding="utf-8") as fh:
+              json.dump(sorted(noisy_reports), fh, indent=2, ensure_ascii=False)
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as fh:
+              fh.write(f"JIRA_JSON_PATH={filtered_batch_path}\n")
+              fh.write(f"NOISY_REPORT_IDS_PATH={noisy_ids_path}\n")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"filtered_issue_count={len(filtered_issues)}\n")
+              fh.write(f"has_noisy_issues={str(bool(filtered_issues)).lower()}\n")
+
+          batch_file_name = batch_path.name
+          print(f"Loaded {len(noisy_reports)} noisy report IDs for {project}")
+          print(f"{batch_file_name}: {len(filtered_issues)} of {len(issues)} issues will be processed")
+          if noisy_batches and batch_file_name not in noisy_batches:
+              print(f"Warning: {batch_file_name} is not listed as noisy in sonar_analytics.json")
+          print(f"Filtered batch file: {filtered_batch_path}")
+          print(f"Noisy report IDs file: {noisy_ids_path}")
+          EOF
       
       - name: Checkout project repository
+        if: steps.noisy.outputs.has_noisy_issues == 'true'
         uses: actions/checkout@v4
         with:
           repository: ${{ steps.config.outputs.repository }}
@@ -98,7 +166,7 @@ jobs:
           path: project
       
       - name: Import TD analysis commits (if needed)
-        if: steps.config.outputs.requires_bundle == 'true'
+        if: steps.noisy.outputs.has_noisy_issues == 'true' && steps.config.outputs.requires_bundle == 'true'
         run: |
           cd project
           echo "Downloading commit bundle..."
@@ -112,18 +180,21 @@ jobs:
           echo "✓ Commits imported: $(git for-each-ref refs/td-analysis/ | wc -l)"
       
       - name: Setup Java 8
+        if: steps.noisy.outputs.has_noisy_issues == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
       
       - name: Setup Java 11
+        if: steps.noisy.outputs.has_noisy_issues == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
       
       - name: Setup Java 17 (default)
+        if: steps.noisy.outputs.has_noisy_issues == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -131,19 +202,21 @@ jobs:
           cache: ${{ steps.config.outputs.build_system }}
 
       - name: Setup Java 21
+        if: steps.noisy.outputs.has_noisy_issues == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
       
       - name: Install SonarScanner
+        if: steps.noisy.outputs.has_noisy_issues == 'true'
         run: |
           wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
           unzip -q sonar-scanner-cli-5.0.1.3006-linux.zip
           echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
       
       - name: Configure Maven (if Maven project)
-        if: steps.config.outputs.build_system == 'maven'
+        if: steps.noisy.outputs.has_noisy_issues == 'true' && steps.config.outputs.build_system == 'maven'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
@@ -151,16 +224,8 @@ jobs:
           mkdir -p ~/.m2
           python3 scripts/generate_maven_settings.py ${{ github.event.inputs.project }}
       
-      - name: Verify batch data
-        run: |
-          PROJECT="${{ github.event.inputs.project }}"
-          BATCH="${{ github.event.inputs.batch_number }}"
-          
-          echo "✓ Processing ${PROJECT} batch ${BATCH}"
-          ls -lh scripts/${PROJECT}_issues_batch_${BATCH}.json
-
       - name: Install protoc versions (required for Hadoop)
-        if: contains(fromJSON('["hadoop_common","hdfs","mapreduce","yarn"]'), github.event.inputs.project)
+        if: steps.noisy.outputs.has_noisy_issues == 'true' && contains(fromJSON('["hadoop_common","hdfs","mapreduce","yarn"]'), github.event.inputs.project)
         run: |
           # ── protoc 2.5.0 (build from source — no pre-built binary exists) ──
           sudo apt-get install -y autoconf automake libtool curl make g++ unzip
@@ -185,6 +250,7 @@ jobs:
           protoc-3.7.1 --version
       
       - name: Run analysis
+        if: steps.noisy.outputs.has_noisy_issues == 'true'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
@@ -199,6 +265,16 @@ jobs:
           cd project
           mkdir -p output
           python3 ../scripts/universal_sonar_analysis.py
+
+      - name: Stage noisy IDs artifact
+        if: always()
+        run: |
+          mkdir -p project/output
+          if [ -n "$NOISY_REPORT_IDS_PATH" ] && [ -f "$NOISY_REPORT_IDS_PATH" ]; then
+            cp "$NOISY_REPORT_IDS_PATH" project/output/noisy_report_ids.json
+          else
+            echo "No noisy report IDs file to stage."
+          fi
       
       - name: Upload results
         uses: actions/upload-artifact@v4
