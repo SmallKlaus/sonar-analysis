@@ -1001,32 +1001,199 @@ def get_measures(project_key: str) -> dict:
     return {}
 
 
-def fetch_issues(project_key: str, **filters) -> list:
-    full_key = f"{CONFIG['sonar_organization']}_{project_key}"
-    url = f"{CONFIG['sonar_url']}/api/issues/search"
+# ── Issue fetching — partition-aware, complete beyond the 10k API cap ────────
+#
+# api/issues/search refuses to return rows past 10,000 (p*ps > 10000 -> HTTP
+# 400). The previous implementation paged per type and treated that 400 as
+# end-of-data, silently truncating any type with >10k issues (large baselines
+# lost thousands of issues; fixed/new fetches are small and were unaffected).
+#
+# The cap is per QUERY, not per project, so any query whose `total` exceeds
+# the cap is split into disjoint sub-queries that each fit under it, then
+# merged (deduped by issue key):
+#     level 0: types                (BUG / VULNERABILITY / CODE_SMELL)
+#     level 1: + severities         (x5)
+#     level 2: + directories        (batched by facet counts to <= 9,500)
+#     level 3: + individual files   (pathological single-directory case)
+# Every partition is verified: if fewer issues are collected than the API
+# reported, a warning is logged so truncation can never be silent again.
+
+API_CAP = 10_000          # hard Sonar Web API limit on retrievable rows per query
+PAGE_SIZE = 500
+PARTITION_BUDGET = 9_500  # keep partitions safely under the cap
+DIR_URL_CHAR_BUDGET = 1_500  # keep comma-joined directories= params URL-safe
+
+
+def _sonar_get(url: str, params: dict) -> dict | None:
     auth = (CONFIG["sonar_token"], "")
-    
-    all_issues = []
+    try:
+        res = requests.get(url, auth=auth, params=params, timeout=30)
+        if res.status_code == 200:
+            return res.json()
+        logger.warning(f"Sonar API {res.status_code} for {url} params={params}: {res.text[:200]}")
+    except Exception as e:
+        logger.warning(f"Sonar API request failed for {url}: {e}")
+    return None
+
+
+def _search_total(full_key: str, params: dict) -> int:
+    """Probe a query's total row count (1 request, ps=1)."""
+    data = _sonar_get(f"{CONFIG['sonar_url']}/api/issues/search",
+                      {"componentKeys": full_key, "ps": 1, **params})
+    return int(data.get("total", 0)) if data else 0
+
+
+def _fetch_pages(full_key: str, params: dict, out: dict) -> None:
+    """Plain paging for a query expected to fit under the API cap."""
+    url = f"{CONFIG['sonar_url']}/api/issues/search"
+    page, fetched = 1, 0
+    while page * PAGE_SIZE <= API_CAP:
+        data = _sonar_get(url, {"componentKeys": full_key, "ps": PAGE_SIZE, "p": page, **params})
+        if data is None:
+            break
+        issues = data.get("issues", [])
+        for issue in issues:
+            out[issue["key"]] = issue          # dedupe across partitions
+        fetched += len(issues)
+        if len(issues) < PAGE_SIZE:
+            break
+        page += 1
+    if fetched >= API_CAP:
+        logger.warning(f"Query hit the {API_CAP} API cap — results truncated for params={params}")
+
+
+def _all_directories(full_key: str) -> list:
+    """All directory paths of the project (api/components/tree, DIR qualifier)."""
+    url = f"{CONFIG['sonar_url']}/api/components/tree"
+    dirs, page = [], 1
+    while page * PAGE_SIZE <= API_CAP:
+        data = _sonar_get(url, {"component": full_key, "qualifiers": "DIR",
+                                "ps": PAGE_SIZE, "p": page})
+        if data is None:
+            break
+        comps = data.get("components", [])
+        dirs.extend(c.get("path") or c.get("name") for c in comps)
+        if len(comps) < PAGE_SIZE:
+            break
+        page += 1
+    return [d for d in dirs if d]
+
+
+def _fetch_by_files_in_dir(full_key: str, params: dict, directory: str, out: dict) -> None:
+    """Pathological case: one directory alone exceeds the partition budget.
+    Fetch its files from the component tree and query per file."""
+    logger.warning(f"Directory '{directory}' exceeds the partition budget — fetching per file")
+    url = f"{CONFIG['sonar_url']}/api/components/tree"
+    page = 1
+    while page * PAGE_SIZE <= API_CAP:
+        data = _sonar_get(url, {"component": full_key, "qualifiers": "FIL",
+                                "ps": PAGE_SIZE, "p": page})
+        if data is None:
+            break
+        comps = data.get("components", [])
+        for comp in comps:
+            path = comp.get("path") or ""
+            if os.path.dirname(path) == directory:
+                # params comes last in _fetch_pages' dict build, so this
+                # componentKeys (the file key) overrides the project key
+                _fetch_pages(full_key, {**params, "componentKeys": comp["key"]}, out)
+        if len(comps) < PAGE_SIZE:
+            break
+        page += 1
+
+
+def _fetch_by_directories(full_key: str, params: dict, out: dict) -> None:
+    """Split an oversized partition by directories, batched so every batch
+    stays under PARTITION_BUDGET issues (counts from the `directories` facet;
+    directories beyond the facet's top-100 are bounded by the smallest facet
+    count, since the facet is sorted by count)."""
+    facet_data = _sonar_get(f"{CONFIG['sonar_url']}/api/issues/search",
+                            {"componentKeys": full_key, "ps": 1,
+                             "facets": "directories", **params})
+    facet_counts = {}
+    if facet_data:
+        for facet in facet_data.get("facets", []):
+            if facet.get("property") == "directories":
+                facet_counts = {v["val"]: int(v["count"]) for v in facet.get("values", [])}
+
+    all_dirs = _all_directories(full_key)
+    known = [(d, facet_counts[d]) for d in all_dirs if d in facet_counts]
+    unknown = [d for d in all_dirs if d not in facet_counts]
+    if len(facet_counts) >= 100:
+        # facet truncated at 100 values: unseen dirs can hold up to the
+        # smallest facet count each
+        max_unknown = min(facet_counts.values())
+    elif facet_counts:
+        max_unknown = 0   # facet covered every non-empty directory
+    else:
+        # facet request failed — assume a conservative bound and rely on the
+        # completeness check in _fetch_partition to flag any shortfall
+        max_unknown = 200
+
+    batches, batch, batch_n, batch_chars = [], [], 0, 0
+
+    def flush():
+        nonlocal batch, batch_n, batch_chars
+        if batch:
+            batches.append(list(batch))
+        batch, batch_n, batch_chars = [], 0, 0
+
+    for d, n in known:
+        if n > PARTITION_BUDGET:
+            _fetch_by_files_in_dir(full_key, params, d, out)
+            continue
+        if (batch_n + n > PARTITION_BUDGET) or (batch_chars + len(d) + 1 > DIR_URL_CHAR_BUDGET):
+            flush()
+        batch.append(d); batch_n += n; batch_chars += len(d) + 1
+    flush()
+
+    if max_unknown > 0:
+        for d in unknown:
+            if (batch_n + max_unknown > PARTITION_BUDGET) or (batch_chars + len(d) + 1 > DIR_URL_CHAR_BUDGET):
+                flush()
+            batch.append(d); batch_n += max_unknown; batch_chars += len(d) + 1
+        flush()
+
+    for b in batches:
+        _fetch_pages(full_key, {**params, "directories": ",".join(b)}, out)
+
+
+def _fetch_partition(full_key: str, params: dict, out: dict, depth: int = 0) -> None:
+    """Fetch one filter partition, recursing into finer partitions when its
+    total exceeds the API cap. Verifies completeness afterwards."""
+    total = _search_total(full_key, params)
+    if total == 0:
+        return
+    n_before = len(out)
+
+    if total <= API_CAP:
+        _fetch_pages(full_key, params, out)
+    elif depth == 0:
+        logger.info(f"  partition of {total} rows exceeds the {API_CAP} cap — splitting by severity ({params})")
+        for sev in ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"]:
+            _fetch_partition(full_key, {**params, "severities": sev}, out, depth + 1)
+        return   # sub-partitions verified themselves
+    else:
+        logger.info(f"  partition of {total} rows exceeds the {API_CAP} cap — splitting by directories ({params})")
+        _fetch_by_directories(full_key, params, out)
+
+    n_added = len(out) - n_before
+    if n_added < total:
+        logger.warning(
+            f"Partition shortfall: API reports {total} issues but {n_added} were "
+            f"collected (params={params}) — some issues may be missing"
+        )
+
+
+def fetch_issues(project_key: str, **filters) -> list:
+    """Fetch ALL issues matching the filters, complete beyond the 10k
+    api/issues/search cap (recursive query partitioning, deduped by key)."""
+    full_key = f"{CONFIG['sonar_organization']}_{project_key}"
+    out: dict = {}
     for issue_type in ["BUG", "VULNERABILITY", "CODE_SMELL"]:
-        page = 1
-        while True:
-            params = {"componentKeys": full_key, "types": issue_type, 
-                     "ps": 500, "p": page, **filters}
-            
-            try:
-                res = requests.get(url, auth=auth, params=params, timeout=30)
-                if res.status_code == 200:
-                    issues = res.json().get("issues", [])
-                    all_issues.extend(issues)
-                    if len(issues) < 500:
-                        break
-                    page += 1
-                else:
-                    break
-            except:
-                break
-    
-    return all_issues
+        _fetch_partition(full_key, {"types": issue_type, **filters}, out)
+    logger.info(f"fetch_issues: {len(out)} unique issues for {full_key} filters={filters}")
+    return list(out.values())
 
 #PRE-BUILD STEP FOR HADOOP
 
