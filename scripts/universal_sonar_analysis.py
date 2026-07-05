@@ -42,6 +42,15 @@ with open(os.path.join(SCRIPTS_REPO_PATH, "scripts", "project_configs.json")) as
 
 PROJECT_CONFIG = PROJECT_CONFIGS.get(PROJECT_NAME, {})
 
+# Optional per-run Java enforcement (set via the FORCE_JAVA_VERSION workflow
+# input). When left at the default ("auto"/empty), Java selection is fully
+# automatic (year-based toolchain + pom.xml detection). When set to a concrete
+# version it is hard-enforced for every scan in this run, overriding both the
+# year-based toolchain and pom.xml auto-detection.
+_FORCED_JAVA = (os.getenv("FORCE_JAVA_VERSION") or "").strip().lower()
+if _FORCED_JAVA in ("", "auto", "default", "none"):
+    _FORCED_JAVA = None
+
 CONFIG = {
     "project_name": PROJECT_NAME,
     "jira_json_path": _resolve_repo_path(
@@ -72,6 +81,9 @@ CONFIG = {
         "17": os.getenv("JAVA_HOME_17_X64"),
         "21": os.getenv("JAVA_HOME_21_X64")
     },
+
+    # None → automatic Java selection; "8"/"11"/"17"/"21" → hard-enforced.
+    "force_java_version": _FORCED_JAVA,
 }
 
 os.makedirs(CONFIG["output_dir"], exist_ok=True)
@@ -92,6 +104,11 @@ logger.info(f"Universal SonarCloud Analysis - {PROJECT_NAME}")
 logger.info(f"Build System: {CONFIG['build_system']}")
 if os.getenv("JIRA_JSON_PATH"):
     logger.info(f"Using filtered issue batch from JIRA_JSON_PATH: {CONFIG['jira_json_path']}")
+if CONFIG["force_java_version"]:
+    logger.info(f"Java selection: ENFORCED to Java {CONFIG['force_java_version']} "
+                f"(workflow input; year toolchain + pom.xml auto-detection disabled)")
+else:
+    logger.info("Java selection: AUTOMATIC (year-based toolchain + pom.xml detection)")
 logger.info("="*70)
 
 
@@ -358,6 +375,16 @@ def get_toolchain(year: int) -> dict:
     else:
         return {"java_major": "17", "java_source": "17",  "gradle": "8.7",  "maven": "3.9.9",  "year": year}
 '''
+
+def apply_forced_java(toolchain: dict, forced: str) -> None:
+    """Override a toolchain's JDK in place to a user-chosen version.
+
+    Java 8 uses the historical '1.8' source string; 11/17/21 use the bare
+    number, matching what get_toolchain() emits.
+    """
+    toolchain["java_major"]  = forced
+    toolchain["java_source"] = "1.8" if forced == "8" else forced
+
 
 def get_protoc_bin(year: int) -> str:
     """
@@ -1327,12 +1354,20 @@ def main():
             before_toolchain = get_toolchain(before_year)
             after_toolchain  = get_toolchain(after_year)
 
-            if "force_java_version" in PROJECT_CONFIG:
+            # Java version resolution priority:
+            #   1. Per-run enforcement (FORCE_JAVA_VERSION workflow input): hard
+            #      override — disables both the year toolchain and pom.xml detection.
+            #   2. Per-project force_java_version (project_configs.json): a starting
+            #      hint that pom.xml auto-detection below may still adjust.
+            #   3. Automatic: year-based toolchain + pom.xml detection.
+            enforce_java = CONFIG["force_java_version"]
+            if enforce_java:
+                apply_forced_java(before_toolchain, enforce_java)
+                apply_forced_java(after_toolchain, enforce_java)
+            elif "force_java_version" in PROJECT_CONFIG:
                 forced_java = PROJECT_CONFIG["force_java_version"]
-                before_toolchain["java_major"] = forced_java
-                before_toolchain["java_source"] = forced_java
-                after_toolchain["java_major"] = forced_java
-                after_toolchain["java_source"] = forced_java
+                apply_forced_java(before_toolchain, forced_java)
+                apply_forced_java(after_toolchain, forced_java)
                 
             project_key = f"{PROJECT_NAME}:{issue_id}"
             create_public_project(project_key)
@@ -1343,16 +1378,20 @@ def main():
                 raise RuntimeError("BEFORE git checkout failed")
             apply_project_compat_patches(CONFIG["repo_path"])
 
-            # Detect JDK from this specific checkout
-            detected = detect_required_java(CONFIG["repo_path"])
-            if detected:
-                jdk_order = ["8", "11", "17"]
-                if jdk_order.index(before_toolchain["java_major"]) < jdk_order.index(detected):
-                    logger.info(f"  ↑ BEFORE JDK raised {before_toolchain['java_major']} → {detected} (from pom.xml)")
-                    before_toolchain["java_major"] = detected
-                elif jdk_order.index(before_toolchain["java_major"]) > jdk_order.index(detected):
-                    logger.info(f"  ↓ BEFORE JDK lowered {before_toolchain['java_major']} → {detected} (from pom.xml)")
-                    before_toolchain["java_major"] = detected
+            # Detect JDK from this specific checkout (skipped when a version is
+            # enforced for this run via the FORCE_JAVA_VERSION workflow input).
+            if enforce_java:
+                logger.info(f"  ⚙ BEFORE JDK enforced to Java {enforce_java} (pom.xml auto-detection disabled)")
+            else:
+                detected = detect_required_java(CONFIG["repo_path"])
+                if detected:
+                    jdk_order = ["8", "11", "17"]
+                    if jdk_order.index(before_toolchain["java_major"]) < jdk_order.index(detected):
+                        logger.info(f"  ↑ BEFORE JDK raised {before_toolchain['java_major']} → {detected} (from pom.xml)")
+                        before_toolchain["java_major"] = detected
+                    elif jdk_order.index(before_toolchain["java_major"]) > jdk_order.index(detected):
+                        logger.info(f"  ↓ BEFORE JDK lowered {before_toolchain['java_major']} → {detected} (from pom.xml)")
+                        before_toolchain["java_major"] = detected
 
             build_system = get_build_system(
                 CONFIG["build_system"], CONFIG["repo_path"], before_toolchain, log_file
@@ -1374,15 +1413,18 @@ def main():
                 raise RuntimeError("AFTER git checkout failed")
             apply_project_compat_patches(CONFIG["repo_path"])
 
-            detected = detect_required_java(CONFIG["repo_path"])
-            if detected:
-                jdk_order = ["8", "11", "17"]
-                if jdk_order.index(after_toolchain["java_major"]) < jdk_order.index(detected):
-                    logger.info(f"  ↑ AFTER JDK raised {after_toolchain['java_major']} → {detected} (from pom.xml)")
-                    after_toolchain["java_major"] = detected
-                elif jdk_order.index(after_toolchain["java_major"]) > jdk_order.index(detected):
-                    logger.info(f"  ↓ AFTER JDK lowered {after_toolchain['java_major']} → {detected} (from pom.xml)")
-                    after_toolchain["java_major"] = detected
+            if enforce_java:
+                logger.info(f"  ⚙ AFTER JDK enforced to Java {enforce_java} (pom.xml auto-detection disabled)")
+            else:
+                detected = detect_required_java(CONFIG["repo_path"])
+                if detected:
+                    jdk_order = ["8", "11", "17"]
+                    if jdk_order.index(after_toolchain["java_major"]) < jdk_order.index(detected):
+                        logger.info(f"  ↑ AFTER JDK raised {after_toolchain['java_major']} → {detected} (from pom.xml)")
+                        after_toolchain["java_major"] = detected
+                    elif jdk_order.index(after_toolchain["java_major"]) > jdk_order.index(detected):
+                        logger.info(f"  ↓ AFTER JDK lowered {after_toolchain['java_major']} → {detected} (from pom.xml)")
+                        after_toolchain["java_major"] = detected
             
             build_system = get_build_system(
                 CONFIG["build_system"], CONFIG["repo_path"], after_toolchain, log_file
