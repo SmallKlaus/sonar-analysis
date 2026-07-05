@@ -23,6 +23,17 @@ on:
         required: true
         default: '1'
         type: string
+      java_version:
+        description: 'Java version to enforce for this run (auto = automatic per-commit selection)'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - 'auto'
+          - '8'
+          - '11'
+          - '17'
+          - '21'
 
 permissions:
   contents: write   # Required: allows the runner to push checkpoints back to this repo
@@ -182,6 +193,7 @@ jobs:
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           PROJECT_NAME: ${{ github.event.inputs.project }}
           BATCH_NUMBER: ${{ github.event.inputs.batch_number }}
+          FORCE_JAVA_VERSION: ${{ github.event.inputs.java_version }}
           PROJECT_REPO_PATH: ${{ github.workspace }}/project
           SCRIPTS_REPO_PATH: ${{ github.workspace }}   # Root of the scripts repo (contains scripts/ and checkpoints/)
           SONAR_SCANNER_OPTS: "-Xmx6656m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
