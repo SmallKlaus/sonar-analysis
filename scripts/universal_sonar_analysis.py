@@ -157,7 +157,8 @@ def save_progress(progress: dict):
 
 
 def checkpoint_issue(issue_id: str, status: str, progress: dict,
-                     report_path: str = None, log_path: str = None):
+                     report_path: str = None, log_path: str = None,
+                     scan_log_path: str = None):
     """
     Persist an issue's artefacts to checkpoints/ and push to the remote repo.
 
@@ -167,7 +168,9 @@ def checkpoint_issue(issue_id: str, status: str, progress: dict,
         progress:    in-memory progress dict (mutated in-place then saved)
         report_path: absolute path to the JSON report (None if the issue failed
                      before a report was created)
-        log_path:    absolute path to the build/scan log
+        log_path:    absolute path to the build log
+        scan_log_path: absolute path to the sonar scanner log (passed on
+                     failure so scanner/server errors survive the runner)
     """
     logger.info(f"  Checkpointing {issue_id} ({status})...")
     committed_files = []
@@ -185,6 +188,13 @@ def checkpoint_issue(issue_id: str, status: str, progress: dict,
         shutil.copy2(log_path, dest)
         committed_files.append(dest)
         logger.info(f"    ✓ Saved log     → checkpoints/{issue_id}_build.log")
+
+    # --- Copy sonar scan log (if provided) ----------------------------------
+    if scan_log_path and os.path.exists(scan_log_path):
+        dest = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_scan.log")
+        shutil.copy2(scan_log_path, dest)
+        committed_files.append(dest)
+        logger.info(f"    ✓ Saved scan log → checkpoints/{issue_id}_scan.log")
 
     # --- Update progress JSON -----------------------------------------------
     progress[issue_id] = {
@@ -935,7 +945,10 @@ sonar.dbd.enabled=false
     
     try:
         env = os.environ.copy()
-        env["JAVA_HOME"] = CONFIG["java_homes"]["17"]
+        # SonarCloud requires a Java 21+ scanner runtime (since July 2026). The
+        # linux-x64 scanner bundle uses its embedded JRE 21 and ignores
+        # JAVA_HOME; this matters only if a no-JRE distribution is ever used.
+        env["JAVA_HOME"] = CONFIG["java_homes"]["21"]
         
         process = subprocess.Popen(
             ["sonar-scanner",
@@ -947,7 +960,6 @@ sonar.dbd.enabled=false
         )
         
         task_id = None
-        error_logs = []
         
         safe_key = project_key.replace(":", "_")
         scan_log_path = os.path.join(CONFIG["output_dir"], f"sonar_scan_{safe_key}.log")
@@ -959,8 +971,6 @@ sonar.dbd.enabled=false
                 if "task?id=" in line:
                     task_id = line.split("task?id=")[1].strip()
                 
-                if "ERROR" in line or "Exception" in line:
-                    error_logs.append(line.strip())
         
         process.wait(timeout=3600)
         
@@ -970,11 +980,18 @@ sonar.dbd.enabled=false
         else:
             logger.error(f"✗ Scan failed (Exit Code {process.returncode}). Full log at: {scan_log_path}")
             
-            if error_logs:
-                logger.error("--- Scanner Error Output ---")
-                for err in error_logs[-15:]:
-                    logger.error(f"  {err}")
-                logger.error("----------------------------")
+            # Dump the raw tail unfiltered — scanner failure messages are often
+            # bare text with no ERROR/Exception prefix (e.g. the Java 17
+            # deprecation notice), so a keyword filter can hide the real cause.
+            try:
+                with open(scan_log_path, "r", encoding="utf-8") as fh:
+                    tail = fh.readlines()[-40:]
+                logger.error("--- Scanner Output (last 40 lines) ---")
+                for tline in tail:
+                    logger.error(f"  {tline.rstrip()}")
+                logger.error("---------------------------------------")
+            except Exception:
+                pass
             
             return None
             
@@ -993,18 +1010,42 @@ def wait_for_task(task_id: str) -> bool:
     for _ in range(270):  # 45 min timeout
         try:
             resp = requests.get(url, auth=auth, timeout=10)
-            status = resp.json()["task"]["status"]
+            task = resp.json()["task"]
+            status = task["status"]
             
             if status == "SUCCESS":
                 logger.info("✓ Task succeeded")
                 return True
             elif status in ("FAILED", "CANCELED"):
                 logger.error(f"✗ Task {status}")
+                # CE task records vanish when the project is deleted, so log
+                # the server-side failure reason while it's still available.
+                if task.get("errorType"):
+                    logger.error(f"  errorType: {task['errorType']}")
+                if task.get("errorMessage"):
+                    logger.error(f"  errorMessage: {task['errorMessage']}")
                 return False
         except:
             pass
         time.sleep(10)
     
+    return False
+
+
+def scan_with_retry(repo_path: str, project_key: str, build_system,
+                    label: str, attempts: int = 2, backoff: int = 90) -> bool:
+    """
+    Run sonar_scan + wait_for_task, retrying once on failure. Rescues
+    transient SonarCloud rejections (rate limits, gateway errors, CE hiccups)
+    without re-running the build — compiled artefacts are still on disk.
+    """
+    for attempt in range(1, attempts + 1):
+        task_id = sonar_scan(repo_path, project_key, build_system)
+        if task_id and wait_for_task(task_id):
+            return True
+        if attempt < attempts:
+            logger.warning(f"  ⚠ {label} scan/task attempt {attempt} failed — retrying in {backoff}s...")
+            time.sleep(backoff)
     return False
 
 
@@ -1399,8 +1440,7 @@ def main():
             if not build_system.build():
                 raise RuntimeError("BEFORE build failed")
             
-            before_task = sonar_scan(CONFIG["repo_path"], project_key, build_system)
-            if not before_task or not wait_for_task(before_task):
+            if not scan_with_retry(CONFIG["repo_path"], project_key, build_system, "BEFORE"):
                 raise RuntimeError("BEFORE sonar scan/task failed")
             
             before_metrics  = get_measures(project_key)
@@ -1432,8 +1472,7 @@ def main():
             if not build_system.build():
                 raise RuntimeError("AFTER build failed")
             
-            after_task = sonar_scan(CONFIG["repo_path"], project_key, build_system)
-            if not after_task or not wait_for_task(after_task):
+            if not scan_with_retry(CONFIG["repo_path"], project_key, build_system, "AFTER"):
                 raise RuntimeError("AFTER sonar scan/task failed")
             
             after_metrics = get_measures(project_key)
@@ -1484,8 +1523,12 @@ def main():
             # re-attempting them on the next run.  Remove the entry from
             # checkpoints/{PROJECT}_progress.json manually if you want to
             # retry a specific failed issue.
+            # Same name sonar_scan() uses: sonar_scan_<PROJECT>_<issue>.log
+            scan_log = os.path.join(CONFIG["output_dir"],
+                                    f"sonar_scan_{PROJECT_NAME}_{issue_id}.log")
             checkpoint_issue(issue_id, "failed", progress,
-                             report_path=None, log_path=log_file)
+                             report_path=None, log_path=log_file,
+                             scan_log_path=scan_log)
             failures.append(issue_id)
 
     # ── Final summary ─────────────────────────────────────────────────────
