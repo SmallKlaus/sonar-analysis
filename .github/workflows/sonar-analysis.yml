@@ -149,9 +149,12 @@ jobs:
 
       - name: Install SonarScanner
         run: |
-          wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-          unzip -q sonar-scanner-cli-5.0.1.3006-linux.zip
-          echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
+          # Scanner 8.x bundles a Java 21 JRE — required since July 2026
+          # (SonarCloud rejects Java 17 scanner runtimes; the bundled launcher
+          # ignores JAVA_HOME, so the JRE must come from the scanner package).
+          wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+          unzip -q sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+          echo "$PWD/sonar-scanner-8.1.0.6389-linux-x64/bin" >> $GITHUB_PATH
 
       - name: Configure Maven (if Maven project)
         if: steps.config.outputs.build_system == 'maven'
@@ -196,6 +199,8 @@ jobs:
           FORCE_JAVA_VERSION: ${{ github.event.inputs.java_version }}
           PROJECT_REPO_PATH: ${{ github.workspace }}/project
           SCRIPTS_REPO_PATH: ${{ github.workspace }}   # Root of the scripts repo (contains scripts/ and checkpoints/)
+          # Scanner 6+ reads SONAR_SCANNER_JAVA_OPTS; legacy name kept as fallback
+          SONAR_SCANNER_JAVA_OPTS: "-Xmx6656m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
           SONAR_SCANNER_OPTS: "-Xmx6656m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
