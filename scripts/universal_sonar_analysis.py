@@ -65,9 +65,13 @@ CONFIG = {
     "repo_path": os.getenv("PROJECT_REPO_PATH", "."),
     "output_dir": "output",
     
-    "sonar_url": "https://sonarcloud.io",
+    # SONAR_HOST_URL selects the backend: default SonarCloud, or a self-hosted
+    # SonarQube (e.g. http://localhost:9000 running inside the runner).
+    "sonar_url": os.getenv("SONAR_HOST_URL", "https://sonarcloud.io"),
     "sonar_token": os.getenv("SONAR_TOKEN"),
-    "sonar_organization": os.getenv("SONAR_ORGANIZATION"),
+    # Empty/unset organization ⇒ self-hosted SonarQube (no org concept);
+    # a value ⇒ SonarCloud, where component keys are namespaced under the org.
+    "sonar_organization": (os.getenv("SONAR_ORGANIZATION") or "").strip() or None,
     
     "build_system": PROJECT_CONFIG.get("build_system", "maven"),
     "sonar_exclusions": PROJECT_CONFIG.get("sonar_exclusions", []),
@@ -100,8 +104,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 logger.info("="*70)
-logger.info(f"Universal SonarCloud Analysis - {PROJECT_NAME}")
+logger.info(f"Universal Sonar Analysis - {PROJECT_NAME}")
 logger.info(f"Build System: {CONFIG['build_system']}")
+if CONFIG["sonar_organization"]:
+    logger.info(f"Sonar backend: SonarCloud (org '{CONFIG['sonar_organization']}') at {CONFIG['sonar_url']}")
+else:
+    logger.info(f"Sonar backend: self-hosted SonarQube at {CONFIG['sonar_url']} (no organization)")
 if os.getenv("JIRA_JSON_PATH"):
     logger.info(f"Using filtered issue batch from JIRA_JSON_PATH: {CONFIG['jira_json_path']}")
 if CONFIG["force_java_version"]:
@@ -884,51 +892,67 @@ def get_build_system(build_type: str, repo_path: str, toolchain: dict, log_file:
 # ============================================================================
 # SONARCLOUD (Build-system agnostic)
 # ============================================================================
-def create_public_project(project_key: str):
-    full_key = f"{CONFIG['sonar_organization']}_{project_key}"
+def full_component_key(project_key: str) -> str:
+    """Component/project key as the active Sonar backend expects it.
+
+    SonarCloud namespaces every key under the organization (`<org>_<key>`);
+    self-hosted SonarQube has no organizations, so the key is used verbatim.
+    """
+    org = CONFIG["sonar_organization"]
+    return f"{org}_{project_key}" if org else project_key
+
+
+def create_public_project(project_key: str, attempts: int = 3, backoff: int = 20):
+    full_key = full_component_key(project_key)
     url = f"{CONFIG['sonar_url']}/api/projects/create"
     auth = (CONFIG["sonar_token"], "")
+
+    data = {"project": full_key, "name": project_key}
+    if CONFIG["sonar_organization"]:
+        # SonarCloud-only parameters; self-hosted SonarQube rejects 'organization'
+        data["organization"] = CONFIG["sonar_organization"]
+        data["visibility"] = "public"
     
-    data = {
-        "organization": CONFIG["sonar_organization"],
-        "project": full_key,
-        "name": project_key,
-        "visibility": "public"
-    }
-    
-    try:
-        res = requests.post(url, auth=auth, data=data, timeout=30)
-        if res.status_code == 200:
-            logger.info(f"✓ Created public project: {full_key}")
-            return True
-        elif "already exists" in res.text.lower():
-            logger.info(f"✓ Project exists: {full_key}")
-            return True
-        else:
-            logger.error(f"✗ Failed to create project: {res.text}")
-            return False
-    except Exception as e:
-        logger.error(f"✗ Error creating project: {e}")
-        return False
+    # Retried with backoff: a missed creation only surfaces after the full
+    # build, as a misleading scanner-side "Not authorized or project not
+    # found" — so transient API failures (rate limits with parallel runners,
+    # gateway errors) must not slip through here.
+    for attempt in range(1, attempts + 1):
+        try:
+            res = requests.post(url, auth=auth, data=data, timeout=30)
+            if res.status_code == 200:
+                logger.info(f"✓ Created public project: {full_key}")
+                return True
+            elif "already exists" in res.text.lower():
+                logger.info(f"✓ Project exists: {full_key}")
+                return True
+            else:
+                logger.error(f"✗ Project create attempt {attempt}/{attempts} failed "
+                             f"(HTTP {res.status_code}): {res.text[:300]}")
+        except Exception as e:
+            logger.error(f"✗ Error creating project (attempt {attempt}/{attempts}): {e}")
+        if attempt < attempts:
+            time.sleep(backoff)
+    return False
 
 
 def sonar_scan(repo_path: str, project_key: str, build_system: BuildSystem) -> str:
-    logger.info("Starting SonarCloud scan...")
-    
+    logger.info("Starting Sonar scan...")
+
     sources = build_system.get_source_dirs()
     binaries = build_system.get_binary_dirs()
-    
+
     sources_str = ",".join(sources) if sources else "."
     binaries_str = ",".join(binaries) if binaries else "."
-    
-    full_project_key = f"{CONFIG['sonar_organization']}_{project_key}"
-    
+
+    full_project_key = full_component_key(project_key)
+
     exclusions = ",".join(CONFIG["sonar_exclusions"]) if CONFIG["sonar_exclusions"] else ""
-    
-    # ADDED: sonar.organization is now explicitly passed to the scanner
+
+    # sonar.organization is a SonarCloud-only property; omit it for self-hosted.
+    org_line = f"sonar.organization={CONFIG['sonar_organization']}\n" if CONFIG["sonar_organization"] else ""
     props_content = f"""
-sonar.organization={CONFIG['sonar_organization']}
-sonar.projectKey={full_project_key}
+{org_line}sonar.projectKey={full_project_key}
 sonar.sources={sources_str}
 sonar.java.binaries={binaries_str}
 sonar.java.source={build_system.toolchain['java_source']}
@@ -1050,7 +1074,7 @@ def scan_with_retry(repo_path: str, project_key: str, build_system,
 
 
 def get_measures(project_key: str) -> dict:
-    full_key = f"{CONFIG['sonar_organization']}_{project_key}"
+    full_key = full_component_key(project_key)
     url = f"{CONFIG['sonar_url']}/api/measures/component"
     auth = (CONFIG["sonar_token"], "")
     
@@ -1256,7 +1280,7 @@ def _fetch_partition(full_key: str, params: dict, out: dict, depth: int = 0) -> 
 def fetch_issues(project_key: str, **filters) -> list:
     """Fetch ALL issues matching the filters, complete beyond the 10k
     api/issues/search cap (recursive query partitioning, deduped by key)."""
-    full_key = f"{CONFIG['sonar_organization']}_{project_key}"
+    full_key = full_component_key(project_key)
     out: dict = {}
     for issue_type in ["BUG", "VULNERABILITY", "CODE_SMELL"]:
         _fetch_partition(full_key, {"types": issue_type, **filters}, out)
@@ -1411,7 +1435,10 @@ def main():
                 apply_forced_java(after_toolchain, forced_java)
                 
             project_key = f"{PROJECT_NAME}:{issue_id}"
-            create_public_project(project_key)
+            # Fail fast: a scan against a missing project only errors out
+            # after the build, with a misleading "project not found" message.
+            if not create_public_project(project_key):
+                raise RuntimeError("SonarCloud project creation failed")
 
             # ── BEFORE scan ───────────────────────────────────────────────
             logger.info("\n▶ BEFORE SCAN")
