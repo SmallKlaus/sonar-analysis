@@ -190,6 +190,28 @@ jobs:
           protoc-2.5.0 --version
           protoc-3.7.1 --version
 
+      - name: Purge corrupted jars from Maven cache
+        run: |
+          # The restored ~/.m2 cache can contain poisoned artefacts — an HTML
+          # error page or truncated download saved as a .jar fails builds with
+          # "zip END header not found" on every run until evicted. Drop any
+          # jar that is not a valid zip so Maven re-fetches it.
+          python3 << 'EOF'
+          import os, zipfile
+          root = os.path.expanduser("~/.m2/repository")
+          removed = 0
+          if os.path.isdir(root):
+              for dirpath, _, files in os.walk(root):
+                  for name in files:
+                      if name.endswith(".jar"):
+                          path = os.path.join(dirpath, name)
+                          if not zipfile.is_zipfile(path):
+                              print(f"Removing corrupt jar: {path}")
+                              os.remove(path)
+                              removed += 1
+          print(f"Cache check complete - {removed} corrupt jar(s) removed")
+          EOF
+
       - name: Run analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
