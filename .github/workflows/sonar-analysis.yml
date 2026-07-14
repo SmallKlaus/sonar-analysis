@@ -1,4 +1,4 @@
-name: Universal SonarCloud Analysis
+name: Universal Sonar Analysis (self-hosted SonarQube)
 
 on:
   workflow_dispatch:
@@ -212,24 +212,92 @@ jobs:
           print(f"Cache check complete - {removed} corrupt jar(s) removed")
           EOF
 
+      - name: Start self-hosted SonarQube (Community Edition)
+        env:
+          # Pin to a concrete "<ver>-community" tag from Docker Hub for full
+          # reproducibility; "community" tracks the latest Community build.
+          SONARQUBE_IMAGE: sonarqube:community
+        run: |
+          set -euo pipefail
+
+          # Embedded Elasticsearch requires raised mmap + file-descriptor limits.
+          sudo sysctl -w vm.max_map_count=524288
+          sudo sysctl -w fs.file-max=131072
+
+          # JVM heaps sized to co-exist with the build and scanner on a runner.
+          # Xms kept low so the server barely reserves RAM while the build runs;
+          # the CE heap expands only during report processing (after the scanner
+          # process has exited), so peak build/scan/CE phases don't stack.
+          docker run -d --name sonarqube \
+            -p 9000:9000 \
+            -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true \
+            -e SONAR_WEB_JAVAOPTS="-Xmx512m -Xms128m" \
+            -e SONAR_CE_JAVAOPTS="-Xmx2048m -Xms256m" \
+            -e SONAR_SEARCH_JAVAOPTS="-Xmx1024m -Xms1024m" \
+            "$SONARQUBE_IMAGE"
+
+          echo "Waiting for SonarQube to reach status UP (up to ~5 min)..."
+          for i in $(seq 1 60); do
+            STATUS=$(curl -s http://localhost:9000/api/system/status \
+              | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))" 2>/dev/null || echo "")
+            echo "  [$i/60] status=${STATUS:-<no response yet>}"
+            if [ "$STATUS" = "UP" ]; then break; fi
+            if [ "$i" = "60" ]; then
+              echo "::error::SonarQube did not reach UP in time"
+              docker logs sonarqube | tail -80
+              exit 1
+            fi
+            sleep 5
+          done
+
+          # First run: change the default admin password (required before the
+          # token API will issue tokens), then mint an analysis token.
+          NEW_PW="Sonar_CI_${GITHUB_RUN_ID}"
+          curl -s -u admin:admin -X POST http://localhost:9000/api/users/change_password \
+            -d "login=admin" -d "previousPassword=admin" -d "password=${NEW_PW}" >/dev/null || true
+
+          TOKEN_JSON=$(curl -s -u "admin:${NEW_PW}" -X POST \
+            http://localhost:9000/api/user_tokens/generate -d "name=ci-${GITHUB_RUN_ID}-${RANDOM}")
+          SONAR_TOKEN=$(echo "$TOKEN_JSON" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))" 2>/dev/null || echo "")
+
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "::error::Failed to generate SonarQube token. Response: $TOKEN_JSON"
+            docker logs sonarqube | tail -80
+            exit 1
+          fi
+
+          # Hand the local URL + token to later steps; mask the token in logs.
+          # SONAR_ORGANIZATION is deliberately NOT set -> script runs self-hosted.
+          echo "::add-mask::$SONAR_TOKEN"
+          echo "SONAR_TOKEN=$SONAR_TOKEN" >> "$GITHUB_ENV"
+          echo "SONAR_HOST_URL=http://localhost:9000" >> "$GITHUB_ENV"
+          echo "✓ SonarQube is UP and analysis token provisioned"
+
       - name: Run analysis
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+          # SONAR_TOKEN and SONAR_HOST_URL are injected by the SonarQube startup
+          # step via $GITHUB_ENV. SONAR_ORGANIZATION is intentionally unset so
+          # the script uses self-hosted (org-less) component keys.
           PROJECT_NAME: ${{ github.event.inputs.project }}
           BATCH_NUMBER: ${{ github.event.inputs.batch_number }}
           FORCE_JAVA_VERSION: ${{ github.event.inputs.java_version }}
           PROJECT_REPO_PATH: ${{ github.workspace }}/project
           SCRIPTS_REPO_PATH: ${{ github.workspace }}   # Root of the scripts repo (contains scripts/ and checkpoints/)
-          # Scanner 6+ reads SONAR_SCANNER_JAVA_OPTS; legacy name kept as fallback
-          SONAR_SCANNER_JAVA_OPTS: "-Xmx6656m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
-          SONAR_SCANNER_OPTS: "-Xmx6656m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
+          # Scanner heap trimmed from 6656m so it co-exists with the SonarQube
+          # server on the runner. Raise it if you move to larger (16 GB) runners.
+          SONAR_SCANNER_JAVA_OPTS: "-Xmx3072m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
+          SONAR_SCANNER_OPTS: "-Xmx3072m -XX:+UseG1GC -XX:MaxMetaspaceSize=384m"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
           cd project
           mkdir -p output
           python3 ../scripts/universal_sonar_analysis.py
+
+      - name: Dump SonarQube server logs on failure
+        if: failure()
+        run: docker logs sonarqube 2>&1 | tail -200 || true
 
       - name: Ensure output directory exists
         if: always()
