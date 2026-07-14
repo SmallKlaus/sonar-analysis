@@ -1,12 +1,15 @@
 """
 universal_sonar_analysis.py - Multi-project, Multi-build-system SonarCloud Analysis
 Supports: Maven and Gradle projects
-Checkpoint system: persists per-issue results to the scripts repo so that
-interrupted batches can be resumed without re-analyzing already-seen issues.
+Checkpoint system: uploads per-issue reports/logs as gzip-compressed assets on
+a per-project GitHub Release (with only the small progress index committed to
+the scripts repo) so interrupted batches resume without re-analyzing already-
+seen issues and never hit GitHub's 100 MB push limit.
 """
 
 import os
 import json
+import gzip
 import shutil
 import subprocess
 import time
@@ -27,7 +30,7 @@ BATCH_NUMBER = os.getenv("BATCH_NUMBER", "1")
 # (i.e. $GITHUB_WORKSPACE on the runner, or a local equivalent).
 # The internal layout is:
 #   <SCRIPTS_REPO_PATH>/scripts/          ← Python scripts, JSON configs, batch files
-#   <SCRIPTS_REPO_PATH>/checkpoints/      ← persisted reports, logs, progress JSON
+#   <SCRIPTS_REPO_PATH>/checkpoints/      ← progress JSON (reports/logs live on the GitHub Release)
 SCRIPTS_REPO_PATH = os.getenv("SCRIPTS_REPO_PATH", os.path.join(os.path.dirname(__file__), ".."))
 
 
@@ -135,6 +138,216 @@ PROGRESS_FILE = os.path.join(CHECKPOINTS_DIR, f"{PROJECT_NAME}_progress.json")
 os.makedirs(CHECKPOINTS_DIR, exist_ok=True)
 
 
+# ── Release-asset checkpoint store ──────────────────────────────────────────
+# Per-issue reports (and build/scan logs) can exceed GitHub's 100 MB push limit,
+# and a single oversized commit blocks every later push in the run. So the heavy
+# artefacts are stored as gzip-compressed assets on a per-project GitHub Release
+# instead of being committed to git; only the small progress JSON stays under
+# version control. Assets are keyed by issue id, so parallel batches of the same
+# project never collide (same-issue re-runs overwrite via --clobber).
+
+RELEASE_TAG = f"checkpoints-{PROJECT_NAME}"
+
+# GitHub Actions always sets GITHUB_REPOSITORY (e.g. "SmallKlaus/sonar-analysis").
+# When unset (local runs) gh auto-detects the repo from the origin remote.
+_GH_REPO = (os.getenv("GITHUB_REPOSITORY") or "").strip()
+_GH_REPO_ARGS = ["--repo", _GH_REPO] if _GH_REPO else []
+
+# gh authenticates from GH_TOKEN/GITHUB_TOKEN, already present in the workflow env.
+_GH_AVAILABLE = shutil.which("gh") is not None
+if not _GH_AVAILABLE:
+    logger.warning(
+        "⚠ gh CLI not found — release-asset checkpoints disabled. Reports are "
+        "still written to output/ and uploaded as the run artifact, but there "
+        "is no cross-run resume."
+    )
+
+# Transient area for compress/decompress; files are deleted after each op so
+# nothing here is committed or bloats the run artifact.
+RELEASE_STAGING_DIR = os.path.join(CONFIG["output_dir"], "_release_staging")
+os.makedirs(RELEASE_STAGING_DIR, exist_ok=True)
+
+# Asset names present on the release (e.g. "HDFS-14678_report.json.gz"),
+# populated once at startup by refresh_release_assets().
+_RELEASE_ASSETS: set = set()
+
+
+def _run_gh(args: list, check: bool = True, timeout: int = 600):
+    """Run a gh CLI command (cwd = scripts repo, so origin auto-detect works)."""
+    return subprocess.run(
+        ["gh"] + args,
+        cwd=SCRIPTS_REPO_PATH, check=check, timeout=timeout,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+
+
+def _err_text(e: Exception) -> str:
+    """Best-effort stderr/message extraction from a subprocess exception."""
+    raw = getattr(e, "stderr", None)
+    if raw:
+        return raw.decode("utf-8", errors="replace").strip() if isinstance(raw, bytes) else str(raw).strip()
+    return str(e)
+
+
+def _gzip_file(src_path: str, dest_path: str):
+    """Gzip src_path → dest_path (level 6: strong ratio at low CPU cost)."""
+    with open(src_path, "rb") as f_in, gzip.open(dest_path, "wb", compresslevel=6) as f_out:
+        shutil.copyfileobj(f_in, f_out)
+
+
+def _gunzip_file(src_path: str, dest_path: str):
+    """Decompress a .gz file → dest_path."""
+    with gzip.open(src_path, "rb") as f_in, open(dest_path, "wb") as f_out:
+        shutil.copyfileobj(f_in, f_out)
+
+
+def ensure_release_exists():
+    """
+    Make sure the per-project checkpoint release exists. Idempotent and
+    race-tolerant: parallel batches may call this at once, so a create that
+    fails because the tag already exists is treated as success. Best-effort —
+    never raises (a run can still produce its artifact without the release).
+    """
+    if not _GH_AVAILABLE:
+        return
+    try:
+        if _run_gh(["release", "view", RELEASE_TAG] + _GH_REPO_ARGS, check=False).returncode == 0:
+            return
+        create = _run_gh(
+            ["release", "create", RELEASE_TAG,
+             "--title", f"Checkpoints: {PROJECT_NAME}",
+             "--notes", "Automated per-issue Sonar analysis checkpoints "
+                        "(gzip-compressed reports and build/scan logs).",
+             "--latest=false"] + _GH_REPO_ARGS,
+            check=False,
+        )
+        if create.returncode == 0:
+            logger.info(f"✓ Created checkpoint release '{RELEASE_TAG}'")
+            return
+        # Lost a create race, or a transient error — re-check existence.
+        if _run_gh(["release", "view", RELEASE_TAG] + _GH_REPO_ARGS, check=False).returncode == 0:
+            logger.info(f"✓ Checkpoint release '{RELEASE_TAG}' already exists")
+            return
+        stderr = create.stderr.decode("utf-8", errors="replace").strip()
+        logger.warning(f"⚠ Could not create release '{RELEASE_TAG}': {stderr}")
+    except Exception as e:
+        logger.warning(f"⚠ ensure_release_exists failed: {_err_text(e)}")
+
+
+def refresh_release_assets():
+    """
+    Populate _RELEASE_ASSETS with every asset name on the checkpoint release,
+    using the paginated assets API so releases with hundreds of issues are not
+    truncated. Best-effort: on any failure the set stays empty, which just means
+    no restores (issues get re-analyzed) — always safe.
+    """
+    global _RELEASE_ASSETS
+    _RELEASE_ASSETS = set()
+    if not _GH_AVAILABLE:
+        return
+
+    repo = _GH_REPO
+    if not repo:
+        # Derive owner/repo from the origin remote for the gh api path.
+        try:
+            url = subprocess.run(
+                ["git", "remote", "get-url", "origin"],
+                cwd=SCRIPTS_REPO_PATH, check=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            ).stdout.decode().strip()
+            m = re.search(r"github\.com[:/]+([^/]+/[^/.]+)", url)
+            repo = m.group(1) if m else ""
+        except Exception:
+            repo = ""
+    if not repo:
+        logger.warning("⚠ Could not determine repo slug — skipping release asset listing")
+        return
+
+    try:
+        rid = _run_gh(
+            ["api", f"repos/{repo}/releases/tags/{RELEASE_TAG}", "--jq", ".id"]
+        ).stdout.decode().strip()
+        if not rid:
+            return
+        out = _run_gh(
+            ["api", "--paginate", f"repos/{repo}/releases/{rid}/assets", "--jq", ".[].name"]
+        ).stdout.decode()
+        _RELEASE_ASSETS = {ln.strip() for ln in out.splitlines() if ln.strip()}
+        logger.info(f"✓ Release '{RELEASE_TAG}' holds {len(_RELEASE_ASSETS)} checkpoint asset(s)")
+    except Exception as e:
+        logger.warning(f"⚠ Could not list release assets: {_err_text(e)}")
+
+
+def _upload_asset(local_path: str, asset_name: str) -> bool:
+    """
+    Gzip local_path and upload it to the release as <asset_name>.gz, with
+    retry/backoff. Returns True on success. On failure the artefact still lives
+    in output/ and ships in the run artifact — only cross-run resume is lost.
+    """
+    if not _GH_AVAILABLE:
+        return False
+    gz_path = os.path.join(RELEASE_STAGING_DIR, asset_name + ".gz")
+    try:
+        _gzip_file(local_path, gz_path)
+    except OSError as e:
+        logger.error(f"    ✗ gzip failed for {os.path.basename(local_path)}: {e}")
+        return False
+
+    try:
+        for attempt in range(1, 6):
+            try:
+                _run_gh(["release", "upload", RELEASE_TAG, gz_path, "--clobber"] + _GH_REPO_ARGS)
+                _RELEASE_ASSETS.add(asset_name + ".gz")
+                size_mb = os.path.getsize(gz_path) / (1024 * 1024)
+                logger.info(f"    ✓ Uploaded → release:{asset_name}.gz ({size_mb:.1f} MB)")
+                return True
+            except subprocess.SubprocessError as e:
+                logger.warning(f"    ⚠ Asset upload failed (attempt {attempt}/5): {_err_text(e)}")
+                time.sleep(5 * attempt)
+        logger.error(f"    ✗ Could not upload {asset_name}.gz after 5 attempts — kept in output/ only")
+        return False
+    finally:
+        try:
+            os.remove(gz_path)
+        except OSError:
+            pass
+
+
+def _download_asset(asset_name: str, dest_path: str) -> bool:
+    """
+    Download <asset_name>.gz from the release and decompress it to dest_path,
+    with retry/backoff. Returns True on success.
+    """
+    if not _GH_AVAILABLE:
+        return False
+    gz_name = asset_name + ".gz"
+    gz_path = os.path.join(RELEASE_STAGING_DIR, gz_name)
+    # gh refuses to overwrite an existing download target — clear any stale one.
+    try:
+        os.remove(gz_path)
+    except OSError:
+        pass
+    try:
+        for attempt in range(1, 6):
+            try:
+                _run_gh(["release", "download", RELEASE_TAG,
+                         "--pattern", gz_name, "--dir", RELEASE_STAGING_DIR] + _GH_REPO_ARGS)
+                if os.path.exists(gz_path):
+                    _gunzip_file(gz_path, dest_path)
+                    return True
+                logger.warning(f"    ⚠ Download of {gz_name} produced no file (attempt {attempt}/5)")
+            except (subprocess.SubprocessError, OSError) as e:
+                logger.warning(f"    ⚠ Asset download failed (attempt {attempt}/5): {_err_text(e)}")
+            time.sleep(5 * attempt)
+        logger.error(f"    ✗ Could not download {gz_name} after 5 attempts")
+        return False
+    finally:
+        try:
+            os.remove(gz_path)
+        except OSError:
+            pass
+
+
 def load_progress() -> dict:
     """
     Load the progress JSON from the checkpoints directory.
@@ -168,53 +381,43 @@ def checkpoint_issue(issue_id: str, status: str, progress: dict,
                      report_path: str = None, log_path: str = None,
                      scan_log_path: str = None):
     """
-    Persist an issue's artefacts to checkpoints/ and push to the remote repo.
+    Persist an issue's artefacts and record its status.
+
+    Heavy artefacts (report + build/scan logs) are gzip-compressed and uploaded
+    as assets on the per-project GitHub Release, so they never hit the 100 MB
+    git push limit. Only the small progress JSON is committed to the repo (its
+    concurrent-batch merge is handled by _git_push_checkpoints).
 
     Args:
-        issue_id:    e.g. "FLINK-12345"
-        status:      "success" or "failed"
-        progress:    in-memory progress dict (mutated in-place then saved)
-        report_path: absolute path to the JSON report (None if the issue failed
-                     before a report was created)
-        log_path:    absolute path to the build log
-        scan_log_path: absolute path to the sonar scanner log (passed on
-                     failure so scanner/server errors survive the runner)
+        issue_id:      e.g. "FLINK-12345"
+        status:        "success" or "failed"
+        progress:      in-memory progress dict (mutated in-place then saved)
+        report_path:   absolute path to the JSON report (None if the issue
+                       failed before a report was created)
+        log_path:      absolute path to the build log
+        scan_log_path: absolute path to the sonar scanner log (passed on failure
+                       so scanner/server errors survive the runner)
     """
     logger.info(f"  Checkpointing {issue_id} ({status})...")
-    committed_files = []
 
-    # --- Copy report (success only) -----------------------------------------
+    # --- Upload heavy artefacts to the release (gzip-compressed) -------------
     if report_path and os.path.exists(report_path):
-        dest = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_report.json")
-        shutil.copy2(report_path, dest)
-        committed_files.append(dest)
-        logger.info(f"    ✓ Saved report  → checkpoints/{issue_id}_report.json")
-
-    # --- Copy build log (always, if present) --------------------------------
+        _upload_asset(report_path, f"{issue_id}_report.json")
     if log_path and os.path.exists(log_path):
-        dest = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_build.log")
-        shutil.copy2(log_path, dest)
-        committed_files.append(dest)
-        logger.info(f"    ✓ Saved log     → checkpoints/{issue_id}_build.log")
-
-    # --- Copy sonar scan log (if provided) ----------------------------------
+        _upload_asset(log_path, f"{issue_id}_build.log")
     if scan_log_path and os.path.exists(scan_log_path):
-        dest = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_scan.log")
-        shutil.copy2(scan_log_path, dest)
-        committed_files.append(dest)
-        logger.info(f"    ✓ Saved scan log → checkpoints/{issue_id}_scan.log")
+        _upload_asset(scan_log_path, f"{issue_id}_scan.log")
 
-    # --- Update progress JSON -----------------------------------------------
+    # --- Update progress JSON (the only file kept in git) -------------------
     progress[issue_id] = {
         "status":    status,
         "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "batch":     BATCH_NUMBER,
     }
     save_progress(progress)
-    committed_files.append(PROGRESS_FILE)
 
-    # --- Commit and push to the remote repo ---------------------------------
-    _git_push_checkpoints(issue_id, status, committed_files)
+    # --- Commit and push just the progress file to the remote repo ----------
+    _git_push_checkpoints(issue_id, status, [PROGRESS_FILE])
 
 
 def _git_push_checkpoints(issue_id: str, status: str, files: list):
@@ -328,29 +531,39 @@ def _git_push_checkpoints(issue_id: str, status: str, files: list):
 
 def restore_from_checkpoint(issue_id: str) -> bool:
     """
-    Check if a report already exists in checkpoints/. If so, copy
-    both the report and log into output/ and return True to skip analysis.
+    Return True (and stage the issue's report + build log into output/) if the
+    issue was already analyzed in a prior run, so it can be skipped. Checks the
+    local checkpoints dir first (legacy layout / manual local drops), then the
+    release assets. A report present = a prior success; failures leave no report
+    and are retried.
     """
-    report_src = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_report.json")
+    out_report = os.path.join(CONFIG["output_dir"], f"{issue_id}_report.json")
 
-    # A report file present = issue was successfully analyzed before
-    # No report = either failed or never run — analyze it
-    if not os.path.exists(report_src):
-        return False
+    # 1) Local checkpoints dir (legacy layout / manual local drops).
+    local_report = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_report.json")
+    if os.path.exists(local_report):
+        logger.info(f"  ↩ Found in local checkpoints — skipping analysis")
+        shutil.copy2(local_report, out_report)
+        logger.info(f"    ✓ Restored report → output/{issue_id}_report.json")
+        local_log = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_build.log")
+        if os.path.exists(local_log):
+            shutil.copy2(local_log, os.path.join(CONFIG["output_dir"], f"{issue_id}_build.log"))
+            logger.info(f"    ✓ Restored log    → output/{issue_id}_build.log")
+        return True
 
-    logger.info(f"  ↩ Found in checkpoints — skipping analysis")
+    # 2) Release asset (normal cross-run resume path).
+    if f"{issue_id}_report.json.gz" in _RELEASE_ASSETS:
+        logger.info(f"  ↩ Found in release checkpoints — downloading")
+        if _download_asset(f"{issue_id}_report.json", out_report):
+            logger.info(f"    ✓ Restored report → output/{issue_id}_report.json")
+            if f"{issue_id}_build.log.gz" in _RELEASE_ASSETS:
+                if _download_asset(f"{issue_id}_build.log",
+                                   os.path.join(CONFIG["output_dir"], f"{issue_id}_build.log")):
+                    logger.info(f"    ✓ Restored log    → output/{issue_id}_build.log")
+            return True
+        logger.warning(f"  ⚠ Release report download failed — will re-analyze {issue_id}")
 
-    # Restore report
-    shutil.copy2(report_src, os.path.join(CONFIG["output_dir"], f"{issue_id}_report.json"))
-    logger.info(f"    ✓ Restored report → output/{issue_id}_report.json")
-
-    # Restore log if present (best effort)
-    log_src = os.path.join(CHECKPOINTS_DIR, f"{issue_id}_build.log")
-    if os.path.exists(log_src):
-        shutil.copy2(log_src, os.path.join(CONFIG["output_dir"], f"{issue_id}_build.log"))
-        logger.info(f"    ✓ Restored log    → output/{issue_id}_build.log")
-
-    return True
+    return False
 
 
 # ============================================================================
@@ -1374,6 +1587,11 @@ def build_hadoop_thirdparty(repo_path: str, toolchain: dict) -> bool:
 def main():
     logger.info(f"Starting analysis: {PROJECT_NAME} batch {BATCH_NUMBER}")
     logger.info(f"Checkpoints directory: {CHECKPOINTS_DIR}")
+
+    # Ensure the per-project checkpoint release exists, then cache its asset
+    # list so restore_from_checkpoint() can resume issues from prior runs.
+    ensure_release_exists()
+    refresh_release_assets()
 
     # Load the persisted progress map once at startup
     progress = load_progress()
