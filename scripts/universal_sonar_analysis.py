@@ -622,8 +622,7 @@ def apply_forced_java(toolchain: dict, forced: str) -> None:
 
 def get_protoc_bin(year: int) -> str:
     """
-    Fallback protoc selector keyed on commit year, used only when the pom does
-    not declare a protobuf version (see detect_required_protoc).
+    Returns the path to the correct protoc binary for the given commit year.
     Hadoop 2.x and early 3.x used protobuf 2.5.0.
     Hadoop 3.3.x switched to protobuf 3.7.1.
     """
@@ -631,51 +630,6 @@ def get_protoc_bin(year: int) -> str:
         return "/usr/local/bin/protoc-2.5.0"
     else:
         return "/usr/local/bin/protoc-3.7.1"
-
-
-def detect_required_protoc(repo_path: str) -> str | None:
-    """
-    Return the protoc binary this checkout actually expects, read from the pom's
-    <protobuf.version>. Hadoop's hadoop-maven-plugins:protoc goal compares the
-    protoc executable's reported version against <protobuf.version> and fails the
-    build on any mismatch, so the commit *year* is not a reliable selector:
-    Hadoop trunk (3.3.0-SNAPSHOT) moved to protobuf 3.7.1 in 2019 — before the
-    year-based cutoff — which yields
-        protoc version is 'libprotoc 2.5.0', expected version is '3.7.1'
-    when the year heuristic picks 2.5.0. The pom is authoritative; prefer it.
-
-    Hadoop declares the property in hadoop-project/pom.xml, not the reactor root,
-    so both are searched.
-    """
-    candidate_poms = [
-        os.path.join(repo_path, "hadoop-project", "pom.xml"),
-        os.path.join(repo_path, "pom.xml"),
-    ]
-    for pom_path in candidate_poms:
-        if not os.path.exists(pom_path):
-            continue
-        try:
-            with open(pom_path, "r", encoding="utf-8") as f:
-                content = f.read()
-        except Exception:
-            continue
-        match = re.search(r"<protobuf\.version>\s*(\d+)\.", content)
-        if match:
-            major = int(match.group(1))
-            return ("/usr/local/bin/protoc-3.7.1" if major >= 3
-                    else "/usr/local/bin/protoc-2.5.0")
-    return None
-
-
-def resolve_protoc_bin(repo_path: str, year: int) -> str:
-    """Prefer the pom-declared protobuf version; fall back to the year heuristic."""
-    detected = detect_required_protoc(repo_path)
-    if detected:
-        logger.info(f"  Protoc selected from pom <protobuf.version>: {detected}")
-        return detected
-    fallback = get_protoc_bin(year)
-    logger.info(f"  Protoc selected from commit year {year} (pom silent): {fallback}")
-    return fallback
 
 def year_from_iso(date_str: str) -> int:
     try:
@@ -811,12 +765,9 @@ class MavenBuildSystem(BuildSystem):
             " -Dmaven.wagon.http.connectionTimeout=60000"
         )
 
-        # Select correct protoc version for Hadoop projects (pom-driven, with a
-        # commit-year fallback). Resolved once and reused for both the env var
-        # and the Maven property below so they can never disagree.
-        protoc_bin = None
+        # Select correct protoc version for Hadoop projects
         if PROJECT_CONFIG.get("requires_protoc"):
-            protoc_bin = resolve_protoc_bin(self.repo_path, self.toolchain.get("year", 2021))
+            protoc_bin = get_protoc_bin(self.toolchain.get("year", 2021))
             env["HADOOP_PROTOC_PATH"] = protoc_bin
             logger.info(f"  Using protoc: {protoc_bin}")
         
@@ -838,6 +789,7 @@ class MavenBuildSystem(BuildSystem):
 
         # Also pass protoc path as a Maven property (some Hadoop versions use this instead)
         if PROJECT_CONFIG.get("requires_protoc"):
+            protoc_bin = get_protoc_bin(self.toolchain.get("year", 2021))
             cmd.append(f"-Dprotoc.path={protoc_bin}")
         
         return self._execute_build(cmd, env)
