@@ -163,8 +163,11 @@ if not _GH_AVAILABLE:
     )
 
 # Transient area for compress/decompress; files are deleted after each op so
-# nothing here is committed or bloats the run artifact.
-RELEASE_STAGING_DIR = os.path.join(CONFIG["output_dir"], "_release_staging")
+# nothing here is committed or bloats the run artifact. MUST be absolute: gh is
+# invoked with cwd=SCRIPTS_REPO_PATH (repo root) while Python's cwd is project/,
+# so a relative path would make gh look for staged files in the wrong directory
+# ("no matches found" on upload; downloads landing where gunzip can't see them).
+RELEASE_STAGING_DIR = os.path.abspath(os.path.join(CONFIG["output_dir"], "_release_staging"))
 os.makedirs(RELEASE_STAGING_DIR, exist_ok=True)
 
 # Asset names present on the release (e.g. "HDFS-14678_report.json.gz"),
